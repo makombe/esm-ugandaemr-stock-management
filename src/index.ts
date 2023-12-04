@@ -15,8 +15,8 @@ export const importTranslation = require.context(
   "lazy"
 );
 
-export const stockManagementAdminCardLink = getAsyncLifecycle(
-  () => import("./stock-management-admin-card-link.component"),
+export const stockManagementLink = getAsyncLifecycle(
+  () => import("./stock-management-link.component"),
   options
 );
 

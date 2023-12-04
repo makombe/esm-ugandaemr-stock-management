@@ -19,6 +19,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@adobe/react-spectrum-ui@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@adobe/react-spectrum-ui@npm:1.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 18ad87c76e2019f22fa9f18df22fc06cb99e27d46fc82ed6974a4cab1d04c6a223ded51fae95d0890069cb7c9a10add468e5e9c62b9b33ac9b5ab9de25ff12e5
+  languageName: node
+  linkType: hard
+
+"@adobe/react-spectrum-workflow@npm:2.3.4":
+  version: 2.3.4
+  resolution: "@adobe/react-spectrum-workflow@npm:2.3.4"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 1c008fec02f19160a6a0589f9647d29b9652322b087ba521ba7e890747a23c70268c2e58799977823a65a8c44d832162743e0ecb3b082614bc70ba59a6eac2fc
+  languageName: node
+  linkType: hard
+
 "@ampproject/remapping@npm:^2.1.0":
   version: 2.2.0
   resolution: "@ampproject/remapping@npm:2.2.0"
@@ -2712,12 +2732,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.1":
+"@babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.1":
   version: 7.18.9
   resolution: "@babel/runtime@npm:7.18.9"
   dependencies:
     regenerator-runtime: ^0.13.4
   checksum: 36dd736baba7164e82b3cc9d43e081f0cb2d05ff867ad39cac515d99546cee75b7f782018b02a3dcf5f2ef3d27f319faa68965fdfec49d4912c60c6002353a2e
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.19.0, @babel/runtime@npm:^7.22.15":
+  version: 7.23.5
+  resolution: "@babel/runtime@npm:7.23.5"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: 164d9802424f06908e62d29b8fd3a87db55accf82f46f964ac481dcead11ff7df8391e3696e5fa91a8ca10ea8845bf650acd730fa88cf13f8026cd8d5eec6936
   languageName: node
   linkType: hard
 
@@ -2885,6 +2914,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@carbon/charts@npm:^1.12.0":
+  version: 1.13.8
+  resolution: "@carbon/charts@npm:1.13.8"
+  dependencies:
+    "@carbon/colors": ^11.20.1
+    "@carbon/telemetry": ~0.1.0
+    "@carbon/utils-position": ^1.1.4
+    carbon-components: ^10.58.12
+    d3: ^7.8.5
+    d3-cloud: ^1.2.7
+    d3-sankey: ^0.12.3
+    date-fns: ^2.30.0
+    html-to-image: ^1.11.11
+    lodash-es: ^4.17.21
+    topojson-client: ^3.1.0
+    tslib: ^2.6.2
+  peerDependencies:
+    d3: ^7.0.0
+    d3-cloud: ^1.2.5
+    d3-sankey: ^0.12.3
+  peerDependenciesMeta:
+    d3-cloud:
+      optional: true
+    d3-sankey:
+      optional: true
+  checksum: 87dc292238aa19a5ecffd22db3c51ceadd7494c7551ab5a3f35f15187ba3484a00b98513cf40b6bc8b132a44f6abcdf7183456e860380b0fecc42c3e38ba1015
+  languageName: node
+  linkType: hard
+
 "@carbon/charts@npm:^1.5.0":
   version: 1.6.0
   resolution: "@carbon/charts@npm:1.6.0"
@@ -2904,31 +2962,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@carbon/charts@npm:^1.6.3":
-  version: 1.8.0
-  resolution: "@carbon/charts@npm:1.8.0"
-  dependencies:
-    "@carbon/styles": ^1.4.0
-    "@carbon/telemetry": ^0.1.0
-    "@carbon/utils-position": ^1.1.4
-    carbon-components: ^10.58.3
-    d3-cloud: 1.2.5
-    d3-sankey: 0.12.3
-    date-fns: 2.8.1
-    dom-to-image-more: ^3.1.6
-    lodash-es: 4.17.21
-    resize-observer-polyfill: 1.5.0
-    topojson-client: 3.1.0
-  peerDependencies:
-    d3: 7.x
-  checksum: ba97e4b0cdd6d451e078183848f00a5c709dedd7aa50b6f4340e47384ae9156fcc6de64500bfe2bccd2d45a19438f84a30e68502dabdfc6413ac44d80af14c45
-  languageName: node
-  linkType: hard
-
 "@carbon/colors@npm:^11.17.1":
   version: 11.17.1
   resolution: "@carbon/colors@npm:11.17.1"
   checksum: 500764927dfb2e50d69cd365951a8fbd2fe031747f8fbae771751bda1f833608264c4690301879cdc8517232c0dfc93f0c40609fa985e66a35e36c0296f47c47
+  languageName: node
+  linkType: hard
+
+"@carbon/colors@npm:^11.20.0, @carbon/colors@npm:^11.20.1":
+  version: 11.20.1
+  resolution: "@carbon/colors@npm:11.20.1"
+  checksum: eb9d983c1ec4852f8542ea21f8bb31d383c417d55fe60a3d1ab8a0e85b617f41699b91657240f07f789b852abe48828f1546da92b1c46de9cfe21c81bb612fd7
   languageName: node
   linkType: hard
 
@@ -2946,6 +2990,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@carbon/feature-flags@npm:^0.16.0":
+  version: 0.16.0
+  resolution: "@carbon/feature-flags@npm:0.16.0"
+  checksum: 1fb964311f240c65fd57ee5971234b0c7b665d660b89ac931d0acc3d140ae0bed1b04eb8fc629f675a307be9579d9c4de317987749878b5a48bb364cbffd85d1
+  languageName: node
+  linkType: hard
+
 "@carbon/feature-flags@npm:^0.9.0":
   version: 0.9.0
   resolution: "@carbon/feature-flags@npm:0.9.0"
@@ -2959,6 +3010,15 @@ __metadata:
   dependencies:
     "@carbon/layout": ^11.16.1
   checksum: 70475ec21a7614c1c1ceca691b2e59f7d54115c222027f485120f89606aa97710bbe88d51c1db0509cd4bc94acf3914e9d48ca7e78b11ade8ca6498889385987
+  languageName: node
+  linkType: hard
+
+"@carbon/grid@npm:^11.21.0, @carbon/grid@npm:^11.21.1":
+  version: 11.21.1
+  resolution: "@carbon/grid@npm:11.21.1"
+  dependencies:
+    "@carbon/layout": ^11.20.1
+  checksum: e9bcb0940f6714f428864c8ec356c41c556e802694ede484259235cfc806a021fc498cc6e4f6e2014303ecfdf459ad4b0134820d0d92722f2ceafc9287321a0c
   languageName: node
   linkType: hard
 
@@ -2985,6 +3045,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@carbon/icon-helpers@npm:^10.45.0":
+  version: 10.45.1
+  resolution: "@carbon/icon-helpers@npm:10.45.1"
+  checksum: 37e490ae7cec63512e1e8db107f7753503dffcc8eea7f932701cf62c4d6f1b94d857f10cd96836c25c1fc4fc01cbbbd0456f50493db941847e0c6e926c8d8541
+  languageName: node
+  linkType: hard
+
 "@carbon/icons-react@npm:^11.22.1":
   version: 11.22.1
   resolution: "@carbon/icons-react@npm:11.22.1"
@@ -2995,6 +3062,19 @@ __metadata:
   peerDependencies:
     react: ">=16"
   checksum: f1e637c12295275f31d4123f5089334fd9a2c6a2be6f73f41f27f3aa49989a734c8f766b5ac3c8cd32ade3f1de52cd0a2844fd95faa201600c3d2061ad5900fd
+  languageName: node
+  linkType: hard
+
+"@carbon/icons-react@npm:^11.31.0":
+  version: 11.31.0
+  resolution: "@carbon/icons-react@npm:11.31.0"
+  dependencies:
+    "@carbon/icon-helpers": ^10.45.0
+    "@carbon/telemetry": 0.1.0
+    prop-types: ^15.7.2
+  peerDependencies:
+    react: ">=16"
+  checksum: 2a42fe082e5067ac166687d05829166962c5c80e25f547677734437e490fb064febb680518f69df4abb5e6ce3ed24acd729b629ba409fe50c605e01a9aae2d52
   languageName: node
   linkType: hard
 
@@ -3018,6 +3098,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@carbon/layout@npm:^11.20.0, @carbon/layout@npm:^11.20.1":
+  version: 11.20.1
+  resolution: "@carbon/layout@npm:11.20.1"
+  checksum: 8db3a31c08ab1fc62bd06404a72ca1e724c938d1ac73c708a63b06103fe054a5ab4294b1fba3471e3f55140ebe0e91e32872a2828dda73a32801fccb670acd35
+  languageName: node
+  linkType: hard
+
 "@carbon/layout@npm:^11.7.0":
   version: 11.7.0
   resolution: "@carbon/layout@npm:11.7.0"
@@ -3029,6 +3116,13 @@ __metadata:
   version: 11.13.1
   resolution: "@carbon/motion@npm:11.13.1"
   checksum: 0aa6aa062be02225c5ca2c34d4a9667ef09dc4ce415d29308d43e458ab0fca73655274632a08d8b72e8274c523088c03e680ad8778be033e6eb92f58ee5b2735
+  languageName: node
+  linkType: hard
+
+"@carbon/motion@npm:^11.16.0":
+  version: 11.16.1
+  resolution: "@carbon/motion@npm:11.16.1"
+  checksum: 1b7644fb19a9154a7d690128ed2fe831232576308dfeb30c694d533e5f8d357dbaf1b3bed7d4c274acb407d84d1ade087583d4f9aec4a8ac1aa9dfffb6922098
   languageName: node
   linkType: hard
 
@@ -3105,6 +3199,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@carbon/react@npm:^1.37.0":
+  version: 1.44.0
+  resolution: "@carbon/react@npm:1.44.0"
+  dependencies:
+    "@babel/runtime": ^7.18.3
+    "@carbon/feature-flags": ^0.16.0
+    "@carbon/icons-react": ^11.31.0
+    "@carbon/layout": ^11.20.0
+    "@carbon/styles": ^1.44.0
+    "@carbon/telemetry": 0.1.0
+    classnames: 2.3.2
+    copy-to-clipboard: ^3.3.1
+    downshift: 8.2.3
+    flatpickr: 4.6.9
+    invariant: ^2.2.3
+    lodash.debounce: ^4.0.8
+    lodash.findlast: ^4.5.0
+    lodash.isequal: ^4.5.0
+    lodash.omit: ^4.5.0
+    lodash.throttle: ^4.1.1
+    prop-types: ^15.7.2
+    react-is: ^18.2.0
+    use-resize-observer: ^6.0.0
+    wicg-inert: ^3.1.1
+    window-or-global: ^1.0.1
+  peerDependencies:
+    react: ^16.8.6 || ^17.0.1 || ^18.2.0
+    react-dom: ^16.8.6 || ^17.0.1 || ^18.2.0
+    sass: ^1.33.0
+  checksum: ce211e31ff1777857c345970e43a8b6c99ab1fca089fea0872ba0a9a32ff97eebac9f0b0cd6552d0c7d75e68dec149c743fc4f7d18d53c5515faeb72c9062bc5
+  languageName: node
+  linkType: hard
+
 "@carbon/styles@npm:^1.14.0, @carbon/styles@npm:^1.4.0":
   version: 1.14.0
   resolution: "@carbon/styles@npm:1.14.0"
@@ -3144,7 +3271,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@carbon/telemetry@npm:0.1.0, @carbon/telemetry@npm:^0.1.0":
+"@carbon/styles@npm:^1.44.0":
+  version: 1.44.0
+  resolution: "@carbon/styles@npm:1.44.0"
+  dependencies:
+    "@carbon/colors": ^11.20.0
+    "@carbon/feature-flags": ^0.16.0
+    "@carbon/grid": ^11.21.0
+    "@carbon/layout": ^11.20.0
+    "@carbon/motion": ^11.16.0
+    "@carbon/themes": ^11.28.0
+    "@carbon/type": ^11.25.0
+    "@ibm/plex": 6.0.0-next.6
+  peerDependencies:
+    sass: ^1.33.0
+  peerDependenciesMeta:
+    sass:
+      optional: true
+  checksum: 1144ae7d1b4dccc70b8a512cddbce1f618024990fd00e03626e69888c90041d9777a2460e1944b556f61846cbe93dccdb063b65e4fc2f50b60bab3625b528a0c
+  languageName: node
+  linkType: hard
+
+"@carbon/telemetry@npm:0.1.0, @carbon/telemetry@npm:~0.1.0":
   version: 0.1.0
   resolution: "@carbon/telemetry@npm:0.1.0"
   bin:
@@ -3177,6 +3325,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@carbon/themes@npm:^11.28.0":
+  version: 11.28.0
+  resolution: "@carbon/themes@npm:11.28.0"
+  dependencies:
+    "@carbon/colors": ^11.20.0
+    "@carbon/layout": ^11.20.0
+    "@carbon/type": ^11.25.0
+    color: ^4.0.0
+  checksum: 52bc43b1b5ee846afc870c1898fadd3efe258fa66cb0e66672a1e20179c3833d6e517be433b339f6538887593342aba27f3130c0c3a61646c505eb16b24e06c2
+  languageName: node
+  linkType: hard
+
 "@carbon/type@npm:^11.10.0":
   version: 11.10.0
   resolution: "@carbon/type@npm:11.10.0"
@@ -3194,6 +3354,16 @@ __metadata:
     "@carbon/grid": ^11.16.1
     "@carbon/layout": ^11.16.1
   checksum: ff08229e71ccb40f420cbc94ac79b63449d4a77d777619383fcc4e44e9e34792158e85a0b170418b50165a130e712155765025dc939625658db285dcaa7bc166
+  languageName: node
+  linkType: hard
+
+"@carbon/type@npm:^11.25.0":
+  version: 11.25.1
+  resolution: "@carbon/type@npm:11.25.1"
+  dependencies:
+    "@carbon/grid": ^11.21.1
+    "@carbon/layout": ^11.20.1
+  checksum: 5184b9cddf050d06dbc3a369400c149e594cd281e090eb0fea972ef964b741ca94c20b828cb6c138be0812861d335d0abbabfe78b368483a5a97bf2ad7e1fc68
   languageName: node
   linkType: hard
 
@@ -3661,6 +3831,55 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formatjs/ecma402-abstract@npm:1.18.0":
+  version: 1.18.0
+  resolution: "@formatjs/ecma402-abstract@npm:1.18.0"
+  dependencies:
+    "@formatjs/intl-localematcher": 0.5.2
+    tslib: ^2.4.0
+  checksum: 22be7f02397d565de621bba5d57135bf7a360b4f3f04e7d75194854f47c22fa8cc2e43ede2c6d1dea885d3cb5df6f58e82ea7ba457a7b3e208403372cd6b90f3
+  languageName: node
+  linkType: hard
+
+"@formatjs/fast-memoize@npm:2.2.0":
+  version: 2.2.0
+  resolution: "@formatjs/fast-memoize@npm:2.2.0"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: 8697fe72a7ece252d600a7d08105f2a2f758e2dd96f54ac0a4c508b1205a559fc08835635e1f8e5ca9dcc3ee61ce1fca4a0e7047b402f29fc96051e293a280ff
+  languageName: node
+  linkType: hard
+
+"@formatjs/icu-messageformat-parser@npm:2.7.3":
+  version: 2.7.3
+  resolution: "@formatjs/icu-messageformat-parser@npm:2.7.3"
+  dependencies:
+    "@formatjs/ecma402-abstract": 1.18.0
+    "@formatjs/icu-skeleton-parser": 1.7.0
+    tslib: ^2.4.0
+  checksum: 3efd07e26dfd768cfb4ebee72787f150eb7c65849610d0b08b09ffd26f127ce2a7027dc901a3a2ee536597a26bce289bff3f3d9de8247c274e364c0666f685d6
+  languageName: node
+  linkType: hard
+
+"@formatjs/icu-skeleton-parser@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@formatjs/icu-skeleton-parser@npm:1.7.0"
+  dependencies:
+    "@formatjs/ecma402-abstract": 1.18.0
+    tslib: ^2.4.0
+  checksum: a461d95b0a39a52d2acb776cb60818188f32ca5d8be7d97440b892bb30564e852410c3fffe96c4c5e6793934f3f694958da8297bd7e3b0cbe114f11223a57013
+  languageName: node
+  linkType: hard
+
+"@formatjs/intl-localematcher@npm:0.5.2":
+  version: 0.5.2
+  resolution: "@formatjs/intl-localematcher@npm:0.5.2"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: a741d69e9d3b71bee19726484de4a296711d96dc27f588d995b9e2079d3bc5d06370b6e84136003197d558d45f9faf507321627a78d8cd986705b78ec701c016
+  languageName: node
+  linkType: hard
+
 "@fortawesome/fontawesome-common-types@npm:^0.2.36":
   version: 0.2.36
   resolution: "@fortawesome/fontawesome-common-types@npm:0.2.36"
@@ -3753,6 +3972,43 @@ __metadata:
   version: 6.0.0-next.6
   resolution: "@ibm/plex@npm:6.0.0-next.6"
   checksum: cb7bece0f8688cf92a3fa37ab47c5921f22a2eb5e40dd72a3d6bbcd715910b0d79f9d160e229514a0c78c70679676746a93f4791a57407fc6aa636105aa11891
+  languageName: node
+  linkType: hard
+
+"@internationalized/date@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "@internationalized/date@npm:3.5.0"
+  dependencies:
+    "@swc/helpers": ^0.5.0
+  checksum: 621298a1686bad64212b1f2a497492dcc9d657a3789ea62a1a5ee1cb37719fa7a54944d4bb318bf22f709eccfcb6627e6d1aad9825aaa67c2150973ccca8c15d
+  languageName: node
+  linkType: hard
+
+"@internationalized/message@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@internationalized/message@npm:3.1.1"
+  dependencies:
+    "@swc/helpers": ^0.5.0
+    intl-messageformat: ^10.1.0
+  checksum: c8658847e80a2dd6f5a253bdc20ce45d304ffa2147248e6422d72714ac501edd0d4cce09e4baf7753cd393e4df7014df747425ff9658728cd1f892d71c3d591b
+  languageName: node
+  linkType: hard
+
+"@internationalized/number@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@internationalized/number@npm:3.4.0"
+  dependencies:
+    "@swc/helpers": ^0.5.0
+  checksum: 238161e726f49a32fd311c5a864b93fd6e7e0f465ce4c54b51558b028a9c24109d66332f48067114d01f3acd1eae4cfa436070013d88db7f1f4f8158c5ddfb9d
+  languageName: node
+  linkType: hard
+
+"@internationalized/string@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@internationalized/string@npm:3.1.1"
+  dependencies:
+    "@swc/helpers": ^0.5.0
+  checksum: 686b4d443dbf6794b5f32e0c3a0ee9333a64bfe2a01aec705fb71f5721f5c9e8aa25b380bdae85e21be0dc72103843642363efcaed437ebad3e7169e478b91ae
   languageName: node
   linkType: hard
 
@@ -5092,9 +5348,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openmrs/esm-api@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-api@npm:5.1.1-pre.977"
+"@openmrs/esm-api@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-api@npm:5.3.0"
   dependencies:
     "@types/fhir": 0.0.31
     lodash-es: ^4.17.21
@@ -5102,32 +5358,33 @@ __metadata:
     "@openmrs/esm-config": 5.x
     "@openmrs/esm-error-handling": 5.x
     "@openmrs/esm-offline": 5.x
-  checksum: 29ab07a35fdc3471771ab4b686155c5d48019ac367f9645e33757ed623984a2f2a4893f4d622ccc1838b9340d98253ad3d2a9de42aa0ca0d791f4abc2c9e192c
+  checksum: 2af1408c2b1fd028dbf8ec3dd2158190424fd1449e1b38205d5ecaf73078474274acbc1944f3c664624bb884866f8191c0086ed0e96da9edfcb737dc4076beb6
   languageName: node
   linkType: hard
 
-"@openmrs/esm-app-shell@npm:5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-app-shell@npm:5.1.1-pre.977"
+"@openmrs/esm-app-shell@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-app-shell@npm:5.3.0"
   dependencies:
-    "@carbon/react": ^1.12.0
-    "@openmrs/esm-framework": 5.1.1-pre.977
-    "@openmrs/esm-styleguide": 5.1.1-pre.977
+    "@carbon/react": ^1.37.0
+    "@openmrs/esm-framework": 5.3.0
+    "@openmrs/esm-styleguide": 5.3.0
     dayjs: ^1.10.4
     dexie: ^3.0.3
     html-webpack-plugin: ^5.5.0
-    i18next: ^19.6.0
-    i18next-browser-languagedetector: ^4.3.1
-    i18next-icu: ^1.4.2
+    i18next: ^21.10.0
+    i18next-browser-languagedetector: ^6.1.8
     import-map-overrides: ^3.0.0
     lodash-es: 4.17.21
     react: ^18.1.0
     react-dom: ^18.1.0
-    react-i18next: ^11.7.0
+    react-i18next: ^11.18.6
     react-router-dom: ^6.3.0
     rxjs: ^6.5.3
+    semver: ^7.3.4
     single-spa: ^5.9.2
     swc-loader: ^0.2.3
+    swr: ^2.2.2
     systemjs: ^6.8.3
     webpack: ^5.88.0
     webpack-pwa-manifest: ^4.3.0
@@ -5136,55 +5393,55 @@ __metadata:
     workbox-strategies: ^6.1.5
     workbox-webpack-plugin: ^6.1.5
     workbox-window: ^6.1.5
-  checksum: a3ab3d4e70403e1c324293095dbb7a1e8fffb74625bf89fb26fc7a1f6589fdad2f221d42c34f2bbf917a03d0939899c0d9f4d33ab581d849837e6750304708dc
+  checksum: 4a10c7744ce70a2e4976257333e976743af11788451254571031abff78b9859fef750c61571856eaa5d9a2aca58748e8cd4a2e9a33fc738d034fbe730c3c0cb3
   languageName: node
   linkType: hard
 
-"@openmrs/esm-breadcrumbs@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-breadcrumbs@npm:5.1.1-pre.977"
+"@openmrs/esm-breadcrumbs@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-breadcrumbs@npm:5.3.0"
   dependencies:
     path-to-regexp: 6.1.0
   peerDependencies:
     "@openmrs/esm-state": 5.x
-  checksum: 3017061f9d08e16ee3afbc31a76faadbc0292135c29f0dfbba5216a0c94cce3fbbfa43c91186c55cc48e67389be575c4bd4a09f19915c2a3a7d01ebb4be866a8
+  checksum: 352a2fdf3216a51db052e33a9efbdfa91bb7a1db430364226f7a04678b8ad7027fa7f939db63b38635c493fd0362ab4ebb865dd395270a545915639f4e146114
   languageName: node
   linkType: hard
 
-"@openmrs/esm-config@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-config@npm:5.1.1-pre.977"
+"@openmrs/esm-config@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-config@npm:5.3.0"
   dependencies:
     ramda: ^0.26.1
   peerDependencies:
     "@openmrs/esm-globals": 5.x
     "@openmrs/esm-state": 5.x
     single-spa: 5.x
-  checksum: 37e14bcea592ab5bb0b804cb22b0fc06e340f932639c85e2811119d2921b27204044004655d5cd3034b58a193f413a35c46d279d1b812c260d0dfceb26b56fea
+  checksum: 6cf14583f9286fcdc02be3b517d677fbe9104895755ea7f2b9fd0f950b5f4d79fe6422fd72f55b91b0b501796092047be254b8fc9bc60374d1b70707532c4144
   languageName: node
   linkType: hard
 
-"@openmrs/esm-dynamic-loading@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-dynamic-loading@npm:5.1.1-pre.977"
+"@openmrs/esm-dynamic-loading@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-dynamic-loading@npm:5.3.0"
   peerDependencies:
     "@openmrs/esm-globals": 5.x
-  checksum: 78785d89bf73bbd8b986db51af2a86cd7faf52d80553aa80caaee2ba81b1aef82de1f724c4d0482ea498ab69fecc01a59f432fa31ce083bb1f5b92720a66226a
+  checksum: 64a2b6e8505f293f42d3654d4ba738fc95568cf3188ad4a3c521ccad49757f0de298f883892fd15c56afc979e7865a6bf4b0ddfbba9c922aef209c488103a315
   languageName: node
   linkType: hard
 
-"@openmrs/esm-error-handling@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-error-handling@npm:5.1.1-pre.977"
+"@openmrs/esm-error-handling@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-error-handling@npm:5.3.0"
   peerDependencies:
     "@openmrs/esm-globals": 5.x
-  checksum: 552c944a95a20472402e2d52ec2efd12fed8a3bb203e820564502db838dff0227ccd04b15e39f49c21eb143a064fab38a8f7c79dcd1ff142ea1e63ebb9b1740d
+  checksum: fddbcb7f30971b6fdfdaa06a15a821c649d2b94add27f21ab9de7849869c3d3e17d5b42fb0fd458136dfb5ea1b3ebd96fed4e1f59e4815c32df45641f3f37f66
   languageName: node
   linkType: hard
 
-"@openmrs/esm-extensions@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-extensions@npm:5.1.1-pre.977"
+"@openmrs/esm-extensions@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-extensions@npm:5.3.0"
   dependencies:
     lodash-es: ^4.17.21
   peerDependencies:
@@ -5193,40 +5450,40 @@ __metadata:
     "@openmrs/esm-feature-flags": 5.x
     "@openmrs/esm-state": 5.x
     single-spa: 5.x
-  checksum: f135d6316d886d8ade35a94ddd004aeb665909f9b7de6c3b6bbd58517ba1f2cd9765dd11e064eadf32d3b3dce2912c64aa9dd217c2e33ef66c5518c1b9c1d453
+  checksum: 3b7990d5baaedf60384267cd5d9f795f89c8bf5af64b82ca811b5f9ecb4329dfa956c450f7e7fbc13530d5ff3d7cd6c936ca039acbaba4b5e7f792fbfa209641
   languageName: node
   linkType: hard
 
-"@openmrs/esm-feature-flags@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-feature-flags@npm:5.1.1-pre.977"
+"@openmrs/esm-feature-flags@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-feature-flags@npm:5.3.0"
   dependencies:
     ramda: ^0.26.1
   peerDependencies:
     "@openmrs/esm-globals": 5.x
     "@openmrs/esm-state": 5.x
     single-spa: 5.x
-  checksum: f0058c9522924e7453eaa9085bf95aae30566cf654ce6a4843cc173947553c45f7e2c10be9ca89ff173b2e4d79293fe0dbb60f5cf3f1996a765a3149c88bf196
+  checksum: 1cbf3fc78ac5d50e10e341062443302843b7daa37b80b7ce398ce6add09a3c811c3024ee4914623c5ce8ad29b1305899f4289c9311b75263b5366a4a96b04745
   languageName: node
   linkType: hard
 
-"@openmrs/esm-framework@npm:5.1.1-pre.977, @openmrs/esm-framework@npm:next":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-framework@npm:5.1.1-pre.977"
+"@openmrs/esm-framework@npm:5.3.0, @openmrs/esm-framework@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-framework@npm:5.3.0"
   dependencies:
-    "@openmrs/esm-api": ^5.1.1-pre.977
-    "@openmrs/esm-breadcrumbs": ^5.1.1-pre.977
-    "@openmrs/esm-config": ^5.1.1-pre.977
-    "@openmrs/esm-dynamic-loading": ^5.1.1-pre.977
-    "@openmrs/esm-error-handling": ^5.1.1-pre.977
-    "@openmrs/esm-extensions": ^5.1.1-pre.977
-    "@openmrs/esm-feature-flags": ^5.1.1-pre.977
-    "@openmrs/esm-globals": ^5.1.1-pre.977
-    "@openmrs/esm-offline": ^5.1.1-pre.977
-    "@openmrs/esm-react-utils": ^5.1.1-pre.977
-    "@openmrs/esm-state": ^5.1.1-pre.977
-    "@openmrs/esm-styleguide": ^5.1.1-pre.977
-    "@openmrs/esm-utils": ^5.1.1-pre.977
+    "@openmrs/esm-api": 5.3.0
+    "@openmrs/esm-breadcrumbs": 5.3.0
+    "@openmrs/esm-config": 5.3.0
+    "@openmrs/esm-dynamic-loading": 5.3.0
+    "@openmrs/esm-error-handling": 5.3.0
+    "@openmrs/esm-extensions": 5.3.0
+    "@openmrs/esm-feature-flags": 5.3.0
+    "@openmrs/esm-globals": 5.3.0
+    "@openmrs/esm-offline": 5.3.0
+    "@openmrs/esm-react-utils": 5.3.0
+    "@openmrs/esm-state": 5.3.0
+    "@openmrs/esm-styleguide": 5.3.0
+    "@openmrs/esm-utils": 5.3.0
     dayjs: ^1.10.7
   peerDependencies:
     dayjs: 1.x
@@ -5236,22 +5493,23 @@ __metadata:
     react-i18next: 11.x
     rxjs: 6.x
     single-spa: 5.x
-  checksum: c520a8602d5d56973666674b361e5703f69578a8108d0ee43b8f81b7e41b10e9b2be56ecf246a703269ba8429dd479d669e2e063a144bb0b7227fd53e9e83446
+    swr: 2.x
+  checksum: 92dde2288367ddd7cdaa8f3ce9eb3a50d297edeb104c4b9cc45d69788290f6207c1c971401b0202f69475c09993a91591c021a69db9a57933c17b6914e8b1014
   languageName: node
   linkType: hard
 
-"@openmrs/esm-globals@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-globals@npm:5.1.1-pre.977"
+"@openmrs/esm-globals@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-globals@npm:5.3.0"
   peerDependencies:
     single-spa: 5.x
-  checksum: 6a7483c58498af2db2320afde517b93a6b3a43c8b6bbee04f029afa5d7e23f86f310a037a3b94ba4a73b098cd1e702e1a16736cd474e6242508bba35f1c9ccbd
+  checksum: b40d117f54f983fce9afc6d949b6a3d113ee3e79b6ab6c8112ae8ca6fb735118b738332f63fca1d280541461970b14362c5f651a86e3a447f12aad4403f7be75
   languageName: node
   linkType: hard
 
-"@openmrs/esm-offline@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-offline@npm:5.1.1-pre.977"
+"@openmrs/esm-offline@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-offline@npm:5.3.0"
   dependencies:
     dexie: ^3.0.3
     lodash-es: ^4.17.21
@@ -5263,17 +5521,16 @@ __metadata:
     "@openmrs/esm-state": 5.x
     "@openmrs/esm-styleguide": 5.x
     rxjs: 6.x
-  checksum: eba3708e5fbae583bc7c4ee5ddd11d1c8ed9da7627c216f8096ae886ebbdfdfdf0a72a660cae2adceca27d6156492596742bafa4c3cc912ed50ec39e066737c3
+  checksum: aa7d069f1683d54445074780f9244064b8177f2822d1105430e37260fe2bb435a6fd58d9a8b7fb9794e8e4ca720cdf0d988db78f13e3149e9905d3d2e4a55253
   languageName: node
   linkType: hard
 
-"@openmrs/esm-react-utils@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-react-utils@npm:5.1.1-pre.977"
+"@openmrs/esm-react-utils@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-react-utils@npm:5.3.0"
   dependencies:
     lodash-es: ^4.17.21
     single-spa-react: ~5.0.0
-    swr: ^2.0.1
   peerDependencies:
     "@openmrs/esm-api": 5.x
     "@openmrs/esm-config": 5.x
@@ -5285,37 +5542,45 @@ __metadata:
     react: 18.x
     react-dom: 18.x
     react-i18next: 11.x
-  checksum: f608e5dbcf8cb0288ed7b6ec7ab3b79fd4c7c8edd0473886e10ff8af33deb1c3f96079be1d75e32fbcb733928af5b62ede4dadc717e2a36a407ce173374a7c69
+    rxjs: 6.x
+    swr: 2.x
+  checksum: 2f00f018107fd9516e698651997839f59535cc9086c09d7219d68ded848fa41a9b9a6b40636e9626f182b70a5eb6a5f3500129dc4638febb856486294773d917
   languageName: node
   linkType: hard
 
-"@openmrs/esm-state@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-state@npm:5.1.1-pre.977"
+"@openmrs/esm-state@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-state@npm:5.3.0"
   dependencies:
     zustand: ^4.3.6
   peerDependencies:
     "@openmrs/esm-globals": 5.x
-  checksum: 0650d06a8031abb77034340776e141c243739576751e08c534007f6119c6123cb24e02cf53613750a500215970b92e0ab2ad23a75f9ea255630a02ee5236d838
+  checksum: 70ec1aef84fbe4944c251990fc0e31361132eabb2e5e3be1dbdbe02307e0c86138fab5274db5a1bf13b5188970e6ae2dadc7d1d15128bb2bf6d9672fad26a900
   languageName: node
   linkType: hard
 
-"@openmrs/esm-styleguide@npm:5.1.1-pre.977, @openmrs/esm-styleguide@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-styleguide@npm:5.1.1-pre.977"
+"@openmrs/esm-styleguide@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-styleguide@npm:5.3.0"
   dependencies:
-    "@carbon/charts": ^1.6.3
-    "@carbon/react": ^1.12.0
+    "@carbon/charts": ^1.12.0
+    "@carbon/react": ^1.37.0
+    "@internationalized/date": ^3.5.0
+    "@react-spectrum/datepicker": ^3.8.0
+    "@react-spectrum/provider": ^3.9.0
+    "@react-spectrum/theme-default": ^3.5.6
     d3: ^7.8.0
     lodash-es: ^4.17.21
   peerDependencies:
     "@openmrs/esm-extensions": 5.x
+    "@openmrs/esm-framework": 5.x
     "@openmrs/esm-react-utils": 5.x
     "@openmrs/esm-state": 5.x
+    dayjs: 1.x
     react: 18.x
     react-dom: 18.x
     rxjs: 6.x
-  checksum: 901e736451b784d3ce53002250d22fd0c732fb83c5eac2814609bb4ef45c34ba15b1ed6c63cf0a901a021802f67060379ef6f7b7dae95c4f73f00c649a1c985c
+  checksum: 892afe5fd6f128a11fbdad25bc6f962eda1a6d40bf56eda94b3644153ae3d38eb04a0e6fb8be1f0243839b0c295a33c822049879d23d416387f96b8df4f7131c
   languageName: node
   linkType: hard
 
@@ -5338,25 +5603,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openmrs/esm-utils@npm:^5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/esm-utils@npm:5.1.1-pre.977"
+"@openmrs/esm-utils@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/esm-utils@npm:5.3.0"
   dependencies:
     semver: 7.3.2
   peerDependencies:
     dayjs: 1.x
     i18next: 19.x
     rxjs: 6.x
-  checksum: 974898d459af12dc1e9391178176201899c907110a325529ce539e72b339f74fef279639e3ea7bffa601624593ba8dba201a9352a4a0d99a9931e2cace30b9de
+  checksum: cdcd051d4380ff94b035a668a196b8a06816896bb8e34058c26eb6383a17590f9bfe83b221babe0468d633b1a095e430d893bf2babc678c53fb1d19adeb11d14
   languageName: node
   linkType: hard
 
-"@openmrs/webpack-config@npm:5.1.1-pre.977":
-  version: 5.1.1-pre.977
-  resolution: "@openmrs/webpack-config@npm:5.1.1-pre.977"
+"@openmrs/webpack-config@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@openmrs/webpack-config@npm:5.3.0"
   dependencies:
     "@swc/core": ^1.3.58
-    babel-preset-minify: ^0.5.1
     clean-webpack-plugin: ^4.0.0
     copy-webpack-plugin: ^11.0.0
     css-loader: ^5.2.4
@@ -5371,7 +5635,7 @@ __metadata:
     webpack-stats-plugin: ^1.0.3
   peerDependencies:
     webpack: 5.x
-  checksum: dcd1451034ca99374b606759a624f08ab7088c8290b507b2478080b669d8571e8fb5abdd5a7ed3a7b69729d97d14f3ade5682fcf1b369e807ff0e2730ff77df0
+  checksum: 2d8ac58c36e7f10ad26e9b22a208761b47986b8d75d01cc95f4426d3c4ba329a07e57fb31cba3e5b6e176c501876ab8473d1ca06be134452fb73c3ef3340c27d
   languageName: node
   linkType: hard
 
@@ -5413,6 +5677,874 @@ __metadata:
   version: 2.11.8
   resolution: "@popperjs/core@npm:2.11.8"
   checksum: e5c69fdebf52a4012f6a1f14817ca8e9599cb1be73dd1387e1785e2ed5e5f0862ff817f420a87c7fc532add1f88a12e25aeb010ffcbdc98eace3d55ce2139cf0
+  languageName: node
+  linkType: hard
+
+"@react-aria/button@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "@react-aria/button@npm:3.9.0"
+  dependencies:
+    "@react-aria/focus": ^3.15.0
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/utils": ^3.22.0
+    "@react-stately/toggle": ^3.7.0
+    "@react-types/button": ^3.9.1
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 267788203dbbc0a006bfbb4cd02e90c1dd22c6130805dc797f46714d3464c641a77a025eead6cbd1bd150e1b83d9225ba3248af2dbb9aaae8bf06af7e50e1598
+  languageName: node
+  linkType: hard
+
+"@react-aria/calendar@npm:^3.5.3":
+  version: 3.5.3
+  resolution: "@react-aria/calendar@npm:3.5.3"
+  dependencies:
+    "@internationalized/date": ^3.5.0
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/live-announcer": ^3.3.1
+    "@react-aria/utils": ^3.22.0
+    "@react-stately/calendar": ^3.4.2
+    "@react-types/button": ^3.9.1
+    "@react-types/calendar": ^3.4.2
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 4251a4d32f16aba0dcae9ad9b821f25daa640707771cbe6a6da44e9d54b68f3e68841832478cdcd351c249f4bf1c735b9ef040ff35e781a2de8cf7a19e1dfff7
+  languageName: node
+  linkType: hard
+
+"@react-aria/datepicker@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "@react-aria/datepicker@npm:3.9.0"
+  dependencies:
+    "@internationalized/date": ^3.5.0
+    "@internationalized/number": ^3.4.0
+    "@internationalized/string": ^3.1.1
+    "@react-aria/focus": ^3.15.0
+    "@react-aria/form": ^3.0.0
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/label": ^3.7.3
+    "@react-aria/spinbutton": ^3.6.0
+    "@react-aria/utils": ^3.22.0
+    "@react-stately/datepicker": ^3.9.0
+    "@react-stately/form": ^3.0.0
+    "@react-types/button": ^3.9.1
+    "@react-types/calendar": ^3.4.2
+    "@react-types/datepicker": ^3.7.0
+    "@react-types/dialog": ^3.5.7
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 0a22e7183e2eca50396b3acb67aef8aa284f7e81fd41d40eefd9c3aee425ae36268a630e2fecaaee46e059753b731fb0ad3a2e5d111c86c8cb9117b21b5d8d84
+  languageName: node
+  linkType: hard
+
+"@react-aria/dialog@npm:^3.5.8":
+  version: 3.5.8
+  resolution: "@react-aria/dialog@npm:3.5.8"
+  dependencies:
+    "@react-aria/focus": ^3.15.0
+    "@react-aria/overlays": ^3.19.0
+    "@react-aria/utils": ^3.22.0
+    "@react-types/dialog": ^3.5.7
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 605f9be0d7b6f80924e4b1977531193c5ea677053a0039d442bd1d8e335f3dc3973fff7e3ff471c2d58b757b27e9e212a9691114c0ee46446cd4d7ac275d6a14
+  languageName: node
+  linkType: hard
+
+"@react-aria/focus@npm:^3.15.0":
+  version: 3.15.0
+  resolution: "@react-aria/focus@npm:3.15.0"
+  dependencies:
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/utils": ^3.22.0
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+    clsx: ^1.1.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 28db7975faf3295b91a68ff61e77f02e3fa260a2b1f3376fd3fd52cade8f8c916f1c725d71b2ceddeb29999d4ddcf0e2a22f2ececaa4788f756977677985fc1c
+  languageName: node
+  linkType: hard
+
+"@react-aria/form@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@react-aria/form@npm:3.0.0"
+  dependencies:
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/utils": ^3.22.0
+    "@react-stately/form": ^3.0.0
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 564281ebf9c6157eb65e3611c37ddfbc74999ed4e033b4a9fbb1f96cac7543bbe1b06c3fea2d6d239017ff1a6e591881b311cb460398268b89aef4b831d94f33
+  languageName: node
+  linkType: hard
+
+"@react-aria/i18n@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "@react-aria/i18n@npm:3.9.0"
+  dependencies:
+    "@internationalized/date": ^3.5.0
+    "@internationalized/message": ^3.1.1
+    "@internationalized/number": ^3.4.0
+    "@internationalized/string": ^3.1.1
+    "@react-aria/ssr": ^3.9.0
+    "@react-aria/utils": ^3.22.0
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 01d2f712eed47063265ecc9507c3bb6e7f3692f5c94781856400f1750d5470f2682b079c69026b99c1474435bc97672ceec9d51ce79d1bb615e8b4dac067895d
+  languageName: node
+  linkType: hard
+
+"@react-aria/interactions@npm:^3.20.0":
+  version: 3.20.0
+  resolution: "@react-aria/interactions@npm:3.20.0"
+  dependencies:
+    "@react-aria/ssr": ^3.9.0
+    "@react-aria/utils": ^3.22.0
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 25e1210d1002559f47e7855ac184a969481838cf6c567a6de8f0f86dfffb9aa86c90234ac35d49e5f16b3959fe075dcf8dca28e87f3d0001579005da35258ab1
+  languageName: node
+  linkType: hard
+
+"@react-aria/label@npm:^3.7.3":
+  version: 3.7.3
+  resolution: "@react-aria/label@npm:3.7.3"
+  dependencies:
+    "@react-aria/utils": ^3.22.0
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: c97f6fc3866009c0869a1169539d897b6540ea1ae9268e1fa694b86b3448ec1e4c6c16e320fa92c3df2448e0dd43300af781419cc7da9377400e280826bdac5a
+  languageName: node
+  linkType: hard
+
+"@react-aria/live-announcer@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "@react-aria/live-announcer@npm:3.3.1"
+  dependencies:
+    "@swc/helpers": ^0.5.0
+  checksum: df4e161247c87038eabf3f623a3ce18ef486f6c8a3e136b9c91bf3585312f48759cbd5d8ba6d0236231ee3070343798b9865a15a07afd9dabebafc0249a1fda7
+  languageName: node
+  linkType: hard
+
+"@react-aria/overlays@npm:^3.19.0":
+  version: 3.19.0
+  resolution: "@react-aria/overlays@npm:3.19.0"
+  dependencies:
+    "@react-aria/focus": ^3.15.0
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/ssr": ^3.9.0
+    "@react-aria/utils": ^3.22.0
+    "@react-aria/visually-hidden": ^3.8.7
+    "@react-stately/overlays": ^3.6.4
+    "@react-types/button": ^3.9.1
+    "@react-types/overlays": ^3.8.4
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 53712ecdf4833378b3a2ea787d768717aac29dec93fe997fea0974fab769bff7d2d6ad228a2a25fbad75d906445e7fa755e778a63f367f71524a3a8634bbdb7a
+  languageName: node
+  linkType: hard
+
+"@react-aria/progress@npm:^3.4.8":
+  version: 3.4.8
+  resolution: "@react-aria/progress@npm:3.4.8"
+  dependencies:
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/label": ^3.7.3
+    "@react-aria/utils": ^3.22.0
+    "@react-types/progress": ^3.5.1
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: fdd30e055d95f3516301609768ab34f24dca06139e55a7ce3d38b11ed1d751d608f7d451b4dd9fa0b588edb8ba4ab5fc9a7a99866c5d27b6ae6d4247a8659a9f
+  languageName: node
+  linkType: hard
+
+"@react-aria/separator@npm:^3.3.8":
+  version: 3.3.8
+  resolution: "@react-aria/separator@npm:3.3.8"
+  dependencies:
+    "@react-aria/utils": ^3.22.0
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 0363c206b58c2e046e4154f1a96fe419ab98a9dd6e6e8bc87b978a9aaad731d37d0dc4830d52ef114767da0af2de88e0d7db76e977fa97551bee079a7092e444
+  languageName: node
+  linkType: hard
+
+"@react-aria/spinbutton@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "@react-aria/spinbutton@npm:3.6.0"
+  dependencies:
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/live-announcer": ^3.3.1
+    "@react-aria/utils": ^3.22.0
+    "@react-types/button": ^3.9.1
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 341f14e0aebb89d96aa0dbcf4cc909a85d6242f86bde01141fba1ea073e58e55ff0f2c0644292c1dc66884cd56609fa6fd531a33d8856271a35e57b067b9422d
+  languageName: node
+  linkType: hard
+
+"@react-aria/ssr@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "@react-aria/ssr@npm:3.9.0"
+  dependencies:
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 7b708494e7c59c4cda8c21f8580d989e7758e854b043d597a0513ee2b08c86e9b877d9f6d5eea9df758bf1b1abdb5adfcba1871e38578ecdf1fe561980addda9
+  languageName: node
+  linkType: hard
+
+"@react-aria/utils@npm:^3.22.0":
+  version: 3.22.0
+  resolution: "@react-aria/utils@npm:3.22.0"
+  dependencies:
+    "@react-aria/ssr": ^3.9.0
+    "@react-stately/utils": ^3.9.0
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+    clsx: ^1.1.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 4ed769920d76eac437dbf31a09ac597bddbcf1f47f6c74336d1e19acbf2fda9a9e4bf00fe0da789512604dddb0ea16599dc9da49a58b74de3a8d7b72015dd787
+  languageName: node
+  linkType: hard
+
+"@react-aria/visually-hidden@npm:^3.8.7":
+  version: 3.8.7
+  resolution: "@react-aria/visually-hidden@npm:3.8.7"
+  dependencies:
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/utils": ^3.22.0
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 72cc9e6614bf424c1af298fa3e8dbd79400bb8290d37e5d278de2df4cd54417ee9a00fb69295727dad187bd1b7cb3e893e82be023c3a4f0f2accf698f5002b82
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/button@npm:^3.15.0":
+  version: 3.15.0
+  resolution: "@react-spectrum/button@npm:3.15.0"
+  dependencies:
+    "@react-aria/button": ^3.9.0
+    "@react-aria/focus": ^3.15.0
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/progress": ^3.7.2
+    "@react-spectrum/text": ^3.5.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-stately/toggle": ^3.7.0
+    "@react-types/button": ^3.9.1
+    "@react-types/shared": ^3.22.0
+    "@spectrum-icons/ui": ^3.6.2
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 1a28fb6ced09352edb2b201f7c6d743a904e86f449b03244e1f88b5cea2fb838abd21bd73c7e77ac8507dae0a5499081e3efe9b561c81044600a198a947b9439
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/buttongroup@npm:^3.6.8":
+  version: 3.6.8
+  resolution: "@react-spectrum/buttongroup@npm:3.6.8"
+  dependencies:
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-types/buttongroup": ^3.3.6
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 2b1643c65cc98100f11c9291f49402433d7ab9b37881c565e428d500a34a3ae41656b90e7150f4e1a6da7cd406a5f4d86a8d3c95b7b6cd2fe95660385f174345
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/calendar@npm:^3.4.3":
+  version: 3.4.3
+  resolution: "@react-spectrum/calendar@npm:3.4.3"
+  dependencies:
+    "@internationalized/date": ^3.5.0
+    "@react-aria/calendar": ^3.5.3
+    "@react-aria/focus": ^3.15.0
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/utils": ^3.22.0
+    "@react-aria/visually-hidden": ^3.8.7
+    "@react-spectrum/button": ^3.15.0
+    "@react-spectrum/label": ^3.16.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-stately/calendar": ^3.4.2
+    "@react-types/button": ^3.9.1
+    "@react-types/calendar": ^3.4.2
+    "@react-types/shared": ^3.22.0
+    "@spectrum-icons/ui": ^3.6.2
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 335615b16edeeb4b557a084488ae9c5d119ddd6b2cc6bcde21e7749bc7921cd2ea5fa3d46f106e1ea632c9bd807732cea418229d839d8c48d324404c36af7600
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/datepicker@npm:^3.8.0":
+  version: 3.9.0
+  resolution: "@react-spectrum/datepicker@npm:3.9.0"
+  dependencies:
+    "@internationalized/date": ^3.5.0
+    "@react-aria/datepicker": ^3.9.0
+    "@react-aria/focus": ^3.15.0
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/button": ^3.15.0
+    "@react-spectrum/calendar": ^3.4.3
+    "@react-spectrum/dialog": ^3.8.5
+    "@react-spectrum/form": ^3.7.0
+    "@react-spectrum/label": ^3.16.0
+    "@react-spectrum/layout": ^3.6.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-spectrum/view": ^3.6.5
+    "@react-stately/datepicker": ^3.9.0
+    "@react-types/datepicker": ^3.7.0
+    "@react-types/shared": ^3.22.0
+    "@spectrum-icons/ui": ^3.6.2
+    "@spectrum-icons/workflow": ^4.2.7
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: f1c20f354764632e8221319ddc5be9063f60633bd322689b46687f6532ef76fc837989d0c5f7f10d8c0b849c224c7a29703fda65bf814905aaea6e63a5e12a11
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/dialog@npm:^3.8.5":
+  version: 3.8.5
+  resolution: "@react-spectrum/dialog@npm:3.8.5"
+  dependencies:
+    "@react-aria/dialog": ^3.5.8
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/overlays": ^3.19.0
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/button": ^3.15.0
+    "@react-spectrum/buttongroup": ^3.6.8
+    "@react-spectrum/divider": ^3.5.8
+    "@react-spectrum/layout": ^3.6.0
+    "@react-spectrum/overlays": ^5.5.2
+    "@react-spectrum/text": ^3.5.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-spectrum/view": ^3.6.5
+    "@react-stately/overlays": ^3.6.4
+    "@react-types/button": ^3.9.1
+    "@react-types/dialog": ^3.5.7
+    "@react-types/shared": ^3.22.0
+    "@spectrum-icons/ui": ^3.6.2
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 9412ab56e2ad5c6c820c1190c5dfd8f7f038a4327a75c58dd710c830fec2921f95fcf146214385d66562c9358e2ff902ca2a684dd50951fcf1ff87eafaa76608
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/divider@npm:^3.5.8":
+  version: 3.5.8
+  resolution: "@react-spectrum/divider@npm:3.5.8"
+  dependencies:
+    "@react-aria/separator": ^3.3.8
+    "@react-spectrum/utils": ^3.11.2
+    "@react-types/divider": ^3.3.6
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 657df84f3e00c28fc18a07f1fd52dace5892b4766522b4d770dd0f17b7867398a3c494aaa7c319b9764b3f7b6b37a02a477747432e113a5b76549f7f82502d94
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/form@npm:^3.7.0":
+  version: 3.7.0
+  resolution: "@react-spectrum/form@npm:3.7.0"
+  dependencies:
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-stately/form": ^3.0.0
+    "@react-types/form": ^3.6.0
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 9d14c15a8da2e602559c0d1d479f5ca1b36a210d6d41bd5a7aef356ec210d8451687847049ea3bf65413d1a56810d95e24dda32e040974bb2994971b7c39d86f
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/icon@npm:^3.7.8":
+  version: 3.7.8
+  resolution: "@react-spectrum/icon@npm:3.7.8"
+  dependencies:
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 1c66c1b2431217a9e95fbf9c72d34e7445b69efe1c51e07a5138b503caa909be63f1c780c5a6c300cfb294ba264611bb22961ecd444e10df714bbd5d1de97685
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/label@npm:^3.16.0":
+  version: 3.16.0
+  resolution: "@react-spectrum/label@npm:3.16.0"
+  dependencies:
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/form": ^3.7.0
+    "@react-spectrum/layout": ^3.6.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-types/label": ^3.9.0
+    "@react-types/shared": ^3.22.0
+    "@spectrum-icons/ui": ^3.6.2
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 7a72ec40f355bff43f3e0a554cfde9b0197dc0e89f74685a54570f25fa9251bd05c3713f5dcf60c94168bacbe68be1907d2e6638ebbe5aeead69e761fe0aa648
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/layout@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "@react-spectrum/layout@npm:3.6.0"
+  dependencies:
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-types/layout": ^3.3.12
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: d24ac775f9785c2b4aee02d41d244654a774e1e8092dad107c8ea263f4ea5d48e057a19a25f4d440bae46dfe5a23147c0840d3ef5d8b699fa8e9e1f3deb3e449
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/overlays@npm:^5.5.2":
+  version: 5.5.2
+  resolution: "@react-spectrum/overlays@npm:5.5.2"
+  dependencies:
+    "@react-aria/interactions": ^3.20.0
+    "@react-aria/overlays": ^3.19.0
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-stately/overlays": ^3.6.4
+    "@react-types/overlays": ^3.8.4
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+    react-transition-group: ^4.4.5
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: e5f82495da8ff2f2368fbc2c53fee10b530770bbfb90fa31741ac1201b8a3ce1678bfb10701b13c604294fdc8e015f3a0704410856400b312f571b050d9e030a
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/progress@npm:^3.7.2":
+  version: 3.7.2
+  resolution: "@react-spectrum/progress@npm:3.7.2"
+  dependencies:
+    "@react-aria/progress": ^3.4.8
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-types/progress": ^3.5.1
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 1c9ddacd2a07dcf81d429122038f8e03ea87ae6e714deb939763012d1c3682182976c0033282067129608824fe9f2f76681381a71e0447bd1d67b2cd31a8beb2
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/provider@npm:^3.9.0":
+  version: 3.9.2
+  resolution: "@react-spectrum/provider@npm:3.9.2"
+  dependencies:
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/overlays": ^3.19.0
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-types/provider": ^3.7.1
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+    clsx: ^1.1.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 8140d5a22e7678fd6c32b9eb076ae1ed7690ca0a88704296b046e099007390bdd4a139c3d3115a9f029848c812649c2ad5ef380728187224ff015f573daa4b24
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/text@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "@react-spectrum/text@npm:3.5.0"
+  dependencies:
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-types/shared": ^3.22.0
+    "@react-types/text": ^3.3.6
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 4045d00c91ba7336a1493098b93f3093669938cad8c2656c171fc6eb481cbb15825b6fe087eda4b8b0ca732def578ea9ff98a8440fb185ddc7c828fe77fa8b77
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/theme-default@npm:^3.5.6":
+  version: 3.5.7
+  resolution: "@react-spectrum/theme-default@npm:3.5.7"
+  dependencies:
+    "@react-types/provider": ^3.7.1
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 9d98a64c21b0e56d7a019d3fe7fe32c1d9ee88b03884ec4429eed0e6455e42779cf50947f667a0141d7fe7103d7002120678927fb7bb76abaaf5107dc1da6741
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/utils@npm:^3.11.2":
+  version: 3.11.2
+  resolution: "@react-spectrum/utils@npm:3.11.2"
+  dependencies:
+    "@react-aria/i18n": ^3.9.0
+    "@react-aria/ssr": ^3.9.0
+    "@react-aria/utils": ^3.22.0
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+    clsx: ^1.1.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: e0b4794145b66fed3e67f962f665cf2061d68d86808206f240247cd97113f3076a23000bfac6e06c502edc291bc85108884cef82527a7575e2d27c08b46a2268
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/view@npm:^3.6.5":
+  version: 3.6.5
+  resolution: "@react-spectrum/view@npm:3.6.5"
+  dependencies:
+    "@react-aria/utils": ^3.22.0
+    "@react-spectrum/utils": ^3.11.2
+    "@react-types/shared": ^3.22.0
+    "@react-types/view": ^3.4.6
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 4818d0e7e3e1973d753157d2f1af45ce0e87cbc7962be32308a45c8232d31c9fae8e627a105ce303f5be7c9fa58b82b643abeed4fc48f09cc4dbca4304c9fe13
+  languageName: node
+  linkType: hard
+
+"@react-stately/calendar@npm:^3.4.2":
+  version: 3.4.2
+  resolution: "@react-stately/calendar@npm:3.4.2"
+  dependencies:
+    "@internationalized/date": ^3.5.0
+    "@react-stately/utils": ^3.9.0
+    "@react-types/calendar": ^3.4.2
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: a663e12e8c05ca07fefa9e49bde27c0b42dcce380c989e0a0fd2d4b7edf3768ecc68fd213aa86c3a176222bc09db7eaa2ea483d5f085478ed47b1efdb36ac337
+  languageName: node
+  linkType: hard
+
+"@react-stately/datepicker@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "@react-stately/datepicker@npm:3.9.0"
+  dependencies:
+    "@internationalized/date": ^3.5.0
+    "@internationalized/string": ^3.1.1
+    "@react-stately/form": ^3.0.0
+    "@react-stately/overlays": ^3.6.4
+    "@react-stately/utils": ^3.9.0
+    "@react-types/datepicker": ^3.7.0
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 9efa816f514d041bb3ac5505c4d2e04399942d1556f0ffae0992ec3b420c82cbfb53586cece85775fa3faed3ae949117e9f1e25730dc5bc89f6524bb6bdf6857
+  languageName: node
+  linkType: hard
+
+"@react-stately/form@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@react-stately/form@npm:3.0.0"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: cd0866ab6a87b00fc7986537da02c6857b5b08c9f01a9e91d4bd8372254fbfc8f8c7ca226582a833d347e7f0934a0ee61c6b52779901977846abe623c97b3791
+  languageName: node
+  linkType: hard
+
+"@react-stately/overlays@npm:^3.6.4":
+  version: 3.6.4
+  resolution: "@react-stately/overlays@npm:3.6.4"
+  dependencies:
+    "@react-stately/utils": ^3.9.0
+    "@react-types/overlays": ^3.8.4
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 39a3a6543449cfecf341b514a07c90e0ee796b0e67672807517ce64e2452af6151e343f2141f7f219400ccd17d4e6e7f8fb5094e3a224ab8381be0e6a7f5dde1
+  languageName: node
+  linkType: hard
+
+"@react-stately/toggle@npm:^3.7.0":
+  version: 3.7.0
+  resolution: "@react-stately/toggle@npm:3.7.0"
+  dependencies:
+    "@react-stately/utils": ^3.9.0
+    "@react-types/checkbox": ^3.6.0
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 6552b8da1317625683f08fa7dd7585c2cd29a30e55291f7df3fbbcc6ad45e9b0ec5c3a1261891866db215e79d0f5ddbddbfc63abab51a325522a5d523cc6376e
+  languageName: node
+  linkType: hard
+
+"@react-stately/utils@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "@react-stately/utils@npm:3.9.0"
+  dependencies:
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: aae38bc45086e086c47141e516f8608b6ad1a0a3c637c1da8b409515b978db0210ed102ca30135a4f733ae2265fecd1b9634cb21b7075fa48895fe7b1cfc6960
+  languageName: node
+  linkType: hard
+
+"@react-types/button@npm:^3.9.1":
+  version: 3.9.1
+  resolution: "@react-types/button@npm:3.9.1"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 5b73d20a8ab588231b62bd32c2171f8284bf1d7dfa4c67e54d436a4e5c663af9a6a1ee93bf5deb9f08308616fe248d2a6300685ef8188b8de3c956194d834a9e
+  languageName: node
+  linkType: hard
+
+"@react-types/buttongroup@npm:^3.3.6":
+  version: 3.3.6
+  resolution: "@react-types/buttongroup@npm:3.3.6"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 959fa130034ac2327c10d5ca7bb937cdbb43900fe061e6c717bf82c7432e9178dcb90a2c45b23c9b86d20989d778d73be7d3ee96b9952f333f1055a16b9a10f4
+  languageName: node
+  linkType: hard
+
+"@react-types/calendar@npm:^3.4.2":
+  version: 3.4.2
+  resolution: "@react-types/calendar@npm:3.4.2"
+  dependencies:
+    "@internationalized/date": ^3.5.0
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 6aa8206b58c99666aab5349159e7c227dc430f14e278950bfb7d394a82c991e37c10ed5b359ff903845d0b1b59148e31a63ed70de45f1f658be4c21d74488a35
+  languageName: node
+  linkType: hard
+
+"@react-types/checkbox@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "@react-types/checkbox@npm:3.6.0"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 867691d8af9832c9f90c6a8231fedadfc2700b177badb03d7175b0cf6c978e7bd488c2ff3b305231fbcd09f0eafe25f3d678f77c02e31ea7b36b463a15639945
+  languageName: node
+  linkType: hard
+
+"@react-types/datepicker@npm:^3.7.0":
+  version: 3.7.0
+  resolution: "@react-types/datepicker@npm:3.7.0"
+  dependencies:
+    "@internationalized/date": ^3.5.0
+    "@react-types/calendar": ^3.4.2
+    "@react-types/overlays": ^3.8.4
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 2d22364120e8b1ef8df8a114abc5f24e6d95c8f88e6ebf78204d7f43192642e69648166a23b355797971497155ea640504b0873b121d1067eb0572cfdb5de963
+  languageName: node
+  linkType: hard
+
+"@react-types/dialog@npm:^3.5.7":
+  version: 3.5.7
+  resolution: "@react-types/dialog@npm:3.5.7"
+  dependencies:
+    "@react-types/overlays": ^3.8.4
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: dc134dc0903b442b681c5c4a7b19c4eed14a8f8ee121aeb7a29bedf078b284395db653f8770f14718048734454fe1dea71221435c09375bd96098555a018181d
+  languageName: node
+  linkType: hard
+
+"@react-types/divider@npm:^3.3.6":
+  version: 3.3.6
+  resolution: "@react-types/divider@npm:3.3.6"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: d47af42cafab3f035838b51d64526550c4d9f702988babe94fd62b739ce936c13ef7b1911802b4000aa654e4aef3c9dc5129de4cb83cdcc8497b9136b49e65b4
+  languageName: node
+  linkType: hard
+
+"@react-types/form@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "@react-types/form@npm:3.6.0"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: bdb85a0e453a2d443c704c600a943d7471fb34472c165fa9606010dfe338f984a36d0a95d596610a166f21d509258243dda195dcacb7c61e20292599702540ce
+  languageName: node
+  linkType: hard
+
+"@react-types/label@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "@react-types/label@npm:3.9.0"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 1d9e002f5f99579282bd0a6353c32f887a079cb7ee4da8fd113ec2ce68a3be57e3ecd9bde23ebe8a900da0f4a08ec339aac3d9987ab8c6066eae1bd9a1298ca5
+  languageName: node
+  linkType: hard
+
+"@react-types/layout@npm:^3.3.12":
+  version: 3.3.12
+  resolution: "@react-types/layout@npm:3.3.12"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 993d1c383ea91b96f2531324d6ca2fe01fce6db85a5ee6d3773f326c30033cc48a93354b16ed98bca5aeb3508cb849c8bddad80fbfe12ff0e21cfbe4c622e9af
+  languageName: node
+  linkType: hard
+
+"@react-types/overlays@npm:^3.8.4":
+  version: 3.8.4
+  resolution: "@react-types/overlays@npm:3.8.4"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 921903c871373de0bb862b0958d1fc6d66da527be7e5ae5a32cfe323dcfce95efab1fc948ab477870a083df44cf9aed2dea21c0b11b37da808344a317ecfa22e
+  languageName: node
+  linkType: hard
+
+"@react-types/progress@npm:^3.5.1":
+  version: 3.5.1
+  resolution: "@react-types/progress@npm:3.5.1"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 1bc35e8df15a6087b0697faceec9a38a551dbd891ba73c5a23500531cd295e0f6ed75040a2d123281aa84567c4a92746b6b7e2a1185593c5d90f03b79e36668e
+  languageName: node
+  linkType: hard
+
+"@react-types/provider@npm:^3.7.1":
+  version: 3.7.1
+  resolution: "@react-types/provider@npm:3.7.1"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 0885114f63915d6c14e593873848e12718d69c708c1a54d156a0e9390d8c979250fa88f1ccfa63b9b1b9e76dfd9b8bf9f76ef1bb3b033ffdcc4b554cc7e8f5ce
+  languageName: node
+  linkType: hard
+
+"@react-types/shared@npm:^3.22.0":
+  version: 3.22.0
+  resolution: "@react-types/shared@npm:3.22.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 108d171c006ee86d01418bb2ca0e54915e8cdb276ecd82cad43bd8aa3a360654a95983b60dbf196c7b004e0307690ae7b0315d051b015277699a552619ec2b29
+  languageName: node
+  linkType: hard
+
+"@react-types/text@npm:^3.3.6":
+  version: 3.3.6
+  resolution: "@react-types/text@npm:3.3.6"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: a7bf2877a27a5ae852454a30fab0b44ae26119bfd7d5f6fdfc3d60a86298cb38c5f1d58f4952ac1f4e2837942b29848fe1cdb437d63dd4588a08ad5b9ec5e3d1
+  languageName: node
+  linkType: hard
+
+"@react-types/view@npm:^3.4.6":
+  version: 3.4.6
+  resolution: "@react-types/view@npm:3.4.6"
+  dependencies:
+    "@react-types/shared": ^3.22.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: d7ce5bab42cc911d61871e122db64f95f766ffca9684eec8a03a6574ffdb39513e441cd5270b335237c1b82eb9b142d398fa8cda479430aff1527a6c421c75f2
   languageName: node
   linkType: hard
 
@@ -5564,6 +6696,34 @@ __metadata:
   dependencies:
     "@sinonjs/commons": ^1.7.0
   checksum: 7d3aef54e17c1073101cb64d953157c19d62a40e261a30923fa1ee337b049c5f29cc47b1f0c477880f42b5659848ba9ab897607ac8ea4acd5c30ddcfac57fca6
+  languageName: node
+  linkType: hard
+
+"@spectrum-icons/ui@npm:^3.6.2":
+  version: 3.6.2
+  resolution: "@spectrum-icons/ui@npm:3.6.2"
+  dependencies:
+    "@adobe/react-spectrum-ui": 1.2.0
+    "@react-spectrum/icon": ^3.7.8
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 9c6ac204b80d1ef6b857520dbe17858423ecd3cb3c63434e4044601929cab6b45845a8aec6a0354d776ca23e2cb20c2c9ad686f0e17c51e13b2fb9a4418ebe2d
+  languageName: node
+  linkType: hard
+
+"@spectrum-icons/workflow@npm:^4.2.7":
+  version: 4.2.7
+  resolution: "@spectrum-icons/workflow@npm:4.2.7"
+  dependencies:
+    "@adobe/react-spectrum-workflow": 2.3.4
+    "@react-spectrum/icon": ^3.7.8
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    "@react-spectrum/provider": ^3.0.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 6948f8c7b9fa2ea5294b65acd24a3f33a86b10ddad4a2ef4afbb68e6a4e2e8b8fc24fa33b273bc3898ffdbc5d0f1aeffe955dce57776cb15b96e6846da3dfeb3
   languageName: node
   linkType: hard
 
@@ -5902,6 +7062,15 @@ __metadata:
     "@swc/helpers":
       optional: true
   checksum: f56ad1d4cb91f7cc1cb5d4b9894bbb528da0b2eabc98984581f5b3f3187cf2c0d512003880f6ff7a3f6d215b7a3dcbf5a9c45e8a428ac2d711941027c0151d89
+  languageName: node
+  linkType: hard
+
+"@swc/helpers@npm:^0.5.0":
+  version: 0.5.3
+  resolution: "@swc/helpers@npm:0.5.3"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: 61c3f7ccd47fc70ad91437df88be6b458cdc11e311cb331288827d7c50befffc72aa18fe913ec2a9e70fbf44e4b818bed38bfd7c329d689e1ff3c198d084cd02
   languageName: node
   linkType: hard
 
@@ -6842,7 +8011,7 @@ __metadata:
   dependencies:
     "@carbon/react": ^1.33.1
     "@hookform/resolvers": ^3.3.0
-    "@openmrs/esm-framework": next
+    "@openmrs/esm-framework": ^5.3.0
     "@openmrs/esm-styleguide": next
     "@swc/cli": ^0.1.62
     "@swc/core": ^1.3.68
@@ -6875,7 +8044,7 @@ __metadata:
     jest-cli: ^28.1.3
     jest-environment-jsdom: ^28.1.3
     lodash-es: ^4.17.21
-    openmrs: next
+    openmrs: ^5.3.0
     prettier: ^2.8.8
     pretty-quick: ^3.1.3
     react: ^18.2.0
@@ -7842,55 +9011,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-helper-evaluate-path@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "babel-helper-evaluate-path@npm:0.5.0"
-  checksum: 4a3b301fd931e0cd3f9ec2a34b4c29a32d31acb6465d2b29793d2b27207bcd50e8e06dd9d95e4a91171d0da82c971404ed9e6aed586a3f2c4b09243cd531fb2a
-  languageName: node
-  linkType: hard
-
-"babel-helper-flip-expressions@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "babel-helper-flip-expressions@npm:0.4.3"
-  checksum: 52174b03edfca1c722b115fae7046d3ddfd726d2e240cb018c6877b1b9baef7a07f9853ed33a37ee7eeebb5769b1748a0cffbd303f9b5a454e18420e0f0a859b
-  languageName: node
-  linkType: hard
-
-"babel-helper-is-nodes-equiv@npm:^0.0.1":
-  version: 0.0.1
-  resolution: "babel-helper-is-nodes-equiv@npm:0.0.1"
-  checksum: 8621bf12fe5e8238c2de125be278e57f02233fa0e0cf59e0f6b8218b9699eac7a3f71087c8fac5981a80d0941382b34794c642cbbffe363286ac49601b4584ef
-  languageName: node
-  linkType: hard
-
-"babel-helper-is-void-0@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "babel-helper-is-void-0@npm:0.4.3"
-  checksum: 0aa68c822c21b3688161d9748b83cc25062a1d4ea39c342c17c7f59d33993de476338d01a3b6218d99f725287be03638d3119d5fe774319eb87054e04e06cf43
-  languageName: node
-  linkType: hard
-
-"babel-helper-mark-eval-scopes@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "babel-helper-mark-eval-scopes@npm:0.4.3"
-  checksum: 3cf6a1b5ab4e519242abf0031b96bd86ef2ad614a2b296231b6b4480f6f998b84ba99a629426b5c6b00e598c10b8ba2af6d2e9d1c7c3c94ed4a2bc9082f71c33
-  languageName: node
-  linkType: hard
-
-"babel-helper-remove-or-void@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "babel-helper-remove-or-void@npm:0.4.3"
-  checksum: 6a2c305c31cb0974a2fd6c860a6685612b4a7ad2cd6b056807f183d9ef5c86f669c002f454fe6729bfd594e5f7349b1f7f06b2107acd7e353e1ccfb2e4d8f32e
-  languageName: node
-  linkType: hard
-
-"babel-helper-to-multiple-sequence-expressions@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "babel-helper-to-multiple-sequence-expressions@npm:0.5.0"
-  checksum: f8f07139eefc87b3e3f7733250b638cb61e03567060bded12934f48800ec07e86a304815e49a4b83610b549234aeb9db9ff1dc71a7bde1442d37e9ebed658ba0
-  languageName: node
-  linkType: hard
-
 "babel-jest@npm:^28.1.3":
   version: 28.1.3
   resolution: "babel-jest@npm:28.1.3"
@@ -8003,104 +9123,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-minify-builtins@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "babel-plugin-minify-builtins@npm:0.5.0"
-  checksum: 55fa4b2e77bb5d8e5008e4ab8a5435d5edd64796388840fdff28cb9d67aa4c4a5a075a9b9253672b8d1e683fd3a58cf7085e6151eea05d5737a7ab364053b68c
-  languageName: node
-  linkType: hard
-
-"babel-plugin-minify-constant-folding@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "babel-plugin-minify-constant-folding@npm:0.5.0"
-  dependencies:
-    babel-helper-evaluate-path: ^0.5.0
-  checksum: 9421a07cf29213852c6f284f16cc9159acfe06df747addc42e3b2dec624bd70bd0af2f18c180e7bdeba40cc63910b99297fb8ecc59da56059847ab5d073dfcb2
-  languageName: node
-  linkType: hard
-
-"babel-plugin-minify-dead-code-elimination@npm:^0.5.2":
-  version: 0.5.2
-  resolution: "babel-plugin-minify-dead-code-elimination@npm:0.5.2"
-  dependencies:
-    babel-helper-evaluate-path: ^0.5.0
-    babel-helper-mark-eval-scopes: ^0.4.3
-    babel-helper-remove-or-void: ^0.4.3
-    lodash: ^4.17.11
-  checksum: ed4c683aa9dac021f08bf46a9a8dae28428e32e0beb0cb0e1923e195490019c5169c42e8211ecc9e23c9e2ce6ac54a809af7b9f9d8cece57eebb51b07b9f2e64
-  languageName: node
-  linkType: hard
-
-"babel-plugin-minify-flip-comparisons@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "babel-plugin-minify-flip-comparisons@npm:0.4.3"
-  dependencies:
-    babel-helper-is-void-0: ^0.4.3
-  checksum: 54e068f926083d6ae539a13d096a9fa564339717ee607f9b3bded360344d377fa6dd47ada377ac445f98462d03d78cdf772efcaa366c692888f325c6382ab6a6
-  languageName: node
-  linkType: hard
-
-"babel-plugin-minify-guarded-expressions@npm:^0.4.4":
-  version: 0.4.4
-  resolution: "babel-plugin-minify-guarded-expressions@npm:0.4.4"
-  dependencies:
-    babel-helper-evaluate-path: ^0.5.0
-    babel-helper-flip-expressions: ^0.4.3
-  checksum: 6071558a5bdc64ed811809d66ad9982ea3ead16ac32f09d4f17e41b07b2106d9b0d12641758f89cfa1dff94fdfb3df8afed908ff1c0e50972b0312cc66d09a75
-  languageName: node
-  linkType: hard
-
-"babel-plugin-minify-infinity@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "babel-plugin-minify-infinity@npm:0.4.3"
-  checksum: d63d83390286949043adf43016150a46d8d7b4d500cdd684a24322d2ec9153127af0c2df36debe3096e12eff3712d4974935585953d0337a09966f0ec5c81f84
-  languageName: node
-  linkType: hard
-
-"babel-plugin-minify-mangle-names@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "babel-plugin-minify-mangle-names@npm:0.5.1"
-  dependencies:
-    babel-helper-mark-eval-scopes: ^0.4.3
-  checksum: fd4dcf6d20b68130063c2e44ebf7c5fa4e912be6bfc8d9036697ac087a348ce2c289aab8d04a3905228e40a3c966300dc0c8e58cc53a16d97553637d820f0669
-  languageName: node
-  linkType: hard
-
-"babel-plugin-minify-numeric-literals@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "babel-plugin-minify-numeric-literals@npm:0.4.3"
-  checksum: 8327b43e06ead88c13558ecaa5faf32bbca0e3f726fce93b59bac92d423291abbe6912419ba4b9f669253318cdf04381c5d6d6eabacaafd51a69c9242975dc5b
-  languageName: node
-  linkType: hard
-
-"babel-plugin-minify-replace@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "babel-plugin-minify-replace@npm:0.5.0"
-  checksum: eca0ef9c9197b55b7c6467fb097fe3f266ca64293eda0c1254303897923df11e9f5a9c25888de98da6a4fc32debe2651d50bdcebb667553013be4875543480f6
-  languageName: node
-  linkType: hard
-
-"babel-plugin-minify-simplify@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "babel-plugin-minify-simplify@npm:0.5.1"
-  dependencies:
-    babel-helper-evaluate-path: ^0.5.0
-    babel-helper-flip-expressions: ^0.4.3
-    babel-helper-is-nodes-equiv: ^0.0.1
-    babel-helper-to-multiple-sequence-expressions: ^0.5.0
-  checksum: 79d718001337fc93f7b6002f2940dbbe35b0704b75e2c0c408eae88ac81400af7a2a79e3c7fcbfb781fd00466a45fd1fff94040cad811002992930e9e26cc1fa
-  languageName: node
-  linkType: hard
-
-"babel-plugin-minify-type-constructors@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "babel-plugin-minify-type-constructors@npm:0.4.3"
-  dependencies:
-    babel-helper-is-void-0: ^0.4.3
-  checksum: 2c6cb97aa8a20c990fc17afd1141e586a1920419bc8a93d2231e7f5f6dcdfbc060c1839873c192c7828040f95ff74b65b8b0af6eb5c54b795e86cf62152ba41e
-  languageName: node
-  linkType: hard
-
 "babel-plugin-polyfill-corejs2@npm:^0.3.2":
   version: 0.3.2
   resolution: "babel-plugin-polyfill-corejs2@npm:0.3.2"
@@ -8195,87 +9217,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-transform-inline-consecutive-adds@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "babel-plugin-transform-inline-consecutive-adds@npm:0.4.3"
-  checksum: e3129bafc9c0ac8b0f3f823db3121d66d03c882fe78c1a0ab0ba5da45889759b7f9176a1b243c0eda12e27353bfd27934ef56e6a3f65861894b78dce96e3df35
-  languageName: node
-  linkType: hard
-
-"babel-plugin-transform-member-expression-literals@npm:^6.9.4":
-  version: 6.9.4
-  resolution: "babel-plugin-transform-member-expression-literals@npm:6.9.4"
-  checksum: 0008ca6f50dbeb7642422ed2c8024a05adc3cb9cad89993e7e1f1fa9bf085574bd874e853857fe441aff4b52ff2c1d7ea273c89da0ca6711a43de317ecf35cfb
-  languageName: node
-  linkType: hard
-
-"babel-plugin-transform-merge-sibling-variables@npm:^6.9.5":
-  version: 6.9.5
-  resolution: "babel-plugin-transform-merge-sibling-variables@npm:6.9.5"
-  checksum: 6182f79703170b473fe4872cfe0df144057d94632be9972076265d3aae05e37aab3fb98ed932ce6d663c722d9aabb48ee2046b2f820ccc73dc45260173ba36e2
-  languageName: node
-  linkType: hard
-
-"babel-plugin-transform-minify-booleans@npm:^6.9.4":
-  version: 6.9.4
-  resolution: "babel-plugin-transform-minify-booleans@npm:6.9.4"
-  checksum: d8553742aa5ddfbcbc9c34c05bf4dce1148026b6aa860b3f1d0f7c8820f8d88e21dca148387c1ddf1e94b5fa7d7f39476bc8c07f082639aee2b841d8df5afc4c
-  languageName: node
-  linkType: hard
-
-"babel-plugin-transform-property-literals@npm:^6.9.4":
-  version: 6.9.4
-  resolution: "babel-plugin-transform-property-literals@npm:6.9.4"
-  dependencies:
-    esutils: ^2.0.2
-  checksum: 14da12703c8b49841594670688c50dc2f7b2be88b5681c70311f5f88b27a50782747a04e9fe1b232b7d2c2a9f223228c61fe6fe41ae0c4eb8208e3a890b2a19d
-  languageName: node
-  linkType: hard
-
-"babel-plugin-transform-regexp-constructors@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "babel-plugin-transform-regexp-constructors@npm:0.4.3"
-  checksum: 242228775b2c9e7d147a3bc3f8e0ce5d903f3baf7b238edc6c4fe4d95d05f84cc4722f37598cae437c26ffc24d63262550abb79d28eefe3c34d98b36be6d4f17
-  languageName: node
-  linkType: hard
-
-"babel-plugin-transform-remove-console@npm:^6.9.4":
-  version: 6.9.4
-  resolution: "babel-plugin-transform-remove-console@npm:6.9.4"
-  checksum: 1123c3816c6f89c064752199c8796f30265d937f5d8e1e43d3837f1c0e87ed0e6bbd0afa6117ce021c8b93ec1de7154e158674bb22331c7ed6609d10121359df
-  languageName: node
-  linkType: hard
-
-"babel-plugin-transform-remove-debugger@npm:^6.9.4":
-  version: 6.9.4
-  resolution: "babel-plugin-transform-remove-debugger@npm:6.9.4"
-  checksum: ed34e5200dcd6e3f954debb3547baa58c8e422e084984a7d66cac4789bee158424c2d4ab21e0bac25e6818316d9c8ca758a976cf20ac333073146089eae6d49c
-  languageName: node
-  linkType: hard
-
-"babel-plugin-transform-remove-undefined@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "babel-plugin-transform-remove-undefined@npm:0.5.0"
-  dependencies:
-    babel-helper-evaluate-path: ^0.5.0
-  checksum: cebba3eae74decba944af78bdbd1e806461bed8a3d500c4bc26dc563d5f1af087d5347f9ac1a3f28cc0ed9186a4095ced0f0099d5ec7aa6cf7ef2119436cafe4
-  languageName: node
-  linkType: hard
-
-"babel-plugin-transform-simplify-comparison-operators@npm:^6.9.4":
-  version: 6.9.4
-  resolution: "babel-plugin-transform-simplify-comparison-operators@npm:6.9.4"
-  checksum: 0b51e361d4c8c7a5b8813a4d652232c3185c3a17c0f0529676f706da876be1432a5bfc3a418fb801e266db67f12f2b92d4bef93a1c5f4582a3cb4edd2de457c2
-  languageName: node
-  linkType: hard
-
-"babel-plugin-transform-undefined-to-void@npm:^6.9.4":
-  version: 6.9.4
-  resolution: "babel-plugin-transform-undefined-to-void@npm:6.9.4"
-  checksum: dd4d89b3e884ed0a35c0a0690fdfa4cf9d5a1678b796a20bc05467f68fc5e186c5f77bc127870811337deb989afed6f6775fb8eab94646fcc7ed1a454c455a95
-  languageName: node
-  linkType: hard
-
 "babel-preset-current-node-syntax@npm:^1.0.0":
   version: 1.0.1
   resolution: "babel-preset-current-node-syntax@npm:1.0.1"
@@ -8307,37 +9248,6 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0
   checksum: 8248a4a5ca4242cc06ad13b10b9183ad2664da8fb0da060c352223dcf286f0ce9c708fa17901dc44ecabec25e6d309e5e5b9830a61dd777c3925f187a345a47d
-  languageName: node
-  linkType: hard
-
-"babel-preset-minify@npm:^0.5.1":
-  version: 0.5.2
-  resolution: "babel-preset-minify@npm:0.5.2"
-  dependencies:
-    babel-plugin-minify-builtins: ^0.5.0
-    babel-plugin-minify-constant-folding: ^0.5.0
-    babel-plugin-minify-dead-code-elimination: ^0.5.2
-    babel-plugin-minify-flip-comparisons: ^0.4.3
-    babel-plugin-minify-guarded-expressions: ^0.4.4
-    babel-plugin-minify-infinity: ^0.4.3
-    babel-plugin-minify-mangle-names: ^0.5.1
-    babel-plugin-minify-numeric-literals: ^0.4.3
-    babel-plugin-minify-replace: ^0.5.0
-    babel-plugin-minify-simplify: ^0.5.1
-    babel-plugin-minify-type-constructors: ^0.4.3
-    babel-plugin-transform-inline-consecutive-adds: ^0.4.3
-    babel-plugin-transform-member-expression-literals: ^6.9.4
-    babel-plugin-transform-merge-sibling-variables: ^6.9.5
-    babel-plugin-transform-minify-booleans: ^6.9.4
-    babel-plugin-transform-property-literals: ^6.9.4
-    babel-plugin-transform-regexp-constructors: ^0.4.3
-    babel-plugin-transform-remove-console: ^6.9.4
-    babel-plugin-transform-remove-debugger: ^6.9.4
-    babel-plugin-transform-remove-undefined: ^0.5.0
-    babel-plugin-transform-simplify-comparison-operators: ^6.9.4
-    babel-plugin-transform-undefined-to-void: ^6.9.4
-    lodash: ^4.17.11
-  checksum: 36484ad5d4cf89948240ad99ee3eb8bc54c85aed9c5d47b188924dfea058157a7e66a6980624f34c8ec45fc2906161f7ae0cbd3017f983a71689b29f79bebc90
   languageName: node
   linkType: hard
 
@@ -8995,15 +9905,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"carbon-components@npm:^10.58.3":
-  version: 10.58.7
-  resolution: "carbon-components@npm:10.58.7"
+"carbon-components@npm:^10.58.12":
+  version: 10.58.12
+  resolution: "carbon-components@npm:10.58.12"
   dependencies:
     "@carbon/telemetry": 0.1.0
     flatpickr: 4.6.1
     lodash.debounce: ^4.0.8
     warning: ^3.0.0
-  checksum: 80d27e9caa0913fce9a90d48e0982bdd7332976cd5ff0faa5c97195c0e16373419fc3be6faf0218bfa0f2d7518e4d14aabfb0be4727f774e0ea2388e3afa9fd0
+  checksum: 1eb67687bcdd7bd78fbcaca77d7f5fe3cb3a3cae9431a6710370cf4edf32c0809b912478f65f6988b7615e3c7980bd10fdbd4fceb818901c77301518c53f6fae
   languageName: node
   linkType: hard
 
@@ -9607,6 +10517,13 @@ __metadata:
   version: 1.0.17
   resolution: "compute-scroll-into-view@npm:1.0.17"
   checksum: b20c05a10c37813c5a6e4bf053c00f65c88d23afed7a6bd7a2a69e05e2ffc2df3483ecfe407d36bf16b8cec8be21ae1966c9c523093a03117e567156cd79a51e
+  languageName: node
+  linkType: hard
+
+"compute-scroll-into-view@npm:^3.0.3":
+  version: 3.1.0
+  resolution: "compute-scroll-into-view@npm:3.1.0"
+  checksum: 224549d6dd1d40342230de5c6d69cac5c3ed5c2f6a4437310f959aadc8db1d20b03da44a6e0de14d9419c6f9130ce51ec99a91b11bde55d4640f10551c89c213
   languageName: node
   linkType: hard
 
@@ -10239,6 +11156,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"d3-cloud@npm:^1.2.7":
+  version: 1.2.7
+  resolution: "d3-cloud@npm:1.2.7"
+  dependencies:
+    d3-dispatch: ^1.0.3
+  checksum: 6217c46e32250daf1cfd71c2f5515a433b12bdb28affff55d27bf3249b8b12ebaab391d15ed973cbf0790758d8834d9870b9315790691dfcdc3e2b82a6f20631
+  languageName: node
+  linkType: hard
+
 "d3-color@npm:1 - 3, d3-color@npm:3":
   version: 3.1.0
   resolution: "d3-color@npm:3.1.0"
@@ -10403,7 +11329,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3-sankey@npm:0.12.3":
+"d3-sankey@npm:0.12.3, d3-sankey@npm:^0.12.3":
   version: 0.12.3
   resolution: "d3-sankey@npm:0.12.3"
   dependencies:
@@ -10552,7 +11478,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3@npm:^7.8.0":
+"d3@npm:^7.8.0, d3@npm:^7.8.5":
   version: 7.8.5
   resolution: "d3@npm:7.8.5"
   dependencies:
@@ -10621,6 +11547,15 @@ __metadata:
   version: 2.8.1
   resolution: "date-fns@npm:2.8.1"
   checksum: 7c4b21843e79dff2a1ac9f1c6996b72fd57ed70529ccb0a915751150710654eff8dc50366a59a9d01085207edf60bb1fd0fe95118e6ce38c149548a7426d645d
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^2.30.0":
+  version: 2.30.0
+  resolution: "date-fns@npm:2.30.0"
+  dependencies:
+    "@babel/runtime": ^7.21.0
+  checksum: f7be01523282e9bb06c0cd2693d34f245247a29098527d4420628966a2d9aad154bd0e90a6b1cf66d37adcb769cd108cf8a7bd49d76db0fb119af5cdd13644f4
   languageName: node
   linkType: hard
 
@@ -11075,13 +12010,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dom-to-image-more@npm:^3.1.6":
-  version: 3.1.6
-  resolution: "dom-to-image-more@npm:3.1.6"
-  checksum: ea47d516528e77d51d9937b334c0a61fbeb9ac9a9fd3cc5fbf62e505d33fa00a7cf37b8b1080dcc9f204117b06e9299bb1bbb8af0dd5c449ab3a8f3b79b759e0
-  languageName: node
-  linkType: hard
-
 "dom-walk@npm:^0.1.0":
   version: 0.1.2
   resolution: "dom-walk@npm:0.1.2"
@@ -11175,6 +12103,21 @@ __metadata:
   peerDependencies:
     react: ">=0.14.9"
   checksum: fc8e731106cdaa9bfcd1d855d8b25dbaaa6fb22dfb51a3c32e51f460c199730a6ddfbd311891bbdc4bba642238d2239f1fb7642ce5d3f616f09fc68abd6a76f4
+  languageName: node
+  linkType: hard
+
+"downshift@npm:8.2.3":
+  version: 8.2.3
+  resolution: "downshift@npm:8.2.3"
+  dependencies:
+    "@babel/runtime": ^7.22.15
+    compute-scroll-into-view: ^3.0.3
+    prop-types: ^15.8.1
+    react-is: ^18.2.0
+    tslib: ^2.6.2
+  peerDependencies:
+    react: ">=16.12.0"
+  checksum: d218096d0b8488b6504553e2dd4199e24da96ffcba43e2d97bf9e87a3ed30a8a626bcc191e3c800981f52f2d7673d50bfe5fb34e091d1338e9df0f08a34fc658
   languageName: node
   linkType: hard
 
@@ -13682,7 +14625,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-escaper@npm:^2.0.0, html-escaper@npm:^2.0.2":
+"html-escaper@npm:^2.0.0":
   version: 2.0.2
   resolution: "html-escaper@npm:2.0.2"
   checksum: d2df2da3ad40ca9ee3a39c5cc6475ef67c8f83c234475f24d8e9ce0dc80a2c82df8e1d6fa78ddd1e9022a586ea1bd247a615e80a5cd9273d90111ddda7d9e974
@@ -13712,6 +14655,13 @@ __metadata:
   dependencies:
     void-elements: 3.1.0
   checksum: 334fdebd4b5c355dba8e95284cead6f62bf865a2359da2759b039db58c805646350016d2017875718bc3c4b9bf81a0d11be5ee0cf4774a3a5a7b97cde21cfd67
+  languageName: node
+  linkType: hard
+
+"html-to-image@npm:^1.11.11":
+  version: 1.11.11
+  resolution: "html-to-image@npm:1.11.11"
+  checksum: b453beca72a697bf06fae4945e5460d1d9b1751e8569a0d721dda9485df1dde093938cc9bd9172b8df5fc23133a53a4d619777b3d22f7211cd8a67e3197ab4e8
   languageName: node
   linkType: hard
 
@@ -13964,21 +14914,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-browser-languagedetector@npm:^4.3.1":
-  version: 4.3.1
-  resolution: "i18next-browser-languagedetector@npm:4.3.1"
+"i18next-browser-languagedetector@npm:^6.1.8":
+  version: 6.1.8
+  resolution: "i18next-browser-languagedetector@npm:6.1.8"
   dependencies:
-    "@babel/runtime": ^7.5.5
-  checksum: 4b1354710aaaa07c3a813769981d0b878a4e8c8037dcb7feb3998be3122c24ff5947f208e14c4be4134c408d416ffdb8d7d011ba6380ab345771622ed63dc729
-  languageName: node
-  linkType: hard
-
-"i18next-icu@npm:^1.4.2":
-  version: 1.4.2
-  resolution: "i18next-icu@npm:1.4.2"
-  dependencies:
-    intl-messageformat: 2.2.0
-  checksum: 3c7f100d33acf85b909f8adf42789b194b3d8bef30f9e8ce95e577c91ca963f729cb0d09ef0a6dc8ddb2b821c593112f36abf88f7a93760ebfb9416ce0c97178
+    "@babel/runtime": ^7.19.0
+  checksum: dd84d3c9cb693a70662436b06f5554898815df33b7641249a64876c74c38960f11ef17b4d7f49ee2da7262abe0f3ae73abe7f3a3b435a344d0d07e4ca7cb24c6
   languageName: node
   linkType: hard
 
@@ -14012,12 +14953,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^19.6.0":
-  version: 19.9.2
-  resolution: "i18next@npm:19.9.2"
+"i18next@npm:^21.10.0":
+  version: 21.10.0
+  resolution: "i18next@npm:21.10.0"
   dependencies:
-    "@babel/runtime": ^7.12.0
-  checksum: a24207707eacb28488975f8921d843bc35b86f2a48504cb82eaf620e1aacddbda8d53a4dc600543a708ba49bc45e61072a753f250e89fad2c1932259190ef81a
+    "@babel/runtime": ^7.17.2
+  checksum: f997985e2d4d15a62a0936a82ff6420b97f3f971e776fe685bdd50b4de0cb4dc2198bc75efe6b152844794ebd5040d8060d6d152506a687affad534834836d81
   languageName: node
   linkType: hard
 
@@ -14322,19 +15263,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"intl-messageformat-parser@npm:1.4.0":
-  version: 1.4.0
-  resolution: "intl-messageformat-parser@npm:1.4.0"
-  checksum: 0606b78523a9730b47292dbf1f1835e189120cd91aa742d1c0925ce0925fb067233fc74ec259a20d7810f5a1a0bd801f5884fe04493082596cf578bfeafa34c6
-  languageName: node
-  linkType: hard
-
-"intl-messageformat@npm:2.2.0":
-  version: 2.2.0
-  resolution: "intl-messageformat@npm:2.2.0"
+"intl-messageformat@npm:^10.1.0":
+  version: 10.5.8
+  resolution: "intl-messageformat@npm:10.5.8"
   dependencies:
-    intl-messageformat-parser: 1.4.0
-  checksum: 5562de75dddae69546180403fec196ed6564d41cb82964de8e319bd9fa9edfe5aaa581bc40775815b65fbdab3db96b62bb0757c2a936ac025e705333e4bd82cd
+    "@formatjs/ecma402-abstract": 1.18.0
+    "@formatjs/fast-memoize": 2.2.0
+    "@formatjs/icu-messageformat-parser": 2.7.3
+    tslib: ^2.4.0
+  checksum: f0fc0c4ce4f711ac46227e1b41e1494bfadfd047e4581299ef4fbf79dcbd85fcc9851e7051432a02239fab9673c212a50f03060b5f83a930c286d4ba6c2261de
   languageName: node
   linkType: hard
 
@@ -18244,12 +19181,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openmrs@npm:next":
-  version: 5.1.1-pre.977
-  resolution: "openmrs@npm:5.1.1-pre.977"
+"openmrs@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "openmrs@npm:5.3.0"
   dependencies:
-    "@openmrs/esm-app-shell": 5.1.1-pre.977
-    "@openmrs/webpack-config": 5.1.1-pre.977
+    "@openmrs/esm-app-shell": 5.3.0
+    "@openmrs/webpack-config": 5.3.0
     "@pnpm/npm-conf": ^2.1.0
     "@swc/core": ^1.3.58
     autoprefixer: ^10.4.2
@@ -18277,8 +19214,8 @@ __metadata:
     workbox-webpack-plugin: ^6.4.1
     yargs: ^17.6.2
   bin:
-    openmrs: dist/cli.js
-  checksum: efef9bb2b46ce2fba967625a546b75c3aa39c5a711715e87904153601da5fc8acb017cd8ca368582d58120283fecd5cc4b6e20fbb32061f7c070fd226d1b1b68
+    openmrs: ./dist/cli.js
+  checksum: c86afa7c3408dece2f9a67d759d625ea5debcff10248364dee6f203ca29b4c98474709ff505420bac7d3046a701b19214df6405e1bba93057697c8c433c97e79
   languageName: node
   linkType: hard
 
@@ -19895,25 +20832,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^11.7.0":
-  version: 11.17.2
-  resolution: "react-i18next@npm:11.17.2"
-  dependencies:
-    "@babel/runtime": ^7.14.5
-    html-escaper: ^2.0.2
-    html-parse-stringify: ^3.0.1
-  peerDependencies:
-    i18next: ">= 19.0.0"
-    react: ">= 16.8.0"
-  peerDependenciesMeta:
-    react-dom:
-      optional: true
-    react-native:
-      optional: true
-  checksum: 9318b3c6ee669f73199b212bd1168004c30bb4de9fac43507ff284593661f988dff1f66bf510e3b7468f0d626c5984169da83b7974dbff44bd728921f8286267
-  languageName: node
-  linkType: hard
-
 "react-image-annotate@npm:^1.8.0":
   version: 1.8.0
   resolution: "react-image-annotate@npm:1.8.0"
@@ -20534,6 +21452,13 @@ __metadata:
   version: 0.13.9
   resolution: "regenerator-runtime@npm:0.13.9"
   checksum: 65ed455fe5afd799e2897baf691ca21c2772e1a969d19bb0c4695757c2d96249eb74ee3553ea34a91062b2a676beedf630b4c1551cc6299afb937be1426ec55e
+  languageName: node
+  linkType: hard
+
+"regenerator-runtime@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "regenerator-runtime@npm:0.14.0"
+  checksum: 1c977ad82a82a4412e4f639d65d22be376d3ebdd30da2c003eeafdaaacd03fc00c2320f18120007ee700900979284fc78a9f00da7fb593f6e6eeebc673fba9a3
   languageName: node
   linkType: hard
 
@@ -21512,6 +22437,17 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 2fa3e877568cd6ce769c75c211beaed1f9fce80b28338cadd9d0b6c40f2e2862bafd62c19a6cff42f3d54292b7c623277bcab8816a2b5521cf15210d43e75232
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.3.4":
+  version: 7.5.4
+  resolution: "semver@npm:7.5.4"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: 12d8ad952fa353b0995bf180cdac205a4068b759a140e5d3c608317098b3575ac2f1e09182206bf2eb26120e1c0ed8fb92c48c592f6099680de56bb071423ca3
   languageName: node
   linkType: hard
 
@@ -22722,17 +23658,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swr@npm:^2.0.1":
-  version: 2.2.0
-  resolution: "swr@npm:2.2.0"
-  dependencies:
-    use-sync-external-store: ^1.2.0
-  peerDependencies:
-    react: ^16.11.0 || ^17.0.0 || ^18.0.0
-  checksum: 1f04795ff9dff54987cbf8a544afc9e42d1350a99e899be8a7cdc4885f561e3ee464f78245ee2ebc8ced262b04023d134f731e276227319dc2d6e1843389ddd8
-  languageName: node
-  linkType: hard
-
 "swr@npm:^2.2.1":
   version: 2.2.1
   resolution: "swr@npm:2.2.1"
@@ -22742,6 +23667,18 @@ __metadata:
   peerDependencies:
     react: ^16.11.0 || ^17.0.0 || ^18.0.0
   checksum: 62ff1b8132966fc977df192cf4452bab94c73dbea304a1438745f27041917154dad32448d8a65fb40d5e3de0b1751ef3fd57b1d71ba450e031517f009d0fc052
+  languageName: node
+  linkType: hard
+
+"swr@npm:^2.2.2":
+  version: 2.2.4
+  resolution: "swr@npm:2.2.4"
+  dependencies:
+    client-only: ^0.0.1
+    use-sync-external-store: ^1.2.0
+  peerDependencies:
+    react: ^16.11.0 || ^17.0.0 || ^18.0.0
+  checksum: d1398f89fd68af0e0cb6100a5769b1e17c0dbe8a778898643ad28456acda64add43344754c7d919e3f2ca82854adf86ff7d465aba25a2d555bcb669e457138f8
   languageName: node
   linkType: hard
 
@@ -23131,7 +24068,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"topojson-client@npm:3.1.0":
+"topojson-client@npm:^3.1.0":
   version: 3.1.0
   resolution: "topojson-client@npm:3.1.0"
   dependencies:
@@ -23267,6 +24204,13 @@ __metadata:
   version: 2.4.0
   resolution: "tslib@npm:2.4.0"
   checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.4.0, tslib@npm:^2.6.2":
+  version: 2.6.2
+  resolution: "tslib@npm:2.6.2"
+  checksum: 329ea56123005922f39642318e3d1f0f8265d1e7fcb92c633e0809521da75eeaca28d2cf96d7248229deb40e5c19adf408259f4b9640afd20d13aecc1430f3ad
   languageName: node
   linkType: hard
 

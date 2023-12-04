@@ -11,9 +11,9 @@
       "component": "stockManagementDashboard"
     },
     {
-      "name": "stock-management-admin-card-link",
-      "slot": "system-admin-page-card-link-slot",
-      "component": "stockManagementAdminCardLink"
+      "name": "stock-management-link",
+      "slot": "app-menu-slot",
+      "component": "stockManagementLink"
     }
   ],
   "pages": [
