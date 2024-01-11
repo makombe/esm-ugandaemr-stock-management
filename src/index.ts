@@ -37,6 +37,13 @@ export const stockOperationDialog = getAsyncLifecycle(
     ),
   options
 );
+export const deleteStockModal = getAsyncLifecycle(
+  () => import("./stock-sources/delete-stock-modal.component"),
+  {
+    featureName: "delete-stock-modal",
+    moduleName,
+  }
+);
 
 export function startupApp() {
   defineConfigSchema(moduleName, configSchema);
