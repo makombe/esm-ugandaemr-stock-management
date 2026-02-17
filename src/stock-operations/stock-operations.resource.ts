@@ -213,7 +213,7 @@ export const useProgramCodeAndProcessingPeriod = () => {
     isLoading: isLoadingPeriod || isLoadingProgramCode,
     error: periodError ?? programError,
     processingPeriod,
-    programCode,
+    programCode: 'ess',
   };
 };
 export function submitExternalRequisition(payload: ExternalRequisitionPayload) {

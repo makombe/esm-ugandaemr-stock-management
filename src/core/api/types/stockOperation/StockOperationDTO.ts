@@ -62,4 +62,9 @@ export interface StockOperationDTO {
   dispatchedDate: Date;
   requisitionStockOperationUuid: string;
   requestType: 'EMERGENCY' | 'REGULAR' | null | undefined;
+  stockInHand?: number;
+  stockOutDays?: number;
+  beginningBalance?: number;
+  quantityDispensed?: number;
+  quantityReceived?: number;
 }
