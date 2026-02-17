@@ -108,10 +108,10 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
           status: 'AUTHORIZED',
           products: operation.stockOperationItems.map((item) => ({
             productCode: item.etcdProductId,
-            quantityDispensed: operation?.quantityDispensed ?? 0,
-            quantityReceived: operation.quantityReceived ?? 0,
-            beginningBalance: operation?.beginningBalance ?? 0,
-            stockInHand: operation?.stockInHand ?? 0,
+            quantityDispensed: operation?.quantityDispensed ?? 805,
+            quantityReceived: operation.quantityReceived ?? 942,
+            beginningBalance: operation?.beginningBalance ?? 81,
+            stockInHand: operation?.stockInHand ?? 216,
             stockOutDays: operation?.stockOutDays ?? 0,
             lossesAndAdjustments: [
               {
