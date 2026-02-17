@@ -25,7 +25,7 @@ export type StopOperationActionType = (typeof StopOperationActionTypes)[number];
 
 export interface ExternalRequisitionPayload {
   sourceOrderId: string;
-  rnrId: string;
+  rnrId?: string;
   facilityCode: string;
   programCode: string;
   periodId: string;

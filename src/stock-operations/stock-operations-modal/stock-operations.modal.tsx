@@ -98,7 +98,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
       if (operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE) {
         await submitExternalRequisition({
           sourceOrderId: operation.operationNumber,
-          rnrId: operation.uuid,
+          // rnrId: operation.uuid,
           facilityCode: facilityCode,
           programCode,
           periodId: processingPeriod,
@@ -108,11 +108,11 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
           status: 'AUTHORIZED',
           products: operation.stockOperationItems.map((item) => ({
             productCode: item.etcdProductId,
-            quantityDispensed: 805,
-            quantityReceived: 942,
-            beginningBalance: 81,
-            stockInHand: 216,
-            stockOutDays: 0,
+            quantityDispensed: operation?.quantityDispensed ?? 805,
+            quantityReceived: operation.quantityReceived ?? 942,
+            beginningBalance: operation?.beginningBalance ?? 81,
+            stockInHand: operation?.stockInHand ?? 216,
+            stockOutDays: operation?.stockOutDays ?? 0,
             lossesAndAdjustments: [
               {
                 quantity: 2,
@@ -138,7 +138,6 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
         closeModal();
       handleMutate(`${restBaseUrl}/stockmanagement/stockoperation`);
     } catch (err) {
-      setIsApproving(false);
       const errorMessages = extractErrorMessagesFromResponse(err);
       const message = errorMessages[0].replace(/[[\]]/g, '');
       showSnackbar({
