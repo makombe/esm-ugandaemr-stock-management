@@ -34,7 +34,7 @@ const ViewPurchaseOrderAction: FC<{ stockOperation: StockOperationDTO }> = ({ st
       }}
       renderIcon={OrderDetails}
     >
-      {t('viewPurchaseOrder', 'View Purchase Order')}
+      {t('purchaseOrder', 'Purchase Order')}
     </Button>
   );
 };

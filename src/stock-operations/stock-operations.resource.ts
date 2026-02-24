@@ -199,7 +199,7 @@ export interface StatusResponseData {
   requisition: {
     sourceOrderId: string;
     rnrId: any;
-    status: any;
+    status: 'RELEASED' | string;
     submissionStatus?: string; // For Failed
     approvalDate: any;
     supplier: { code: string; name: string };
