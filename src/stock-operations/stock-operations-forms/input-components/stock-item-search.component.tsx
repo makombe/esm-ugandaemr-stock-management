@@ -62,8 +62,8 @@ const StockItemSearch: React.FC<StockItemSearchProps> = ({ onSelectedItem }) => 
       {searchTerm && stockItemsList?.length > 0 && (
         <div className={styles.searchResults}>
           {stockItemsList?.slice(0, 5).map((stockItem) => {
-            const commonName = getCommonName(stockItem);
-            const drugName = getDrugName(stockItem);
+            const commonName = getCommonName(stockItem) + `(${stockItem.etcdProductId})`;
+            const drugName = getDrugName(stockItem) + +`(${stockItem.etcdProductId})`;
             return (
               <ClickableTile onClick={() => handleOnSearchResultClick(stockItem)} key={stockItem?.uuid}>
                 {useItemCommonNameAsDisplay ? commonName : drugName}

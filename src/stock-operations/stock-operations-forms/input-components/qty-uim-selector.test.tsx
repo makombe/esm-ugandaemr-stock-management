@@ -51,6 +51,7 @@ describe('QtyUOMSelector', () => {
     expiryNotice: 180,
     hasExpiration: true,
     isDrug: true,
+    etcdProductId: 'etcd-product-id-002',
     links: [
       {
         rel: 'self',

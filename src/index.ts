@@ -139,6 +139,13 @@ export const stockOperationsModal = getAsyncLifecycle(
     moduleName,
   },
 );
+export const stockOperationPurchaseOrderModal = getAsyncLifecycle(
+  () => import('./stock-operations/purchase-order/puchase-order.modal'),
+  {
+    featureName: 'stock-operation-purchase-order-modal',
+    moduleName,
+  },
+);
 
 export const stockManagementAppMenuItem = getSyncLifecycle(appMenu, options);
 

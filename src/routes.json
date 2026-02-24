@@ -190,6 +190,10 @@
       "component": "stockOperationsModal"
     },
     {
+      "name": "stock-operation-purchase-order-modal",
+      "component": "stockOperationPurchaseOrderModal"
+    },
+    {
       "name": "transactions-print-bincard-preview-modal",
       "component": "transactionBincardPrintPreviewModal"
     },

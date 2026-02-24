@@ -46,6 +46,7 @@ export interface StockItemDTO {
   categoryUuid: string | null | undefined;
   categoryName: string | null | undefined;
   expiryNotice: number | null | undefined;
+  etcdProductId: string | null | undefined;
 }
 
 export const LocationStockItemBatchNo = 'LocationStockItemBatchNo';

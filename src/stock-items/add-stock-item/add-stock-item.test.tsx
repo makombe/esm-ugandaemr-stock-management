@@ -62,6 +62,7 @@ describe('AddEditStockItem', () => {
     acronym: 'TCN',
     conceptName: 'Test Concept Name',
     hasExpiration: true,
+    etcdProductId: 'etcd-product-id-001',
     packagingUnits: [
       {
         uuid: 'packaging-uuid-001',

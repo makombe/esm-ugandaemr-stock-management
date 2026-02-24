@@ -8,6 +8,8 @@ import StockOperationLinks from '../../stock-operation-links.component';
 import StockItemsTable from './stock-items-table';
 import styles from './stock-operation-expanded-row.scss';
 import StockOpertationStatus from './stock-operations-status';
+import { OperationType } from '../../../core/api/types/stockOperation/StockOperationType';
+import ExtrenalRequisitionRemoteStatus from './external-requisition-remote-status';
 
 interface StockOperationExpandedRowProps {
   model: StockOperationDTO;
@@ -82,6 +84,10 @@ const StockOperationExpandedRow: React.FC<StockOperationExpandedRowProps> = (pro
               extraStatusinfo={<span>{props.model?.rejectionReason}</span>}
             />
           )}
+          {props.model.operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE &&
+            (props.model.status as any) === 'AUTHORIZED' && (
+              <ExtrenalRequisitionRemoteStatus operationNumber={props.model.operationNumber} />
+            )}
         </Row>
         <Row className={styles.statusContainerRow}>
           {isLoading && (

@@ -186,6 +186,45 @@ export function useFacilityCode() {
   };
 }
 
+export interface StatusResponse {
+  status: 'FAIL' | 'SUCCESS';
+  statusCode: number;
+  message?: string;
+  data?: StatusResponseData;
+}
+
+export interface StatusResponseData {
+  sourceSystem: string;
+  submissionStatus: string;
+  requisition: {
+    sourceOrderId: string;
+    rnrId: any;
+    status: any;
+    submissionStatus?: string; // For Failed
+    approvalDate: any;
+    supplier: { code: string; name: string };
+    items: Array<{
+      productCode: string;
+      genericConceptCode: string;
+      uom: string;
+      quantityRequested: number;
+      quantityApproved: number;
+    }>;
+    errorMessage: string; // For Failed
+  };
+}
+
+export function useExternalRequisitionStation(operationNumber: string) {
+  const { error: facilityCodeError, facilityCode, isLoading: isloadingFacilityCode } = useFacilityCode();
+  const url = `${restBaseUrl}/kenyaemr/nlmis/requisition-status?sourceOrderId=${operationNumber}&facilityCode=${facilityCode}`;
+  const { data, error, isLoading } = useSWR<FetchResponse<StatusResponse>>(facilityCode ? url : null, openmrsFetch);
+  return {
+    isLoading: isLoading || isloadingFacilityCode,
+    error: error ?? facilityCodeError,
+    status: data?.data,
+  };
+}
+
 export const useProgramCode = () => {
   const url = `${restBaseUrl}/kenyaemr/nlmis/programs`;
   const { data, error, isLoading } = useSWR<FetchResponse<Array<{ id: string; code?: string }>>>(url, openmrsFetch);
