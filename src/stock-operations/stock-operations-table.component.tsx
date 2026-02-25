@@ -26,7 +26,7 @@ import {
 } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import { isDesktop, restBaseUrl } from '@openmrs/esm-framework';
+import { isDesktop, restBaseUrl, useSession } from '@openmrs/esm-framework';
 import { DATE_PICKER_CONTROL_FORMAT, DATE_PICKER_FORMAT, StockFilters } from '../constants';
 import { formatDisplayDate } from '../core/utils/datetimeUtils';
 import { handleMutate } from '../utils';
@@ -65,7 +65,18 @@ const StockOperations: React.FC<StockOperationsTableProps> = () => {
       sourceTypeUuid: selectedSources.join(','),
       operationTypeUuid: selectedOperations.join(','),
     });
-  console.log('items', totalItems);
+  const {
+    sessionLocation: { uuid: locationUuid, display: sessionLocationDisplay },
+  } = useSession();
+
+  const filteredOperationsByLocation = useMemo(() => {
+    if (!sessionLocationDisplay) return [];
+
+    return items.filter(
+      (operation) =>
+        operation.sourceName === sessionLocationDisplay || operation.destinationName === sessionLocationDisplay,
+    );
+  }, [items, sessionLocationDisplay]);
 
   const filterApplied =
     selectedFromDate || selectedToDate || selectedSources.length || selectedStatus.length || selectedOperations.length;
@@ -97,7 +108,7 @@ const StockOperations: React.FC<StockOperationsTableProps> = () => {
 
   const tableRows = useMemo(
     () =>
-      items?.map((stockOperation, index) => {
+      filteredOperationsByLocation?.map((stockOperation, index) => {
         const threshHold = 1;
         const itemCountGreaterThanThreshhold = (stockOperation?.stockOperationItems?.length ?? 0) > threshHold;
         const commonNames =
@@ -139,7 +150,7 @@ const StockOperations: React.FC<StockOperationsTableProps> = () => {
           actions: <EditStockOperationActionMenu stockOperation={stockOperation} showIcon={true} showprops={false} />,
         };
       }),
-    [items],
+    [filteredOperationsByLocation],
   );
 
   if (isLoading && !filterApplied) {
@@ -253,7 +264,7 @@ const StockOperations: React.FC<StockOperationsTableProps> = () => {
                       </TableExpandRow>
                       {row.isExpanded ? (
                         <TableExpandedRow colSpan={headers.length + 2}>
-                          <StockOperationExpandedRow model={items[index]} />
+                          <StockOperationExpandedRow model={filteredOperationsByLocation[index]} />
                         </TableExpandedRow>
                       ) : (
                         <TableExpandedRow className={styles.hiddenRow} colSpan={headers.length + 2} />
