@@ -217,7 +217,9 @@ export interface StatusResponseData {
 export function useExternalRequisitionStation(operationNumber: string) {
   const { error: facilityCodeError, facilityCode, isLoading: isloadingFacilityCode } = useFacilityCode();
   const url = `${restBaseUrl}/kenyaemr/nlmis/requisition-status?sourceOrderId=${operationNumber}&facilityCode=${facilityCode}`;
-  const { data, error, isLoading } = useSWR<FetchResponse<StatusResponse>>(facilityCode ? url : null, openmrsFetch);
+  const { data, error, isLoading } = useSWR<FetchResponse<StatusResponse>>(facilityCode ? url : null, openmrsFetch, {
+    refreshInterval: 5000,
+  });
   return {
     isLoading: isLoading || isloadingFacilityCode,
     error: error ?? facilityCodeError,

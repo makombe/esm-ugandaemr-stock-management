@@ -1,11 +1,14 @@
-import { Button, ButtonSet, ModalBody, ModalFooter, ModalHeader, Tag , InlineLoading } from '@carbon/react';
+import { Button, ButtonSet, InlineLoading, ModalBody, ModalFooter, ModalHeader, Tag } from '@carbon/react';
 import React, { useMemo, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { StockItemDTO } from '../../core/api/types/stockItem/StockItem';
 import { type StockOperationDTO } from '../../core/api/types/stockOperation/StockOperationDTO';
-import { type StatusResponseData, type StatusResponse } from '../stock-operations.resource';
+import { type StatusResponse, type StatusResponseData } from '../stock-operations.resource';
 import styles from './puchase-order.scss';
-import { useStockItems } from '../../stock-items/stock-items.resource';
-import { ResourceRepresentation } from '../../core/api/api';
+import { usePurchaseOrderItems } from './purchase-order.resources';
+import { launchStockoperationAddOrEditWorkSpace } from '../stock-operation.utils';
+import { OperationType } from '../../core/api/types/stockOperation/StockOperationType';
+import { useStockOperationTypes } from '../../stock-lookups/stock-lookups.resource';
 
 type PurchaseOrderModalProps = {
   onClose?: () => void;
@@ -15,20 +18,40 @@ type PurchaseOrderModalProps = {
 
 const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stockOperation }) => {
   const { t } = useTranslation();
-  const modalTitle = t('purchaseOrder', 'Purchase Order');
-  const onReceipt = () => {
-    onClose?.();
-  };
-
   const requisition = status?.data?.requisition;
   const items = requisition?.items || [];
-  const stockOperationItems = stockOperation?.stockOperationItems || [];
+  const {
+    error,
+    isLoading,
+    stockItems: purchaseOrderItems,
+    createReceiptPayload,
+  } = usePurchaseOrderItems(items.map((item) => item.productCode));
+  const { types, isLoading: typesLoading } = useStockOperationTypes();
+  const receiptType = useMemo(
+    () => types?.results?.find((type) => type.operationType === OperationType.RECEIPT_OPERATION_TYPE),
+    [types],
+  );
+  const modalTitle = t('purchaseOrder', 'Purchase Order');
+
+  const onReceipt = () => {
+    const receiptPayload = createReceiptPayload(items);
+    launchStockoperationAddOrEditWorkSpace(
+      t,
+      receiptType,
+      undefined,
+      undefined,
+      receiptPayload as unknown as Partial<StockOperationDTO>,
+    );
+    onClose?.();
+  };
 
   return (
     <>
       <ModalHeader closeModal={onClose} title={modalTitle} />
       <ModalBody>
-        {status && (
+        {isLoading || typesLoading ? (
+          <InlineLoading />
+        ) : (
           <div className={styles.statusContainer}>
             <h4 className={styles.sectionTitle}>{t('requisitionStatus', 'Requisition Status')}</h4>
             <div className={styles.statusHeader}>
@@ -58,7 +81,13 @@ const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stoc
               <div className={styles.itemsContainer}>
                 <h5 className={styles.sectionTitle}>{t('items', 'Items')}</h5>
                 {items.map((item, index) => (
-                  <Item key={index} item={item} />
+                  <Item
+                    key={index}
+                    item={item}
+                    stockItem={purchaseOrderItems.find(
+                      (i) => i.etcdProductId === item.productCode || i.genericConceptCode === item.genericConceptCode,
+                    )}
+                  />
                 ))}
               </div>
             )}
@@ -85,33 +114,21 @@ const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stoc
 
 export default PurchaseOrderModal;
 
-const Item = ({ item }: { item: StatusResponseData['requisition']['items'][number] }) => {
+const Item = ({
+  item,
+  stockItem,
+}: {
+  stockItem: StockItemDTO;
+  item: StatusResponseData['requisition']['items'][number];
+}) => {
   const { t } = useTranslation();
-  const { items, isLoading } = useStockItems({
-    q: item.productCode ?? item.genericConceptCode,
-    v: ResourceRepresentation.Full,
-  });
-  const itemWithProductCode = useMemo(() => {
-    const matchedStockItem = items?.results?.find((i) => i.etcdProductId === item.productCode);
-    return matchedStockItem;
-  }, [items, item]);
-
-  if (isLoading) {
-    return (
-      <InlineLoading
-        description={t('loadingItemDetails', 'Loading {{item}} item details...', {
-          item: item.productCode ?? item.genericConceptCode,
-        })}
-      />
-    );
-  }
 
   return (
     <div className={styles.itemRow}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span className={styles.itemName}>{`${itemWithProductCode?.etcdProductId || item.productCode} - ${
-          itemWithProductCode?.drugName ?? itemWithProductCode?.commonName ?? ''
-        } (${item.genericConceptCode ?? ''})`}</span>
+        <span className={styles.itemName}>{`${stockItem?.etcdProductId || item.productCode} - ${
+          stockItem?.drugName ?? stockItem?.commonName ?? ''
+        } (${stockItem?.genericConceptCode ?? ''})`}</span>
         <span className={styles.detailLabel}>{item.uom}</span>
       </div>
       <div style={{ display: 'flex', gap: '1rem' }}>

@@ -52,6 +52,7 @@ describe('QtyUOMSelector', () => {
     hasExpiration: true,
     isDrug: true,
     etcdProductId: 'etcd-product-id-002',
+    genericConceptCode: 'generic-concept-code-002',
     links: [
       {
         rel: 'self',
