@@ -9,6 +9,7 @@ export const launchStockoperationAddOrEditWorkSpace = (
   operationType: StockOperationType,
   stockOperation?: StockOperationDTO,
   stockRequisitionUuid?: string, // Only supplied on stock issue (when workspace is launched for stock issue)
+  defaultValues?: Partial<StockOperationDTO>,
 ) => {
   launchWorkspace('stock-operation-form-workspace', {
     workspaceTitle: stockOperation
@@ -21,6 +22,7 @@ export const launchStockoperationAddOrEditWorkSpace = (
     stockOperationType: operationType,
     stockOperation: stockOperation,
     stockRequisitionUuid: stockRequisitionUuid,
+    defaultValues,
   });
 };
 

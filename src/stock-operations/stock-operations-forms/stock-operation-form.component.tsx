@@ -44,6 +44,7 @@ type StockOperationFormProps = DefaultWorkspaceProps & {
   stockOperation?: StockOperationDTO;
   stockOperationType: StockOperationType;
   stockRequisitionUuid?: string;
+  defaultValues?: Partial<StockOperationDTO>;
 };
 
 const StockOperationForm: React.FC<StockOperationFormProps> = ({
@@ -51,6 +52,7 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
   stockOperationType,
   stockRequisitionUuid,
   closeWorkspace,
+  defaultValues,
 }) => {
   const { t } = useTranslation();
   const operationType = useMemo(() => {
@@ -85,21 +87,24 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
         stockOperation?.responsiblePersonUuid ?? // if person uuid exist, make it default
         (stockOperation?.responsiblePersonOther ? otherUser.uuid : undefined) ?? // if other resp person exist, default other user uuid
         (autoPopulateResponsiblePerson ? defaultLoggedUserUuid : undefined), //Else default login user if configured
-      operationDate: stockOperation?.operationDate ? parseDate(stockOperation!.operationDate as any) : today(),
-      remarks: stockOperation?.remarks ?? '',
+      operationDate:
+        stockOperation?.operationDate || defaultValues?.operationDate
+          ? parseDate(stockOperation?.operationDate ?? (defaultValues?.operationDate as any))
+          : today(),
+      remarks: stockOperation?.remarks ?? defaultValues?.remarks ?? '',
 
       operationTypeUuid: stockOperation?.operationTypeUuid ?? stockOperationType?.uuid,
-      reasonUuid: stockOperation?.reasonUuid ?? '',
-      responsiblePersonOther: stockOperation?.responsiblePersonOther ?? '',
+      reasonUuid: stockOperation?.reasonUuid ?? defaultValues?.reasonUuid ?? '',
+      responsiblePersonOther: stockOperation?.responsiblePersonOther ?? defaultValues?.responsiblePersonOther ?? '',
       stockOperationItems:
-        stockOperation?.stockOperationItems?.map((item) =>
+        (stockOperation?.stockOperationItems ?? defaultValues?.stockOperationItems)?.map((item) =>
           pick(
             { ...item, expiration: item.expiration ? parseDate(item.expiration as any) : undefined },
             stockOperationItemBaseSchema.keyof().options,
           ),
         ) ?? [],
-      sourceUuid: stockOperation?.sourceUuid ?? '',
-      destinationUuid: stockOperation?.destinationUuid ?? '',
+      sourceUuid: stockOperation?.sourceUuid ?? defaultValues?.sourceUuid ?? '',
+      destinationUuid: stockOperation?.destinationUuid ?? defaultValues?.destinationUuid ?? '',
       requestType: operationTypePermision.requirePriority ? 'REGULAR' : undefined,
     },
     mode: 'all',

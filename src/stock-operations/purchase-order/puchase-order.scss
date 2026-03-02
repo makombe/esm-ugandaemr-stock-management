@@ -1,0 +1,79 @@
+@use '@carbon/colors';
+@use '@carbon/layout';
+@use '@carbon/type';
+
+.btnSet {
+  padding: 0rem;
+  margin-top: layout.$spacing-05;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: layout.$spacing-05;
+}
+
+.btn {
+  height: layout.$spacing-10;
+  display: flex;
+  align-content: flex-start;
+  align-items: baseline;
+  min-width: 20%;
+}
+
+.sectionTitle {
+  @include type.type-style('heading-02');
+  margin-bottom: layout.$spacing-05;
+  color: colors.$gray-100;
+  border-bottom: 1px solid colors.$gray-20;
+  padding-bottom: layout.$spacing-03;
+}
+
+.statusContainer {
+  margin-bottom: layout.$spacing-07;
+}
+
+.statusHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: layout.$spacing-05;
+  margin-bottom: layout.$spacing-06;
+}
+
+.detailRow {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: layout.$spacing-04;
+}
+
+.detailLabel {
+  @include type.type-style('label-01');
+  color: colors.$gray-60;
+}
+
+.detailValue {
+  @include type.type-style('body-short-01');
+  font-weight: 600;
+}
+
+.itemsContainer {
+  margin-top: layout.$spacing-06;
+}
+
+.itemRow {
+  display: flex;
+  justify-content: space-between;
+  padding: layout.$spacing-03 0;
+  border-bottom: 1px solid colors.$gray-10;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.itemName {
+  @include type.type-style('body-short-01');
+}
+
+.itemQuantity {
+  @include type.type-style('body-short-01');
+  font-weight: 600;
+}

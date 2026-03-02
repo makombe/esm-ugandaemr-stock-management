@@ -283,7 +283,7 @@ describe('Stock Operation step 2 (stock operation items details)', () => {
     await user.click(searchInput);
     await user.type(searchInput, 'stock');
     expect(mocksetSearchString).toHaveBeenCalledWith('stock');
-    expect(screen.getByText('mock-common-name'));
+    expect(screen.getByText(/mock-common-name/i));
   });
 
   it('should properly handle stock operation item selection', async () => {
@@ -316,7 +316,7 @@ describe('Stock Operation step 2 (stock operation items details)', () => {
     });
     await user.click(searchInput);
     await user.type(searchInput, 'stock');
-    await user.click(screen.getByText('mock-common-name'));
+    await user.click(screen.getByText(/mock-common-name/i));
     // Look for common name at the top of workspace
     expect(screen.getByText(/no drug name available|no common name available|mock-common-name/i)).toBeInTheDocument();
   });

@@ -16,6 +16,7 @@ import StockOperationRejectButton from './stock-operations-modal/stock-operation
 import StockOperationReturnButton from './stock-operations-modal/stock-operations-return-button.component';
 import useOperationTypePermisions from './stock-operations-forms/hooks/useOperationTypePermisions';
 import styles from './stock-operations-table.scss';
+import ViewPurchaseOrderAction from './purchase-order/view-purchase-order-btn.component';
 
 type Props = {
   stockOperation: StockOperationDTO;
@@ -28,53 +29,59 @@ const StockoperationActions: React.FC<Props> = ({ stockOperation, stockOperation
     return operationFromString(stockOperationType.operationType);
   }, [stockOperationType]);
   return (
-    <>
+    <div className={styles.actionBtns}>
+      {stockOperation &&
+        operationType &&
+        operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE &&
+        (stockOperation.status as any) === 'AUTHORIZED' && (
+          <>
+            <ViewPurchaseOrderAction stockOperation={stockOperation} />
+          </>
+        )}
       {((!stockOperation.permission?.canEdit &&
         (stockOperation.permission?.canApprove || stockOperation.permission?.canReceiveItems)) ||
         stockOperation.permission?.canEdit ||
         StockOperationTypeHasPrint(operationType) ||
         (stockOperation?.permission?.isRequisitionAndCanIssueStock ?? false) ||
         stockOperation.permission?.isRequisitionAndCanIssueStock) && (
-        <div className={styles.actionBtns}>
-          <>
-            {!stockOperation.permission?.canEdit && stockOperation.permission?.canApprove && (
-              <>
-                {!operationTypePermision.requiresDispatchAcknowledgement && (
-                  <StockOperationApprovalButton operation={stockOperation} operationType={operationType} />
-                )}
+        <>
+          {!stockOperation.permission?.canEdit && stockOperation.permission?.canApprove && (
+            <>
+              {!operationTypePermision.requiresDispatchAcknowledgement && (
+                <StockOperationApprovalButton operation={stockOperation} operationType={operationType} />
+              )}
 
-                {operationTypePermision.requiresDispatchAcknowledgement && (
-                  <StockOperationApproveDispatchButton operation={stockOperation} />
-                )}
+              {operationTypePermision.requiresDispatchAcknowledgement && (
+                <StockOperationApproveDispatchButton operation={stockOperation} />
+              )}
 
-                <StockOperationRejectButton operation={stockOperation} />
-                <StockOperationReturnButton operation={stockOperation} />
-                <StockOperationCancelButton operation={stockOperation} />
-              </>
-            )}
+              <StockOperationRejectButton operation={stockOperation} />
+              <StockOperationReturnButton operation={stockOperation} />
+              <StockOperationCancelButton operation={stockOperation} />
+            </>
+          )}
 
-            {!stockOperation.permission?.canEdit && stockOperation.permission?.canReceiveItems && (
-              <>
-                <StockOperationCompleteDispatchButton operation={stockOperation} reason={false} />
-                <StockOperationReturnButton operation={stockOperation} />
-              </>
-            )}
+          {!stockOperation.permission?.canEdit && stockOperation.permission?.canReceiveItems && (
+            <>
+              <StockOperationCompleteDispatchButton operation={stockOperation} reason={false} />
+              <StockOperationReturnButton operation={stockOperation} />
+            </>
+          )}
 
-            {stockOperation.permission?.canEdit && <StockOperationCancelButton operation={stockOperation} />}
-            {stockOperation.permission?.isRequisitionAndCanIssueStock && (
-              <StockOperationIssueStockButton operation={stockOperation} />
-            )}
-            {(stockOperation.permission?.isRequisitionAndCanIssueStock ||
-              stockOperation.operationType === OperationType.STOCK_ISSUE_OPERATION_TYPE ||
-              stockOperation.operationType === OperationType.REQUISITION_OPERATION_TYPE ||
-              stockOperation.operationType === OperationType.RECEIPT_OPERATION_TYPE ||
-              stockOperation.operationType === OperationType.TRANSFER_OUT_OPERATION_TYPE) && (
-              <StockOperationPrintButton operation={stockOperation} />
-            )}
-          </>
-        </div>
+          {stockOperation.permission?.canEdit && <StockOperationCancelButton operation={stockOperation} />}
+          {stockOperation.permission?.isRequisitionAndCanIssueStock && (
+            <StockOperationIssueStockButton operation={stockOperation} />
+          )}
+          {(stockOperation.permission?.isRequisitionAndCanIssueStock ||
+            stockOperation.operationType === OperationType.STOCK_ISSUE_OPERATION_TYPE ||
+            stockOperation.operationType === OperationType.REQUISITION_OPERATION_TYPE ||
+            stockOperation.operationType === OperationType.RECEIPT_OPERATION_TYPE ||
+            stockOperation.operationType === OperationType.TRANSFER_OUT_OPERATION_TYPE) && (
+            <StockOperationPrintButton operation={stockOperation} />
+          )}
+        </>
       )}
-    </>
+    </div>
   );
 };
 
