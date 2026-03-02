@@ -7,6 +7,7 @@ import { useCallback } from 'react';
 import type { StatusResponseData } from '../stock-operations.resource';
 import type { StockOperationItemDTO } from '../../core/api/types/stockOperation/StockOperationItemDTO';
 import { MAIN_STORE_LOCATION_TAG, RECEIPT_UUID } from '../../constants';
+import { getStockOperationUniqueId } from '../stock-operation.utils';
 
 export const usePurchaseOrderItems = (productCodes: string[]) => {
   const {
@@ -57,7 +58,7 @@ export const usePurchaseOrderItems = (productCodes: string[]) => {
             purchasePrice: undefined,
             hasExpiration: false,
             id: undefined,
-            uuid: undefined,
+            uuid: `new-item-${getStockOperationUniqueId()}`,
             brandName: undefined,
             manufacturerName: undefined,
             isOutOfStock: false,

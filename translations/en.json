@@ -173,7 +173,6 @@
   "loading": "Loading...",
   "loading StockoperationLinks": "Loading stock operation links",
   "loadingData": "Loading data...",
-  "loadingItemDetails": "Loading {{item}} item details...",
   "loadingOperationActions": "Loading stock operation actions",
   "loadingOperationTypes": "Loading operation types",
   "location": "Location(s)",
