@@ -12,7 +12,7 @@ import { otherUser } from '../../../core/utils/utils';
 import { launchStockOperationsModal } from '../../stock-operation.utils';
 import { type StockOperationDTO } from '../../../core/api/types/stockOperation/StockOperationDTO';
 import { type StockOperationItemDTO } from '../../../core/api/types/stockOperation/StockOperationItemDTO';
-import { type StockOperationItemDtoSchema } from '../../validation-schema';
+import { type ExternalRequisitionExtrafields, type StockOperationItemDtoSchema } from '../../validation-schema';
 import useOperationTypePermisions from '../hooks/useOperationTypePermisions';
 import styles from '../stock-operation-form.scss';
 
@@ -34,7 +34,7 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
   const { t } = useTranslation();
   const operationTypePermision = useOperationTypePermisions(stockOperationType);
   const editable = useMemo(() => !stockOperation || stockOperation.status === 'NEW', [stockOperation]);
-  const form = useFormContext<StockOperationItemDtoSchema>();
+  const form = useFormContext<StockOperationItemDtoSchema & ExternalRequisitionExtrafields>();
   const [approvalRequired, setApprovalRequired] = useState<boolean | null>(
     stockOperation?.approvalRequired || operationTypePermision.requirePriority,
   );
@@ -80,9 +80,11 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
                   }),
           });
         });
+        const orderReason = formData.reasonForRequestedQuantity;
         // construct update payload
         const payload = {
           ...formData,
+          reasonForRequestedQuantity: undefined,
           // Remove other uuid if responsible person is set to other
           responsiblePersonUuid:
             formData.responsiblePersonUuid === otherUser.uuid ? undefined : formData.responsiblePersonUuid,
@@ -90,6 +92,7 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
           stockOperationItems: [
             ...formData.stockOperationItems.map((item) => ({
               ...item,
+              reasonForRequestedQuantity: orderReason,
               uuid:
                 item.uuid.startsWith('new-item-') || (!stockOperation && isStockIssueOperation) ? undefined : item.uuid, // Remove uuid for newly inserted items and stock issue items derived from requisition to avoid foreign key constraint lookup error
             })),

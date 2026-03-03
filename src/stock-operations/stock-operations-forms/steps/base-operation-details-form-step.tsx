@@ -50,7 +50,7 @@ const BaseOperationDetailsFormStep: FC<BaseOperationDetailsFormStepProps> = ({
     sourceTags,
     destinationTags,
   } = useParties(stockOperationType);
-  const form = useFormContext<StockOperationItemDtoSchema & Pick<ExternalRequisitionExtrafields, 'requestType'>>();
+  const form = useFormContext<StockOperationItemDtoSchema & ExternalRequisitionExtrafields>();
   const isStockIssueOperation = useMemo(
     () => OperationType.STOCK_ISSUE_OPERATION_TYPE === stockOperationType.operationType,
     [stockOperationType],
@@ -64,6 +64,8 @@ const BaseOperationDetailsFormStep: FC<BaseOperationDetailsFormStepProps> = ({
       'destinationUuid',
       'reasonUuid',
       'responsiblePersonOther',
+      'reasonForRequestedQuantity',
+      'requestType',
     ]);
     if (valid) onNext();
   };
@@ -234,26 +236,50 @@ const BaseOperationDetailsFormStep: FC<BaseOperationDetailsFormStepProps> = ({
         </Column>
       )}
       {operationTypePermision.requirePriority && (
-        <Controller
-          control={form.control}
-          name="requestType"
-          render={({ field, fieldState }) => (
-            <Dropdown<ExternalRequisitionExtrafields['requestType']>
-              {...field}
-              id="requestType"
-              invalidText={fieldState?.error?.message}
-              itemToString={(item: ExternalRequisitionExtrafields['requestType']) =>
-                item === 'EMERGENCY' ? t('emergency', 'Emergency') : item === 'REGULAR' ? t('regular', 'Regular') : ''
-              }
-              initialSelectedItem={field.value}
-              onChange={({ selectedItem }) => field.onChange(selectedItem)}
-              items={['EMERGENCY', 'REGULAR']}
-              label={t('requestType', 'Request Type')}
-              titleText={t('requestType', 'Request Type')}
-              type="default"
+        <>
+          <Controller
+            control={form.control}
+            name="requestType"
+            render={({ field, fieldState }) => (
+              <Dropdown<ExternalRequisitionExtrafields['requestType']>
+                {...field}
+                id="requestType"
+                invalidText={fieldState?.error?.message}
+                itemToString={(item: ExternalRequisitionExtrafields['requestType']) =>
+                  item === 'EMERGENCY' ? t('emergency', 'Emergency') : item === 'REGULAR' ? t('regular', 'Regular') : ''
+                }
+                initialSelectedItem={field.value}
+                onChange={({ selectedItem }) => field.onChange(selectedItem)}
+                items={['EMERGENCY', 'REGULAR']}
+                label={t('requestType', 'Request Type')}
+                titleText={t('requestType', 'Request Type')}
+                type="default"
+              />
+            )}
+          />
+          <Column>
+            <Controller
+              control={form.control}
+              name="reasonForRequestedQuantity"
+              render={({ field, fieldState: { error } }) => (
+                <TextArea
+                  {...field}
+                  readOnly={field.disabled}
+                  disabled={false}
+                  maxCount={250}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                    field.onChange(e.target.value);
+                  }}
+                  placeholder={t('enterReson', 'Enter reason') + ' ...'}
+                  id={'reason'}
+                  labelText={t('reasonForRequestedQuantity', 'Order Reason')}
+                  invalid={error?.message}
+                  invalidText={error?.message}
+                />
+              )}
             />
-          )}
-        />
+          </Column>
+        </>
       )}
       <Column>
         <Controller
