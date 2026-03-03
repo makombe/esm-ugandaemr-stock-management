@@ -217,6 +217,7 @@ export const getStockOperationItemFormSchema = (operationType: OperationType) =>
     case OperationType.STOCK_ISSUE_OPERATION_TYPE:
       return stockIssueSchemaWithValidation;
     case OperationType.DISPOSED_OPERATION_TYPE:
+    case OperationType.LOSS_OPERATION_TYPE:
     case OperationType.RETURN_OPERATION_TYPE:
     case OperationType.STOCK_TAKE_OPERATION_TYPE:
     case OperationType.TRANSFER_OUT_OPERATION_TYPE:
@@ -256,6 +257,7 @@ export const getStockOperationItemBaseSchema = (operationType: OperationType) =>
     case OperationType.STOCK_ISSUE_OPERATION_TYPE:
       return stockIssueBaseSchema;
     case OperationType.DISPOSED_OPERATION_TYPE:
+    case OperationType.LOSS_OPERATION_TYPE:
     case OperationType.RETURN_OPERATION_TYPE:
     case OperationType.STOCK_TAKE_OPERATION_TYPE:
     case OperationType.TRANSFER_OUT_OPERATION_TYPE:
@@ -323,6 +325,7 @@ export const getStockOperationFormSchema = (operation: OperationType): z.Schema 
     case OperationType.STOCK_TAKE_OPERATION_TYPE:
     case OperationType.ADJUSTMENT_OPERATION_TYPE:
     case OperationType.DISPOSED_OPERATION_TYPE:
+    case OperationType.LOSS_OPERATION_TYPE:
       return stockOperationItemDtoSchema.omit({ destinationUuid: true }).merge(
         z.object({
           stockOperationItems: getStockOperationItemFormSchema(operation)
