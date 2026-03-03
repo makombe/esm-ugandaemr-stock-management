@@ -324,7 +324,7 @@
   "stockOperationEdited": "Stock operation edited successfully",
   "stockOperationError": "Error loading stock operation types",
   "stockOperationErrorDescription": "Details: {{message}}",
-  "stockOperationErrorTitle": "Error on saving form",
+  "stockOperationErrorTitle": "Failed to submit request",
   "stockoperationItemDeleteError": "Error deleting stock operation item {{item}}",
   "stockoperationItemDeletSuccess": "Stock operation item {{item}} deleted succesfully",
   "stockoperationItems": "Stock operation items",

@@ -86,7 +86,7 @@ const StockOperationExpandedRow: React.FC<StockOperationExpandedRowProps> = (pro
           )}
           {props.model.operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE &&
             (props.model.status as any) === 'AUTHORIZED' && (
-              <ExtrenalRequisitionRemoteStatus operationNumber={props.model.operationNumber} />
+              <ExtrenalRequisitionRemoteStatus operationNumber={props.model.operationNumber} uuid={props.model.uuid} />
             )}
         </Row>
         <Row className={styles.statusContainerRow}>

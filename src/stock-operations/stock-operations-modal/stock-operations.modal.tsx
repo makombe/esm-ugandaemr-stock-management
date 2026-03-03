@@ -123,6 +123,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
 
             quantityRequested: item.quantity,
             reasonForRequestedQuantity: item.reasonForRequestedQuantity,
+            genericConceptCode: item.genericConceptCode,
           })),
         });
       }
@@ -141,7 +142,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
       const errorMessages = extractErrorMessagesFromResponse(err);
       const message = errorMessages[0].replace(/[[\]]/g, '');
       showSnackbar({
-        title: t('stockOperationErrorTitle', 'Error on saving form'),
+        title: t('stockOperationErrorTitle', 'Failed to submit request'),
         subtitle: t('stockOperationErrorDescription', 'Details: {{message}}', {
           message,
         }),

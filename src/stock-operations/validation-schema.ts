@@ -186,21 +186,13 @@ export const getStockOperationItemFormSchema = (operationType: OperationType) =>
     case OperationType.OPENING_STOCK_OPERATION_TYPE:
       return baseStockOperationItemSchema.omit({ stockBatchUuid: true });
     case OperationType.REQUISITION_OPERATION_TYPE:
+    case OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE:
       return baseStockOperationItemSchema.omit({
         batchNo: true,
         stockBatchUuid: true,
         expiration: true,
         purchasePrice: true,
       });
-    case OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE:
-      return baseStockOperationItemSchema
-        .omit({
-          batchNo: true,
-          stockBatchUuid: true,
-          expiration: true,
-          purchasePrice: true,
-        })
-        .merge(externalRequisitionExtraFieldsSchema.pick({ reasonForRequestedQuantity: true }));
     case OperationType.ADJUSTMENT_OPERATION_TYPE:
       return baseStockOperationItemSchema
         .omit({
@@ -370,6 +362,6 @@ export const getStockOperationFormSchema = (operation: OperationType): z.Schema 
               .nonempty('You must add atleast one stock item'),
           }),
         )
-        .merge(externalRequisitionExtraFieldsSchema.pick({ requestType: true }));
+        .merge(externalRequisitionExtraFieldsSchema);
   }
 };

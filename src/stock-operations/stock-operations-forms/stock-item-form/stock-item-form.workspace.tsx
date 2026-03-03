@@ -58,17 +58,15 @@ const StockItemForm: React.FC<StockItemFormProps> = ({ stockOperationType, stock
   const { useItemCommonNameAsDisplay } = useConfig<ConfigObject>();
 
   const fields = baseSchema.keyof().options;
-  const form = useForm<z.infer<typeof formSchema> & Pick<ExternalRequisitionExtrafields, 'reasonForRequestedQuantity'>>(
-    {
-      resolver: zodResolver(formSchema),
-      defaultValues: {
-        ...stockOperationItem,
-        isOutOfStock: stockOperationItem.isOutOfStock || false,
-        quantity: stockOperationItem.quantity, // Preserve original quantity
-      },
-      mode: 'all',
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      ...stockOperationItem,
+      isOutOfStock: stockOperationItem.isOutOfStock || false,
+      quantity: stockOperationItem.quantity, // Preserve original quantity
     },
-  );
+    mode: 'all',
+  });
   const { t } = useTranslation();
   const { item } = useStockItem(form.getValues('stockItemUuid'));
 
@@ -341,31 +339,6 @@ const StockItemForm: React.FC<StockItemFormProps> = ({ stockOperationType, stock
                   invalidText={error?.message}
                   id={`purchaseprice`}
                   placeholder={t('purchasePrice', 'Purchase Price')}
-                />
-              )}
-            />
-          </Column>
-        )}
-
-        {operationTypePermision.requirePriority && (
-          <Column>
-            <Controller
-              control={form.control}
-              name="reasonForRequestedQuantity"
-              render={({ field, fieldState: { error } }) => (
-                <TextArea
-                  {...field}
-                  readOnly={field.disabled}
-                  disabled={false}
-                  maxCount={250}
-                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                    field.onChange(e.target.value);
-                  }}
-                  placeholder={t('enterReson', 'Enter reason') + ' ...'}
-                  id={'reason'}
-                  labelText={t('reasonForRequestedQuantity', 'Order Reason')}
-                  invalid={error?.message}
-                  invalidText={error?.message}
                 />
               )}
             />

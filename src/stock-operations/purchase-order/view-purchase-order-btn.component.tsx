@@ -7,7 +7,10 @@ import { type StockOperationDTO } from '../../core/api/types/stockOperation/Stoc
 import { useExternalRequisitionStation } from '../stock-operations.resource';
 
 const ViewPurchaseOrderAction: FC<{ stockOperation: StockOperationDTO }> = ({ stockOperation }) => {
-  const { error, status, isLoading } = useExternalRequisitionStation(stockOperation.operationNumber);
+  const { error, status, isLoading } = useExternalRequisitionStation(
+    stockOperation.operationNumber,
+    stockOperation.uuid,
+  );
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -22,7 +25,7 @@ const ViewPurchaseOrderAction: FC<{ stockOperation: StockOperationDTO }> = ({ st
 
   if (isLoading) return <InlineLoading />;
   if (error) return null;
-  if (status.status !== 'SUCCESS') return null;
+  if (status?.status !== 'SUCCESS') return null;
   return (
     <Button
       onClick={() => {

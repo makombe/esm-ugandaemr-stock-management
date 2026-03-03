@@ -6,9 +6,12 @@ import { formatDate } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 
-const ExtrenalRequisitionRemoteStatus: FC<Pick<StockOperationDTO, 'operationNumber'>> = ({ operationNumber }) => {
+const ExtrenalRequisitionRemoteStatus: FC<Pick<StockOperationDTO, 'operationNumber' | 'uuid'>> = ({
+  operationNumber,
+  uuid,
+}) => {
   const { t } = useTranslation();
-  const { error, status, isLoading } = useExternalRequisitionStation(operationNumber);
+  const { error, status, isLoading } = useExternalRequisitionStation(operationNumber, uuid);
 
   if (isLoading) return <InlineLoading />;
 

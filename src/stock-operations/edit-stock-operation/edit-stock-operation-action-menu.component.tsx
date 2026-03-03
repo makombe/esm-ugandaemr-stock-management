@@ -61,7 +61,7 @@ const EditStockOperationActionMenu: React.FC<EditStockOperationActionMenuProps> 
     return <InlineLoading status="active" iconDescription="Loading" />;
   }
 
-  if (operationTypesError || stockOperationError) {
+  if (operationTypesError || stockOperationError || fetchedStockOperation?.status !== 'NEW') {
     return <>--</>;
   }
 

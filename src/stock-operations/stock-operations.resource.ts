@@ -1,16 +1,18 @@
-import { type FetchResponse, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
+import { type FetchResponse, openmrsFetch, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
+import { useEffect, useMemo } from 'react';
 import useSWR from 'swr';
 import { type ResourceFilterCriteria, toQueryParams } from '../core/api/api';
 import { type PageableResult } from '../core/api/types/PageableResult';
 import { type InventoryGroupBy } from '../core/api/types/stockItem/StockItem';
+import { type StockItemInventory } from '../core/api/types/stockItem/StockItemInventory';
 import {
   type ExternalRequisitionPayload,
   type StopOperationAction,
 } from '../core/api/types/stockOperation/StockOperationAction';
 import { type StockOperationDTO } from '../core/api/types/stockOperation/StockOperationDTO';
-import { type StockOperationItemDtoSchema } from './validation-schema';
 import { type StockOperationItemCost } from '../core/api/types/stockOperation/StockOperationItemCost';
-import { type StockItemInventory } from '../core/api/types/stockItem/StockItemInventory';
+import { type StockOperationItemDtoSchema } from './validation-schema';
+import { useTranslation } from 'react-i18next';
 
 export interface StockOperationFilter extends ResourceFilterCriteria {
   status?: string | null | undefined;
@@ -214,15 +216,105 @@ export interface StatusResponseData {
   };
 }
 
-export function useExternalRequisitionStation(operationNumber: string) {
+export type LocalStatusResponse = {
+  uuid: string;
+  message: string;
+  status: string;
+  source: string;
+  dateCreated: string;
+  dateUpdated: string;
+  operationNumber: null;
+};
+
+export function useExternalRequisitionStation(operationNumber: string, operationUuid: string) {
+  const { t } = useTranslation();
+  // 1. Fetch Local Status
+  const localStatusUrl = `${restBaseUrl}/stockmanagement/externalrequisitionstatus/${operationUuid}`;
+  const {
+    data: localData,
+    isLoading: isLoadingLocal,
+    error: localError,
+    mutate: mutateLocalStatus,
+  } = useSWR<FetchResponse<LocalStatusResponse>>(localStatusUrl, async (url) => {
+    try {
+      const res = await openmrsFetch<LocalStatusResponse>(url);
+      return res;
+    } catch (err) {
+      return null;
+    }
+  });
+  const localStatus = useMemo(() => {
+    const data = localData?.data?.message ? JSON.parse(localData?.data?.message) : undefined;
+    return data as StatusResponse | undefined;
+  }, [localData]);
   const { error: facilityCodeError, facilityCode, isLoading: isloadingFacilityCode } = useFacilityCode();
-  const url = `${restBaseUrl}/kenyaemr/nlmis/requisition-status?sourceOrderId=${operationNumber}&facilityCode=${facilityCode}`;
-  const { data, error, isLoading } = useSWR<FetchResponse<StatusResponse>>(facilityCode ? url : null, openmrsFetch);
+  // 2. Determine if we need to hit the remote NLMIS API
+  const shouldFetchRemote = useMemo(() => {
+    if (isLoadingLocal || isloadingFacilityCode || !facilityCode) return false;
+
+    // Fetch if no local data exists, or if the local record indicates it's not finished
+    if (!localStatus) return true;
+    if (localStatus?.status === 'FAIL') return true;
+    if (localStatus?.data?.requisition?.status !== 'RELEASED') return true;
+
+    return false;
+  }, [facilityCode, isLoadingLocal, isloadingFacilityCode, localStatus]);
+
+  const remoteUrl = `${restBaseUrl}/kenyaemr/nlmis/requisition-status?sourceOrderId=${operationNumber}&facilityCode=${facilityCode}`;
+  const {
+    data: remoteData,
+    error: remoteError,
+    isLoading: isLoadingRemote,
+  } = useSWR<FetchResponse<StatusResponse>>(shouldFetchRemote ? remoteUrl : null, openmrsFetch);
+
+  // 3. The effective status: Remote data takes priority if it exists
+  const status = useMemo(() => remoteData?.data ?? localStatus, [remoteData, localStatus]);
+
+  // 4. Syncing Effect
+  useEffect(() => {
+    const remoteStatus = remoteData?.data;
+
+    // Logic: Sync if we have new remote data that differs from our local record
+    const hasNewData =
+      remoteStatus &&
+      (!localStatus ||
+        remoteStatus.data?.requisition?.submissionStatus !== localStatus.data?.requisition?.submissionStatus);
+    if (hasNewData) {
+      const status = remoteData?.data?.data?.requisition?.status ?? remoteData?.data.status;
+      openmrsFetch(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
+        method: 'POST',
+        body: {
+          uuid: operationUuid,
+          message: JSON.stringify(remoteStatus),
+          status,
+          source: remoteStatus.data?.sourceSystem,
+          operationNumber,
+        },
+        headers: { 'Content-Type': 'application/json' },
+      })
+        .then(() => {
+          // Force SWR to re-fetch local data so isLoadingLocal becomes true/false correctly
+          mutateLocalStatus();
+          showSnackbar({
+            title: t('syncComplete', 'Status Sync Complete'),
+            kind: 'success',
+            subtitle: t('syncWasSuccessful', 'Status Sync was successful'),
+          });
+        })
+        .catch((err) => {
+          showSnackbar({
+            title: t('syncError', 'Sync Error'),
+            kind: 'error',
+            subtitle: err?.message,
+          });
+        });
+    }
+  }, [remoteData, localStatus, operationUuid, t, localStatusUrl, mutateLocalStatus, operationNumber]);
 
   return {
-    isLoading: isLoading || isloadingFacilityCode,
-    error: error ?? facilityCodeError,
-    status: data?.data,
+    isLoading: isLoadingRemote || isloadingFacilityCode || isLoadingLocal,
+    error: remoteError ?? facilityCodeError ?? localError,
+    status,
   };
 }
 
