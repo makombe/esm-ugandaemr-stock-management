@@ -34,6 +34,7 @@ export enum OperationType {
   RECEIPT_OPERATION_TYPE = 'receipt',
   RETURN_OPERATION_TYPE = 'return',
   ADJUSTMENT_OPERATION_TYPE = 'adjustment',
+  LOSS_OPERATION_TYPE = 'loss',
 }
 
 export function operationFromString(str: string): OperationType | undefined {
@@ -49,13 +50,15 @@ export function operationFromString(str: string): OperationType | undefined {
   if (str === OperationType.OPENING_STOCK_OPERATION_TYPE) return OperationType.OPENING_STOCK_OPERATION_TYPE;
   if (str === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE)
     return OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE;
+  if (str === OperationType.LOSS_OPERATION_TYPE) return OperationType.LOSS_OPERATION_TYPE;
 }
 
 export const StockOperationTypeRequiresStockAdjustmentReason = (operationType: OperationType) => {
   return (
     operationType === OperationType.ADJUSTMENT_OPERATION_TYPE ||
     operationType === OperationType.STOCK_TAKE_OPERATION_TYPE ||
-    operationType === OperationType.DISPOSED_OPERATION_TYPE
+    operationType === OperationType.DISPOSED_OPERATION_TYPE ||
+    operationType === OperationType.LOSS_OPERATION_TYPE
   );
 };
 
