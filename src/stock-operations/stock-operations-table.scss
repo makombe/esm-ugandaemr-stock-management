@@ -114,3 +114,15 @@
   @include type.type-style('body-02');
   margin: layout.$spacing-05 0;
 }
+
+.operationNumberCell {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 100rem;
+  min-width: 13rem;
+
+  word-break: break-all;
+  overflow-wrap: break-word;
+}

@@ -123,7 +123,9 @@ const StockOperations: React.FC<StockOperationsTableProps> = () => {
           key: `key-${stockOperation?.uuid}`,
           operationTypeName: `${stockOperation?.operationTypeName}`,
           operationNumber: (
-            <EditStockOperationActionMenu stockOperation={stockOperation} showIcon={false} showprops={true} />
+            <div className={styles.operationNumberCell}>
+              <EditStockOperationActionMenu stockOperation={stockOperation} showIcon={false} showprops={true} />
+            </div>
           ),
           stockOperationItems: {
             commonNames,
