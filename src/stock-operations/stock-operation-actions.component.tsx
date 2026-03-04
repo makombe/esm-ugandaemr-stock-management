@@ -55,8 +55,12 @@ const StockoperationActions: React.FC<Props> = ({ stockOperation, stockOperation
                 <StockOperationApproveDispatchButton operation={stockOperation} />
               )}
 
-              <StockOperationRejectButton operation={stockOperation} />
-              <StockOperationReturnButton operation={stockOperation} />
+              {operationType !== OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE && (
+                <>
+                  <StockOperationRejectButton operation={stockOperation} />
+                  <StockOperationReturnButton operation={stockOperation} />
+                </>
+              )}
               <StockOperationCancelButton operation={stockOperation} />
             </>
           )}
