@@ -318,9 +318,12 @@ export function useExternalRequisitionStation(operationNumber: string, operation
   };
 }
 
-export const useProgramCode = () => {
+export const useProgramCode = (enabled = true) => {
   const url = `${restBaseUrl}/kenyaemr/nlmis/programs`;
-  const { data, error, isLoading } = useSWR<FetchResponse<Array<{ id: string; code?: string }>>>(url, openmrsFetch);
+  const { data, error, isLoading } = useSWR<FetchResponse<Array<{ id: string; code?: string }>>>(
+    enabled ? url : null,
+    openmrsFetch,
+  );
   return {
     isLoading,
     error,
@@ -328,9 +331,12 @@ export const useProgramCode = () => {
   };
 };
 
-export const useProcessingPeriod = () => {
+export const useProcessingPeriod = (enabled = true) => {
   const url = `${restBaseUrl}/kenyaemr/nlmis/processing-periods`;
-  const { data, error, isLoading } = useSWR<FetchResponse<{ content: Array<{ id: string }> }>>(url, openmrsFetch);
+  const { data, error, isLoading } = useSWR<FetchResponse<{ content: Array<{ id: string }> }>>(
+    enabled ? url : null,
+    openmrsFetch,
+  );
   return {
     isLoading,
     error,
@@ -338,9 +344,9 @@ export const useProcessingPeriod = () => {
   };
 };
 
-export const useProgramCodeAndProcessingPeriod = () => {
-  const { error: programError, isLoading: isLoadingProgramCode, programCode } = useProgramCode();
-  const { error: periodError, isLoading: isLoadingPeriod, processingPeriod } = useProcessingPeriod();
+export const useProgramCodeAndProcessingPeriod = (enabled = true) => {
+  const { error: programError, isLoading: isLoadingProgramCode, programCode } = useProgramCode(enabled);
+  const { error: periodError, isLoading: isLoadingPeriod, processingPeriod } = useProcessingPeriod(enabled);
   return {
     isLoading: isLoadingPeriod || isLoadingProgramCode,
     error: periodError ?? programError,

@@ -39,12 +39,13 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
   const [notes, setNotes] = useState('');
   const [isApproving, setIsApproving] = useState(false);
   const { error, facilityCode, isLoading } = useFacilityCode();
+  const isExternalRequisition = operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE;
   const {
     error: periodOrProgramError,
     isLoading: isLoadingProgramAndPeriod,
     processingPeriod,
     programCode,
-  } = useProgramCodeAndProcessingPeriod();
+  } = useProgramCodeAndProcessingPeriod(isExternalRequisition);
 
   const handleClick = async (event) => {
     event.preventDefault();
@@ -95,7 +96,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
     };
 
     try {
-      if (operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE) {
+      if (isExternalRequisition) {
         await submitExternalRequisition({
           sourceOrderId: operation.operationNumber,
           // rnrId: operation.uuid,
@@ -154,7 +155,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
     }
   };
 
-  if (isLoading || isLoadingProgramAndPeriod)
+  if (isExternalRequisition && (isLoading || isLoadingProgramAndPeriod)) {
     return (
       <div>
         <ModalHeader closeModal={closeModal} title={t('operationModalTitle', '{{title}} Operation', { title })} />
@@ -163,14 +164,16 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
         </ModalBody>
       </div>
     );
+  }
 
-  if (error || periodOrProgramError)
+  if (isExternalRequisition && (error || periodOrProgramError)) {
     return (
       <ErrorState
         headerTitle={t('errorFetchingFacilityCode', 'Error retreiving facility code')}
         error={error ?? periodOrProgramError}
       />
     );
+  }
 
   return (
     <div>
