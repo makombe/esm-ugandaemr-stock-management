@@ -17,8 +17,14 @@ const StockOperationReasonSelector: React.FC<StockOperationReasonSelectorProps> 
   stockOperationType,
   adjustmentType,
 }) => {
-  const { stockAdjustmentReasonUUID, stockNegativeReasonUuid, stockPositiveReasonUuid, stockTakeReasonUUID } =
-    useConfig<ConfigObject>();
+  const {
+    stockAdjustmentReasonUUID,
+    stockNegativeReasonUuid,
+    stockPositiveReasonUuid,
+    stockTakeReasonUUID,
+    stockDisposalReasonUUID,
+    stockLossReasonUUID,
+  } = useConfig<ConfigObject>();
 
   const getOperationReasonUUID = () => {
     if (stockOperationType === OperationType.STOCK_TAKE_OPERATION_TYPE) {
@@ -26,6 +32,12 @@ const StockOperationReasonSelector: React.FC<StockOperationReasonSelectorProps> 
     }
     if (stockOperationType === 'adjustment' && adjustmentType) {
       return adjustmentType === 'positive' ? stockPositiveReasonUuid : stockNegativeReasonUuid;
+    }
+    if (stockOperationType === OperationType.DISPOSED_OPERATION_TYPE) {
+      return stockDisposalReasonUUID;
+    }
+    if (stockOperationType === OperationType.LOSS_OPERATION_TYPE) {
+      return stockLossReasonUUID;
     }
     return stockAdjustmentReasonUUID;
   };
