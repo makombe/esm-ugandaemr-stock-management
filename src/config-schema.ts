@@ -45,6 +45,16 @@ export const configSchema = {
     _description: 'UUID for the stock take reasons',
     _default: '47f0825e-8648-47c2-b847-d3197ed6bb72',
   },
+  stockDisposalReasonUUID: {
+    _type: Type.ConceptUuid,
+    _description: 'UUID for the stock disposal reasons',
+    _default: 'c1ae6854-a115-46ab-9a8e-3a06ef17057d',
+  },
+  stockLossReasonUUID: {
+    _type: Type.ConceptUuid,
+    _description: 'UUID for the stock loss reasons',
+    _default: '7bb3d247-f4c6-4dc7-99a3-003c3174c4d5',
+  },
   stockSourceTypeUUID: {
     _type: Type.ConceptUuid,
     _description: 'UUID for the stock source types',
@@ -102,5 +112,7 @@ export type ConfigObject = {
     alt: string;
     name: string;
   };
-  stockTakeReasonUUID;
+  stockTakeReasonUUID: string;
+  stockDisposalReasonUUID: string;
+  stockLossReasonUUID: string;
 };
