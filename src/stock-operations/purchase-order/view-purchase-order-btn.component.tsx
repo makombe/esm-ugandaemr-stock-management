@@ -23,7 +23,7 @@ const ViewPurchaseOrderAction: FC<{ stockOperation: StockOperationDTO }> = ({ st
     }
   }, [error, t]);
 
-  if (isLoading) return <InlineLoading />;
+  if (isLoading) return null;
   if (error) return null;
   if (status?.status !== 'SUCCESS') return null;
   return (

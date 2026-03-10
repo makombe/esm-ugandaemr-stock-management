@@ -6,6 +6,9 @@ import {
   type StockOperationType,
   StockOperationTypeHasPrint,
 } from '../core/api/types/stockOperation/StockOperationType';
+import ViewPurchaseOrderAction from './purchase-order/view-purchase-order-btn.component';
+import useOperationTypePermisions from './stock-operations-forms/hooks/useOperationTypePermisions';
+import { StockOperationRetryButton } from './stock-operations-modal/stock-operation-retry-button.component';
 import StockOperationApprovalButton from './stock-operations-modal/stock-operations-approve-button.component';
 import StockOperationApproveDispatchButton from './stock-operations-modal/stock-operations-approve-dispatch-button.component';
 import StockOperationCancelButton from './stock-operations-modal/stock-operations-cancel-button.component';
@@ -14,9 +17,8 @@ import StockOperationIssueStockButton from './stock-operations-modal/stock-opera
 import StockOperationPrintButton from './stock-operations-modal/stock-operations-print-button.component';
 import StockOperationRejectButton from './stock-operations-modal/stock-operations-reject-button.component';
 import StockOperationReturnButton from './stock-operations-modal/stock-operations-return-button.component';
-import useOperationTypePermisions from './stock-operations-forms/hooks/useOperationTypePermisions';
 import styles from './stock-operations-table.scss';
-import ViewPurchaseOrderAction from './purchase-order/view-purchase-order-btn.component';
+import { StockOperationEditRequisitionButton } from './stock-operations-modal/stock-operation-edit-requisition-btn.component';
 
 type Props = {
   stockOperation: StockOperationDTO;
@@ -35,7 +37,9 @@ const StockoperationActions: React.FC<Props> = ({ stockOperation, stockOperation
         operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE &&
         (stockOperation.status as any) === 'AUTHORIZED' && (
           <>
+            <StockOperationRetryButton operation={stockOperation} />
             <ViewPurchaseOrderAction stockOperation={stockOperation} />
+            <StockOperationEditRequisitionButton operation={stockOperation} />
           </>
         )}
       {((!stockOperation.permission?.canEdit &&

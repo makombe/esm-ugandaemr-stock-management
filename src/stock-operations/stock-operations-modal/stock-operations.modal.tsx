@@ -1,23 +1,24 @@
+import { Button, Form, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextArea } from '@carbon/react';
+import { ErrorState, getCoreTranslation, openmrsFetch, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
+import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextArea } from '@carbon/react';
-import { ErrorState, getCoreTranslation, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
-import { type StockOperationDTO } from '../../core/api/types/stockOperation/StockOperationDTO';
+import { extractErrorMessagesFromResponse } from '../../constants';
 import {
   type StopOperationAction,
   type StopOperationActionType,
 } from '../../core/api/types/stockOperation/StockOperationAction';
+import { type StockOperationDTO } from '../../core/api/types/stockOperation/StockOperationDTO';
+import { OperationType } from '../../core/api/types/stockOperation/StockOperationType';
+import { handleMutate } from '../../utils';
 import {
   executeStockOperationAction,
+  type LocalStatusResponse,
   submitExternalRequisition,
   useFacilityCode,
   useProgramCodeAndProcessingPeriod,
 } from '../stock-operations.resource';
-import { extractErrorMessagesFromResponse } from '../../constants';
-import { handleMutate } from '../../utils';
 import styles from './stock-operations.scss';
-import { OperationType } from '../../core/api/types/stockOperation/StockOperationType';
-import dayjs from 'dayjs';
 
 interface StockOperationsModalProps {
   title: string;
@@ -97,7 +98,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
 
     try {
       if (isExternalRequisition) {
-        await submitExternalRequisition({
+        submitExternalRequisition({
           sourceOrderId: operation.operationNumber,
           // rnrId: operation.uuid,
           facilityCode: facilityCode,
@@ -126,7 +127,43 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
             reasonForRequestedQuantity: item.reasonForRequestedQuantity,
             genericConceptCode: item.genericConceptCode,
           })),
-        });
+        })
+          .then(({ data }) => {
+            showSnackbar({
+              title: t('success', 'Success'),
+              subtitle: t('requisitionSubmittedSuccessfully', 'Requisition Submitted Successfully to nlmis'),
+              kind: 'success',
+            });
+            return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
+              method: 'POST',
+              body: {
+                uuid: operation.uuid,
+                message: JSON.stringify(data),
+                status: data.status,
+                source: 'NLMIS',
+                operationNumber: operation.operationNumber,
+              },
+              headers: { 'Content-Type': 'application/json' },
+            });
+          })
+          .then(({ data }) => {
+            showSnackbar({
+              title: t('success', 'Success'),
+              subtitle: t('requisitionStatusUpdatedSuccessfully', 'Requisition Status Updated Successfully from nlmis'),
+              kind: 'success',
+            });
+          })
+          .catch((err) => {
+            const errorMessages = extractErrorMessagesFromResponse(err);
+            const message = errorMessages[0].replace(/[[\]]/g, '');
+            showSnackbar({
+              title: t('submissionFailed', 'Submission Failed'),
+              subtitle: t('submissionFailedDetails', 'Details: {{message}}', {
+                message,
+              }),
+              kind: 'error',
+            });
+          });
       }
       // submit action
       await executeStockOperationAction(payload);

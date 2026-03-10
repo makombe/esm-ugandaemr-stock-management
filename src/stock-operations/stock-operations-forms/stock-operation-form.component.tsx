@@ -81,7 +81,7 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
   const { autoPopulateResponsiblePerson } = useConfig<ConfigObject>();
   const { error, items: _stockOperation, isLoading } = useStockOperationAndItems(stockRequisitionUuid);
 
-  const form = useForm<StockOperationItemDtoSchema & Pick<ExternalRequisitionExtrafields, 'requestType'>>({
+  const form = useForm<StockOperationItemDtoSchema & ExternalRequisitionExtrafields>({
     defaultValues: {
       responsiblePersonUuid:
         stockOperation?.responsiblePersonUuid ?? // if person uuid exist, make it default
@@ -105,7 +105,10 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
         ) ?? [],
       sourceUuid: stockOperation?.sourceUuid ?? defaultValues?.sourceUuid ?? '',
       destinationUuid: stockOperation?.destinationUuid ?? defaultValues?.destinationUuid ?? '',
-      requestType: operationTypePermision.requirePriority ? 'REGULAR' : undefined,
+      requestType: operationTypePermision.requirePriority ? stockOperation?.requestType ?? 'REGULAR' : undefined,
+      reasonForRequestedQuantity: operationTypePermision.requirePriority
+        ? stockOperation?.stockOperationItems?.at(0)?.reasonForRequestedQuantity ?? ''
+        : undefined,
     },
     mode: 'all',
     values: stockRequisitionUuid

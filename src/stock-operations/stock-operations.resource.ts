@@ -1,6 +1,6 @@
 import { type FetchResponse, openmrsFetch, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
 import { useEffect, useMemo } from 'react';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { type ResourceFilterCriteria, toQueryParams } from '../core/api/api';
 import { type PageableResult } from '../core/api/types/PageableResult';
 import { type InventoryGroupBy } from '../core/api/types/stockItem/StockItem';
@@ -265,6 +265,7 @@ export function useExternalRequisitionStation(operationNumber: string, operation
     data: remoteData,
     error: remoteError,
     isLoading: isLoadingRemote,
+    mutate: mutateRemoteStatus,
   } = useSWR<FetchResponse<StatusResponse>>(shouldFetchRemote ? remoteUrl : null, openmrsFetch);
 
   // 3. The effective status: Remote data takes priority if it exists
@@ -315,6 +316,11 @@ export function useExternalRequisitionStation(operationNumber: string, operation
     isLoading: isLoadingRemote || isloadingFacilityCode || isLoadingLocal,
     error: remoteError ?? facilityCodeError ?? localError,
     status,
+    facilityCode,
+    mutate: () => {
+      mutateLocalStatus();
+      mutateRemoteStatus();
+    },
   };
 }
 
@@ -357,7 +363,7 @@ export const useProgramCodeAndProcessingPeriod = (enabled = true) => {
 export function submitExternalRequisition(payload: ExternalRequisitionPayload) {
   const apiUrl = `${restBaseUrl}/kenyaemr/hmis-requisition/submit`;
   const abortController = new AbortController();
-  return openmrsFetch(apiUrl, {
+  return openmrsFetch<StatusResponse>(apiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
