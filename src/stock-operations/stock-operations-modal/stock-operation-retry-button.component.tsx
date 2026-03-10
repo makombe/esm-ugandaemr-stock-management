@@ -1,0 +1,112 @@
+import { Button, InlineLoading } from '@carbon/react';
+import { Restart } from '@carbon/react/icons';
+import { openmrsFetch, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
+import dayjs from 'dayjs';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { StockOperationDTO } from '../../core/api/types/stockOperation/StockOperationDTO';
+import {
+  type LocalStatusResponse,
+  submitExternalRequisition,
+  useExternalRequisitionStation,
+  useProgramCodeAndProcessingPeriod,
+} from '../stock-operations.resource';
+import { extractErrorMessagesFromResponse } from '../../constants';
+
+export const StockOperationRetryButton: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
+  const { t } = useTranslation();
+  const [submitting, setSubmitting] = useState(false);
+  const { isLoading, status, facilityCode, mutate } = useExternalRequisitionStation(
+    operation.operationNumber,
+    operation.uuid,
+  );
+  const {
+    isLoading: isLoadingProgramAndPeriod,
+    processingPeriod,
+    programCode,
+  } = useProgramCodeAndProcessingPeriod(true);
+  const handleRetry = () => {
+    setSubmitting(true);
+    submitExternalRequisition({
+      sourceOrderId: operation.operationNumber,
+      // rnrId: operation.uuid,
+      facilityCode: facilityCode,
+      programCode,
+      periodId: processingPeriod,
+      clientSubmitedTime: dayjs().toISOString(),
+      sourceApplication: 'KenyaEMR',
+      emergency: operation.requestType === 'EMERGENCY' ? true : false,
+      status: 'AUTHORIZED',
+      products: operation.stockOperationItems.map((item) => ({
+        productCode: item.etcdProductId,
+        quantityDispensed: operation?.quantityDispensed ?? 805,
+        quantityReceived: operation.quantityReceived ?? 942,
+        beginningBalance: operation?.beginningBalance ?? 81,
+        stockInHand: operation?.stockInHand ?? 216,
+        stockOutDays: operation?.stockOutDays ?? 0,
+        lossesAndAdjustments: [
+          {
+            quantity: 2,
+            typeCode: 'EXP',
+            typeName: 'Expired',
+          },
+        ],
+
+        quantityRequested: item.quantity,
+        reasonForRequestedQuantity: item.reasonForRequestedQuantity,
+        genericConceptCode: item.genericConceptCode,
+      })),
+    })
+      .then(({ data }) => {
+        showSnackbar({
+          title: t('success', 'Success'),
+          subtitle: t('requisitionSubmittedSuccessfully', 'Requisition Submitted Successfully to nlmis'),
+          kind: 'success',
+        });
+        return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
+          method: 'POST',
+          body: {
+            uuid: operation.uuid,
+            message: JSON.stringify(data),
+            status: data.status,
+            source: 'NLMIS',
+            operationNumber: operation.operationNumber,
+          },
+          headers: { 'Content-Type': 'application/json' },
+        });
+      })
+      .then(({ data }) => {
+        showSnackbar({
+          title: t('success', 'Success'),
+          subtitle: t('requisitionStatusUpdatedSuccessfully', 'Requisition Status Updated Successfully from nlmis'),
+          kind: 'success',
+        });
+      })
+      .catch((err) => {
+        const errorMessages = extractErrorMessagesFromResponse(err);
+        const message = errorMessages[0].replace(/[[\]]/g, '');
+        showSnackbar({
+          title: t('submissionFailed', 'Submission Failed'),
+          subtitle: t('submissionFailedDetails', 'Details: {{message}}', {
+            message,
+          }),
+          kind: 'error',
+        });
+      })
+      .finally(() => {
+        setSubmitting(false);
+        mutate();
+      });
+  };
+
+  if (isLoading || isLoadingProgramAndPeriod || submitting) {
+    return <InlineLoading description={t('loading', 'Loading...')} />;
+  }
+
+  if (status.status !== 'FAIL') return null;
+  return (
+    <Button onClick={handleRetry} renderIcon={Restart} kind="tertiary">
+      {t('retry', 'Retry')}
+    </Button>
+  );
+};

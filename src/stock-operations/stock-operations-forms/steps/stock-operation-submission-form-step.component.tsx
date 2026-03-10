@@ -33,7 +33,13 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
 }) => {
   const { t } = useTranslation();
   const operationTypePermision = useOperationTypePermisions(stockOperationType);
-  const editable = useMemo(() => !stockOperation || stockOperation.status === 'NEW', [stockOperation]);
+  const editable = useMemo(
+    () =>
+      !stockOperation ||
+      stockOperation.status === 'NEW' ||
+      stockOperation.operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE,
+    [stockOperation],
+  );
   const form = useFormContext<StockOperationItemDtoSchema & ExternalRequisitionExtrafields>();
   const [approvalRequired, setApprovalRequired] = useState<boolean | null>(
     stockOperation?.approvalRequired || operationTypePermision.requirePriority,
