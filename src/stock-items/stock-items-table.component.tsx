@@ -32,6 +32,7 @@ import AddStockItemsBulktImportActionButton from './add-bulk-stock-item/add-stoc
 import EditStockItemActionsMenu from './edit-stock-item/edit-stock-item-action-menu.component';
 import FilterStockItems from './components/filter-stock-items/filter-stock-items.component';
 import styles from './stock-items-table.scss';
+import StockAvailability from '../stock-operations/stock-operations-forms/steps/stock-availability-cell.component';
 
 interface StockItemsTableProps {
   from?: string;
@@ -95,21 +96,26 @@ const StockItemsTableComponent: React.FC<StockItemsTableProps> = () => {
       },
       {
         id: 4,
+        header: t('stockAvailability', 'Stock Availability'),
+        key: 'stockAvailability',
+      },
+      {
+        id: 5,
         header: t('dispensingUnitName', 'Dispensing UoM'),
         key: 'dispensingUnitName',
       },
       {
-        id: 5,
+        id: 6,
         header: t('defaultStockOperationsUoMName', 'Bulk Packaging'),
         key: 'defaultStockOperationsUoMName',
       },
       {
-        id: 6,
+        id: 7,
         header: t('reorderLevel', 'Reorder Level'),
         key: 'reorderLevel',
       },
       {
-        id: 7,
+        id: 8,
         header: t('actions', 'Actions'),
         key: 'actions',
       },
@@ -127,6 +133,7 @@ const StockItemsTableComponent: React.FC<StockItemsTableProps> = () => {
       genericName: <EditStockItemActionsMenu data={items[index]} />,
       commonName: stockItem?.commonName,
       tradeName: stockItem?.drugUuid ? stockItem?.conceptName : '',
+      stockAvailability: <StockAvailability stockItemUuid={stockItem?.uuid} />,
       preferredVendorName: stockItem?.preferredVendorName,
       dispensingUoM: stockItem?.defaultStockOperationsUoMName,
       dispensingUnitName: stockItem?.dispensingUnitName,

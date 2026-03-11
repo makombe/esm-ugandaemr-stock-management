@@ -311,6 +311,7 @@
   "startDate": "Start Date",
   "started": "Started",
   "status": "Status",
+  "stockAvailability": "Stock Availability",
   "stockAvailabilityError": "Error loading stock availability",
   "stockCard": "Stock Card",
   "stockIssueError": "StockIssue error",
