@@ -10,6 +10,7 @@ export const launchStockoperationAddOrEditWorkSpace = (
   stockOperation?: StockOperationDTO,
   stockRequisitionUuid?: string, // Only supplied on stock issue (when workspace is launched for stock issue)
   defaultValues?: Partial<StockOperationDTO>,
+  externalRequsitionUuid?: string, // Only supplied when launching receipt from purchase id
 ) => {
   launchWorkspace('stock-operation-form-workspace', {
     workspaceTitle: stockOperation
@@ -23,6 +24,7 @@ export const launchStockoperationAddOrEditWorkSpace = (
     stockOperation: stockOperation,
     stockRequisitionUuid: stockRequisitionUuid,
     defaultValues,
+    externalRequsitionUuid,
   });
 };
 

@@ -14,9 +14,10 @@ type PurchaseOrderModalProps = {
   onClose?: () => void;
   status?: StatusResponse;
   stockOperation?: StockOperationDTO;
+  delivered?: boolean;
 };
 
-const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stockOperation }) => {
+const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stockOperation, delivered }) => {
   const { t } = useTranslation();
   const requisition = status?.data?.requisition;
   const items = requisition?.items || [];
@@ -41,6 +42,7 @@ const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stoc
       undefined,
       undefined,
       receiptPayload as unknown as Partial<StockOperationDTO>,
+      stockOperation?.uuid,
     );
     onClose?.();
   };
@@ -102,7 +104,7 @@ const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stoc
           <Button
             onClick={onReceipt}
             className={styles.btn}
-            disabled={status?.data?.requisition?.status !== 'RELEASED'}
+            disabled={status?.data?.requisition?.status !== 'RELEASED' || delivered}
           >
             {t('receipt', 'Receipt')}
           </Button>
