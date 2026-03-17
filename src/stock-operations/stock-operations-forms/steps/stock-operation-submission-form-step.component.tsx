@@ -3,8 +3,13 @@ import { Button, Column, InlineLoading, RadioButton, RadioButtonGroup, Stack } f
 import { ArrowLeft, ArrowRight, Departure, ListChecked, Save, SendFilled } from '@carbon/react/icons';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
-import { createStockOperation, deleteStockOperationItem, updateStockOperation } from '../../stock-operations.resource';
+import { openmrsFetch, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
+import {
+  createStockOperation,
+  deleteStockOperationItem,
+  type LocalStatusResponse,
+  updateStockOperation,
+} from '../../stock-operations.resource';
 import { extractErrorMessagesFromResponse } from '../../../constants';
 import { handleMutate } from '../../../utils';
 import { OperationType, type StockOperationType } from '../../../core/api/types/stockOperation/StockOperationType';
@@ -22,6 +27,7 @@ type StockOperationSubmissionFormStepProps = {
   stockOperationType: StockOperationType;
   onNext?: () => void;
   dismissWorkspace?: () => void;
+  externalRequsitionUuid?: string;
 };
 
 const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormStepProps> = ({
@@ -30,6 +36,7 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
   stockOperation,
   onNext,
   dismissWorkspace,
+  externalRequsitionUuid,
 }) => {
   const { t } = useTranslation();
   const operationTypePermision = useOperationTypePermisions(stockOperationType);
@@ -131,8 +138,33 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
         throw error;
       }
     })(); // Call handleSubmit to trigger validation and submission
+    // Update externa requisition status to RECEIVED
+    if (externalRequsitionUuid) {
+      try {
+        await openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
+          method: 'POST',
+          body: {
+            uuid: externalRequsitionUuid,
+            receiptNumber: result.operationNumber,
+            deliveryStatus: 'RECEIVED',
+          },
+          headers: { 'Content-Type': 'application/json' },
+        });
+        showSnackbar({
+          title: t('success', 'Success'),
+          subtitle: t('requisitionStatusUpdatedSuccessfully', 'Requisition Status Updated Successfully to RECEIVED'),
+          kind: 'success',
+        });
+      } catch (error) {
+        showSnackbar({
+          title: t('externalRequisitionStatusUpdateFailed', 'Failed to update external requisition status'),
+          subtitle: error?.message,
+          kind: 'error',
+        });
+      }
+    }
     return result; // Return the result after handleSubmit completes
-  }, [form, stockOperation, t, approvalRequired, isStockIssueOperation, dismissWorkspace]);
+  }, [form, stockOperation, t, approvalRequired, isStockIssueOperation, dismissWorkspace, externalRequsitionUuid]);
 
   const handleComplete = useCallback(() => {
     handleSave().then((operation) => {

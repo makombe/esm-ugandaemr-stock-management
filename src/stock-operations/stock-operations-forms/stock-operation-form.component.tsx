@@ -45,6 +45,7 @@ type StockOperationFormProps = DefaultWorkspaceProps & {
   stockOperationType: StockOperationType;
   stockRequisitionUuid?: string;
   defaultValues?: Partial<StockOperationDTO>;
+  externalRequsitionUuid?: string;
 };
 
 const StockOperationForm: React.FC<StockOperationFormProps> = ({
@@ -53,6 +54,7 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
   stockRequisitionUuid,
   closeWorkspace,
   defaultValues,
+  externalRequsitionUuid,
 }) => {
   const { t } = useTranslation();
   const operationType = useMemo(() => {
@@ -202,6 +204,7 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
             onPrevious={() => setSelectedIndex(1)}
             onNext={showReceivedItems ? () => setSelectedIndex(3) : undefined}
             dismissWorkspace={closeWorkspace}
+            externalRequsitionUuid={externalRequsitionUuid}
           />
         ),
         disabled: !stockOperation,
@@ -221,10 +224,11 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
     stockOperation,
     stockOperationType,
     t,
-    operationTypePermision,
-    showReceivedItems,
     handleLaunchStockItem,
+    operationTypePermision?.requiresDispatchAcknowledgement,
+    showReceivedItems,
     closeWorkspace,
+    externalRequsitionUuid,
   ]);
 
   const [selectedIndex, setSelectedIndex] = useState(0);

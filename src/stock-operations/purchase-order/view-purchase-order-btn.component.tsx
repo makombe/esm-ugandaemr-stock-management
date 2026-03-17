@@ -7,7 +7,7 @@ import { type StockOperationDTO } from '../../core/api/types/stockOperation/Stoc
 import { useExternalRequisitionStation } from '../stock-operations.resource';
 
 const ViewPurchaseOrderAction: FC<{ stockOperation: StockOperationDTO }> = ({ stockOperation }) => {
-  const { error, status, isLoading } = useExternalRequisitionStation(
+  const { error, status, isLoading, deliveryStatus } = useExternalRequisitionStation(
     stockOperation.operationNumber,
     stockOperation.uuid,
   );
@@ -32,6 +32,7 @@ const ViewPurchaseOrderAction: FC<{ stockOperation: StockOperationDTO }> = ({ st
         const dismiss = showModal('stock-operation-purchase-order-modal', {
           stockOperation,
           status,
+          delivered: deliveryStatus === 'RECEIVED',
           onClose: () => dismiss(),
         });
       }}
