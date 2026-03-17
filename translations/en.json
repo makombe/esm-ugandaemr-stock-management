@@ -140,6 +140,7 @@
   "expiringStock": "Expiring stock",
   "expiry": "Expiry",
   "expiryNoticeDays": "Expiration Notice (days)",
+  "externalRequisitionStatusUpdateFailed": "Failed to update external requisition status",
   "fetchPurchaseOrderFailed": "Failed to fetch purchase order status",
   "filter": "Filter...",
   "filterByLocation": "Filter by Location",
