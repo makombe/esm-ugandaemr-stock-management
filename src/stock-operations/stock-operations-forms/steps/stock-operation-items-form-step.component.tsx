@@ -16,7 +16,11 @@ import { useTranslation } from 'react-i18next';
 import { type StockOperationDTO } from '../../../core/api/types/stockOperation/StockOperationDTO';
 import { type StockOperationType, OperationType } from '../../../core/api/types/stockOperation/StockOperationType';
 import { getStockOperationUniqueId } from '../../stock-operation.utils';
-import { type BaseStockOperationItemFormData, type StockOperationItemDtoSchema } from '../../validation-schema';
+import {
+  type SchemaOptions,
+  type BaseStockOperationItemFormData,
+  type StockOperationItemDtoSchema,
+} from '../../validation-schema';
 import useOperationTypePermisions from '../hooks/useOperationTypePermisions';
 import StockItemSearch from '../input-components/stock-item-search.component';
 import QuantityUomCell from './quantity-uom-cell.component';
@@ -34,6 +38,7 @@ type StockOperationItemsFormStepProps = {
   onNext?: () => void;
   onPrevious?: () => void;
   onLaunchItemsForm?: (stockOperationItem?: BaseStockOperationItemFormData) => void;
+  schemaOptions?: SchemaOptions;
 };
 const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = ({
   stockOperationType,
@@ -41,14 +46,28 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
   onNext,
   onPrevious,
   onLaunchItemsForm,
+  schemaOptions,
 }) => {
   const { t } = useTranslation();
   const operationTypePermision = useOperationTypePermisions(stockOperationType);
+  const isNewBatchMode = schemaOptions?.positiveAdjustmentType === 'new_batch';
+  const isPositiveAdjustment = schemaOptions?.adjustmentType === 'positive';
+  const effectivePermission = useMemo(
+    () => ({
+      ...operationTypePermision,
+      requiresActualBatchInfo:
+        isPositiveAdjustment && isNewBatchMode ? true : operationTypePermision.requiresActualBatchInfo,
+      requiresBatchUuid: isPositiveAdjustment && isNewBatchMode ? false : operationTypePermision.requiresBatchUuid,
+    }),
+    [operationTypePermision, isNewBatchMode, isPositiveAdjustment],
+  );
+
   const uniqueId = useId();
 
   const form = useFormContext<StockOperationItemDtoSchema>();
   const observableOperationItems = form.watch('stockOperationItems');
   const isStockIssueOperation = stockOperationType?.operationType === OperationType.STOCK_ISSUE_OPERATION_TYPE;
+  const isAdjustmentOperation = stockOperationType?.operationType === OperationType.ADJUSTMENT_OPERATION_TYPE;
 
   const headers = useMemo(() => {
     return [
@@ -62,7 +81,7 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
         header: t('itemDetails', 'Item Details'),
         styles: { width: '20% !important' },
       },
-      ...(operationTypePermision.requiresBatchUuid || operationTypePermision.requiresActualBatchInfo
+      ...(effectivePermission.requiresBatchUuid || effectivePermission.requiresActualBatchInfo
         ? [
             {
               key: 'batch',
@@ -71,7 +90,7 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
             },
           ]
         : []),
-      ...(operationTypePermision.requiresActualBatchInfo
+      ...(effectivePermission.requiresActualBatchInfo
         ? [
             {
               key: 'expiry',
@@ -79,7 +98,7 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
             },
           ]
         : []),
-      ...(operationTypePermision.requiresBatchUuid
+      ...(effectivePermission.requiresBatchUuid
         ? [
             {
               key: 'expiry',
@@ -96,7 +115,7 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
         key: 'quantityuom',
         header: t('quantityUom', 'Qty UoM'),
       },
-      ...(operationTypePermision.requiresBatchUuid || operationTypePermision.requiresActualBatchInfo
+      ...(effectivePermission.requiresBatchUuid || effectivePermission.requiresActualBatchInfo
         ? [
             {
               key: 'brand',
@@ -115,7 +134,7 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
         : []),
       { key: 'actions', header: t('actions', 'Actions') },
     ];
-  }, [operationTypePermision, t]);
+  }, [operationTypePermision, t, effectivePermission]);
 
   const tableRows = useMemo(() => {
     return observableOperationItems?.map((item, index) => {
@@ -203,46 +222,51 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
 
     if (!valid) {
       const errors = form.formState.errors;
+      const items = observableOperationItems ?? [];
 
-      // Check if we have items
-      if (!observableOperationItems || observableOperationItems.length === 0) {
+      // ── No items at all ─────────────────────────────────────────────────────
+      if (items.length === 0) {
         showSnackbar({
           kind: 'error',
-          title: 'Validation error',
-          subtitle: 'You must add at least one item',
+          title: t('validationError', 'Validation error'),
+          subtitle: t('atLeastOneItem', 'You must add at least one item'),
         });
         return;
       }
 
-      // For stock issue operations, check for specific validation issues
+      // ── Stock issue: surface specific batch-related errors ───────────────────
       if (isStockIssueOperation && errors.stockOperationItems) {
         const itemErrors = errors.stockOperationItems as any;
-        let hasInStockItemWithoutBatch = false;
-        let errorMessage = 'Please fix the following issues:';
-
-        observableOperationItems.forEach((item: any, index: number) => {
+        const hasInStockItemWithoutBatch = items.some((item: any, index: number) => {
           const itemError = itemErrors[index];
-          if (itemError) {
-            // Check if it's a batch error for in-stock item
-            if (itemError.stockBatchUuid && !item.isOutOfStock) {
-              hasInStockItemWithoutBatch = true;
-              errorMessage = 'In-stock items require batch selection';
-            }
-          }
+          return itemError?.stockBatchUuid && !item.isOutOfStock;
         });
 
         showSnackbar({
           kind: 'error',
-          title: 'Validation error',
-          subtitle: hasInStockItemWithoutBatch ? errorMessage : 'Please update batch information for all items',
+          title: t('validationError', 'Validation error'),
+          subtitle: hasInStockItemWithoutBatch
+            ? t('inStockItemsRequireBatch', 'In-stock items require batch selection')
+            : t('updateBatchInfo', 'Please update batch information for all items'),
         });
         return;
       }
 
+      // ── Adjustment with items already saved by StockItemForm ─────────────────
+      // Items were individually validated by StockItemForm before being pushed
+      // into the array — if items exist, treat the step as valid and proceed.
+      if (
+        isAdjustmentOperation && // ← pass this down as a prop or derive from stockOperationType
+        items.length > 0 &&
+        !errors.stockOperationItems?.message // only block on the "non-empty" error, not item shape
+      ) {
+        onNext?.();
+        return;
+      }
       showSnackbar({
         kind: 'error',
-        title: 'Validation error',
-        subtitle: 'Please correct the validation errors before proceeding',
+        title: t('validationError', 'Validation error'),
+        subtitle: t('correctValidationErrors', 'Please correct the validation errors before proceeding'),
       });
       return;
     }

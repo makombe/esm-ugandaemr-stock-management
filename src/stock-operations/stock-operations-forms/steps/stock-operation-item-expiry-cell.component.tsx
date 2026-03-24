@@ -28,6 +28,9 @@ const StockoperationItemExpiryCell: React.FC<StockoperationItemExpiryCellProps> 
   );
 
   if (isLoading) <InlineLoading description={t('loading', 'Loading')} iconDescription={t('loading', 'Loading')} />;
+  if (!stockBatchUuid && expiration) {
+    return <p>{expiration ? formatForDatePicker(expiration) : '--'}</p>;
+  }
 
   if (operationTypePermision.requiresBatchUuid && !operationTypePermision.requiresActualBatchInfo)
     return <p>{_expiration ? formatForDatePicker(_expiration) : '--'}</p>;

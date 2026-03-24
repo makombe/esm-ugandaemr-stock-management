@@ -22,9 +22,12 @@ import {
   getStockOperationItemBaseSchema,
   type StockOperationItemDtoSchema,
   type ExternalRequisitionExtrafields,
+  type SchemaOptions,
 } from '../validation-schema';
 import useOperationTypePermisions from './hooks/useOperationTypePermisions';
-import BaseOperationDetailsFormStep from './steps/base-operation-details-form-step';
+import BaseOperationDetailsFormStep, {
+  type ExtendedStockOperationType,
+} from './steps/base-operation-details-form-step';
 import ReceivedItems from './steps/received-items.component';
 import StockOperationItemsFormStep from './steps/stock-operation-items-form-step.component';
 import StockOperationSubmissionFormStep from './steps/stock-operation-submission-form-step.component';
@@ -32,17 +35,9 @@ import StockItemForm, { type StockItemFormProps } from './stock-item-form/stock-
 import StockOperationStepper from './stock-operation-stepper/stock-operation-stepper.component';
 import { useStockOperationAndItems } from '../stock-operations.resource';
 
-/**
- * Props interface for the StockOperationForm component
- * @interface StockOperationFormProps
- * @property {StockOperationType} [stockOperationType] - The stock operation type being created or edited.
- * @property {StockOperationDTO} [stockOperation] - The stock operation data transfer object.
- * @property {string} [stockRequisitionUuid] - Requisition operation uuid used in stock issue stockOperation type
- * When undefined or null, the form will be in creation mode.
- */
 type StockOperationFormProps = DefaultWorkspaceProps & {
   stockOperation?: StockOperationDTO;
-  stockOperationType: StockOperationType;
+  stockOperationType: ExtendedStockOperationType; // ← ExtendedStockOperationType, not base
   stockRequisitionUuid?: string;
   defaultValues?: Partial<StockOperationDTO>;
   externalRequsitionUuid?: string;
@@ -57,19 +52,25 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
   externalRequsitionUuid,
 }) => {
   const { t } = useTranslation();
-  const operationType = useMemo(() => {
-    return operationFromString(stockOperationType.operationType);
-  }, [stockOperationType]);
+
+  // Derive whether this is a positive adjustment directly from the extended prop.
+  // stockOperationType.operationType will be 'adjustment' for both positive and
+  // negative — adjustmentType is what distinguishes them.
+  const isPositiveAdjustment = stockOperationType.adjustmentType === 'positive';
+  const isAdjustmentOperation =
+    operationFromString(stockOperationType.operationType) === OperationType.ADJUSTMENT_OPERATION_TYPE;
+
+  const operationType = useMemo(() => operationFromString(stockOperationType.operationType), [stockOperationType]);
+
   const operationTypePermision = useOperationTypePermisions(stockOperationType);
-  const stockOperationItemFormSchema = useMemo(() => {
-    return getStockOperationItemFormSchema(operationType);
-  }, [operationType]);
-  const stockOperationItemBaseSchema = useMemo(() => {
-    return getStockOperationItemBaseSchema(operationType);
-  }, [operationType]);
-  const formschema = useMemo(() => {
-    return getStockOperationFormSchema(operationType);
-  }, [operationType]);
+
+  // stockOperationItemBaseSchema does NOT yet depend on positiveAdjustmentType —
+  // we use a stable default here just for the pick() calls on existing items.
+  // The reactive schemaOptions below is what drives StockItemForm.
+  const stockOperationItemBaseSchema = useMemo(() => getStockOperationItemBaseSchema(operationType), [operationType]);
+
+  const formschema = useMemo(() => getStockOperationFormSchema(operationType), [operationType]);
+
   const showReceivedItems = useMemo(() => {
     return (
       (StockOperationTypeIsStockIssue(stockOperation?.operationType as OperationType) ||
@@ -77,24 +78,25 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
       (stockOperation.status === 'DISPATCHED' || stockOperation.status === 'COMPLETED')
     );
   }, [stockOperation]);
+
   const {
     user: { uuid: defaultLoggedUserUuid },
   } = useSession();
   const { autoPopulateResponsiblePerson } = useConfig<ConfigObject>();
   const { error, items: _stockOperation, isLoading } = useStockOperationAndItems(stockRequisitionUuid);
 
+  // ─── form must be initialized BEFORE any .watch() calls ─────────────────────
   const form = useForm<StockOperationItemDtoSchema & ExternalRequisitionExtrafields>({
     defaultValues: {
       responsiblePersonUuid:
-        stockOperation?.responsiblePersonUuid ?? // if person uuid exist, make it default
-        (stockOperation?.responsiblePersonOther ? otherUser.uuid : undefined) ?? // if other resp person exist, default other user uuid
-        (autoPopulateResponsiblePerson ? defaultLoggedUserUuid : undefined), //Else default login user if configured
+        stockOperation?.responsiblePersonUuid ??
+        (stockOperation?.responsiblePersonOther ? otherUser.uuid : undefined) ??
+        (autoPopulateResponsiblePerson ? defaultLoggedUserUuid : undefined),
       operationDate:
         stockOperation?.operationDate || defaultValues?.operationDate
           ? parseDate(stockOperation?.operationDate ?? (defaultValues?.operationDate as any))
           : today(),
       remarks: stockOperation?.remarks ?? defaultValues?.remarks ?? '',
-
       operationTypeUuid: stockOperation?.operationTypeUuid ?? stockOperationType?.uuid,
       reasonUuid: stockOperation?.reasonUuid ?? defaultValues?.reasonUuid ?? '',
       responsiblePersonOther: stockOperation?.responsiblePersonOther ?? defaultValues?.responsiblePersonOther ?? '',
@@ -111,6 +113,8 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
       reasonForRequestedQuantity: operationTypePermision.requirePriority
         ? stockOperation?.stockOperationItems?.at(0)?.reasonForRequestedQuantity ?? ''
         : undefined,
+      // Seed positiveAdjustmentType so the radio group has a default value
+      positiveAdjustmentType: isPositiveAdjustment ? 'existing_batch' : undefined,
     },
     mode: 'all',
     values: stockRequisitionUuid
@@ -132,6 +136,25 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
       : undefined,
     resolver: zodResolver(formschema),
   });
+  // ────────────────────────────────────────────────────────────────────────────
+
+  // ─── Now safe to watch — form is initialized ─────────────────────────────────
+  // Only watch when relevant; for non-adjustment operations this will be undefined
+  // which is fine — schemaOptions will just omit positiveAdjustmentType.
+  const positiveAdjustmentType = isPositiveAdjustment ? form.watch('positiveAdjustmentType') : undefined;
+
+  // Reactive schemaOptions — updates whenever positiveAdjustmentType changes.
+  // This is what gets passed down to StockItemForm to drive schema + permission
+  // branching without affecting any other operation type.
+  const schemaOptions: SchemaOptions = useMemo(
+    () => ({
+      adjustmentType: stockOperationType.adjustmentType, // 'positive' | 'negative' | undefined
+      positiveAdjustmentType: positiveAdjustmentType ?? 'existing_batch',
+    }),
+    [stockOperationType.adjustmentType, positiveAdjustmentType],
+  );
+  // ────────────────────────────────────────────────────────────────────────────
+
   const [renderItemForm, setRenderItemForm] = useState(false);
   const [itemsFormProps, setItemFormProps] = useState<StockItemFormProps>();
 
@@ -140,12 +163,10 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
       setItemFormProps({
         stockOperationType,
         stockOperationItem,
+        schemaOptions, // ← carries adjustmentType + positiveAdjustmentType
         onSave: (data) => {
-          // If the operation is a negative adjustment, we need to ensure that the quantity is negative.
-          if (
-            stockOperationType.uuid === '11111111-1111-1111-1111-111111111111' &&
-            stockOperationType.name === 'Negative Adjustment'
-          ) {
+          // For negative adjustment, quantity must be stored as negative
+          if (isAdjustmentOperation && stockOperationType.adjustmentType === 'negative') {
             data.quantity = data.quantity > 0 ? -data.quantity : data.quantity;
           }
 
@@ -167,12 +188,15 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
       });
       setRenderItemForm(true);
     },
-    [stockOperationType, form, setItemFormProps, setRenderItemForm],
+    // schemaOptions is now a dep — when positiveAdjustmentType changes and the
+    // user re-opens an item form it gets the fresh options
+    [stockOperationType, form, schemaOptions, isAdjustmentOperation],
   );
+
   const steps: TabItem[] = useMemo(() => {
     return [
       {
-        name: stockOperation ? `${stockOperationType?.name} Details` : `${stockOperationType?.name} Details`,
+        name: `${stockOperationType?.name} Details`,
         component: (
           <BaseOperationDetailsFormStep
             stockOperation={stockOperation}
@@ -191,6 +215,7 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
             onNext={() => setSelectedIndex(2)}
             onPrevious={() => setSelectedIndex(0)}
             onLaunchItemsForm={handleLaunchStockItem}
+            schemaOptions={schemaOptions}
           />
         ),
         disabled: !stockOperation,
@@ -229,19 +254,18 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
     showReceivedItems,
     closeWorkspace,
     externalRequsitionUuid,
+    schemaOptions,
   ]);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useEffect(() => {
-    // Display fields errors for stock operation items and operation type uuid
     Object.entries(form.formState.errors ?? {}).forEach(([key, val]) => {
       if (['stockOperationItems', 'operationTypeUuid'].includes(key)) {
         showSnackbar({ kind: 'error', title: key, subtitle: (val as FieldError)?.message });
       }
     });
 
-    // Navigate to step where the error is
     const fieldSteps = [
       [
         'responsiblePersonUuid',
@@ -263,7 +287,6 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
     }
   }, [form.formState.errors]);
 
-  // Stock issue errors (while fetching related requisitio or if no supplied requisition)
   useEffect(() => {
     if (operationType === OperationType.STOCK_ISSUE_OPERATION_TYPE && !stockRequisitionUuid)
       showSnackbar({
@@ -286,7 +309,7 @@ const StockOperationForm: React.FC<StockOperationFormProps> = ({
         <StockItemForm {...itemsFormProps} />
       ) : (
         <StockOperationStepper
-          steps={steps.map((tab, index) => ({
+          steps={steps.map((tab) => ({
             title: tab.name,
             component: tab.component,
             disabled: tab.disabled,

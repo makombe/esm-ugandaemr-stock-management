@@ -31,6 +31,7 @@ const BatchNoSelector: React.FC<BatchNoSelectorProps> = ({
   const { items, setStockItemUuid, isLoading: isLoadingBatchinfo } = useStockItemBatchInformationHook();
   const currentUserRoles = useUserRoles();
   const { locationsTaggedMainStoreAndSubstore } = useLocationsTaggedMainStoreAndSubstore();
+
   const stockIssueLocationsForCurrentUser = getMatchingUserLocations(
     currentUserRoles,
     locationsTaggedMainStoreAndSubstore,

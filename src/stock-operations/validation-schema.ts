@@ -180,7 +180,34 @@ const stockIssueSchemaWithValidation = stockIssueBaseSchema.superRefine((data, c
   }
 });
 
-export const getStockOperationItemFormSchema = (operationType: OperationType) => {
+export const positiveAdjustmentExistingBatchItemSchema = baseStockOperationItemSchema
+  .omit({ batchNo: true, expiration: true, purchasePrice: true })
+  .extend({
+    stockBatchUuid: z.string().min(1, { message: 'Batch selection is required' }),
+    quantity: z.coerce.number().min(1, { message: 'Quantity must be greater than 0' }),
+  });
+export const positiveAdjustmentNewBatchItemSchema = baseStockOperationItemSchema
+  .omit({ stockBatchUuid: true, purchasePrice: true })
+  .extend({
+    batchNo: z.string().min(1, { message: 'Batch number is required' }),
+    expiration: z.coerce.date({ required_error: 'Expiration date is required' }),
+    quantity: z.coerce.number().min(1, { message: 'Quantity must be greater than 0' }),
+  });
+
+export const negativeAdjustmentItemSchema = baseStockOperationItemSchema
+  .omit({ batchNo: true, expiration: true, purchasePrice: true })
+  .extend({
+    stockBatchUuid: z.string().min(1, { message: 'Batch selection is required' }),
+    quantity: z.coerce.number().refine((v) => v !== 0, { message: 'Quantity cannot be zero.' }),
+  });
+
+export type PositiveAdjustmentType = 'existing_batch' | 'new_batch';
+export type SchemaOptions = {
+  adjustmentType?: 'positive' | 'negative';
+  positiveAdjustmentType?: PositiveAdjustmentType;
+};
+
+export const getStockOperationItemFormSchema = (operationType: OperationType, options?: SchemaOptions) => {
   switch (operationType) {
     case OperationType.RECEIPT_OPERATION_TYPE:
     case OperationType.OPENING_STOCK_OPERATION_TYPE:
@@ -194,6 +221,32 @@ export const getStockOperationItemFormSchema = (operationType: OperationType) =>
         purchasePrice: true,
       });
     case OperationType.ADJUSTMENT_OPERATION_TYPE:
+      if (options?.adjustmentType !== 'positive') {
+        return baseStockOperationItemSchema
+          .omit({
+            batchNo: true,
+            expiration: true,
+            purchasePrice: true,
+          })
+          .extend({
+            stockBatchUuid: z.string().min(1, { message: 'Batch selection is required' }),
+            quantity: z.coerce.number().refine((v) => v !== 0, {
+              message: 'Quantity cannot be zero.',
+            }),
+          });
+      }
+      if (options?.positiveAdjustmentType === 'new_batch') {
+        return baseStockOperationItemSchema
+          .omit({
+            stockBatchUuid: true,
+            purchasePrice: true,
+          })
+          .extend({
+            batchNo: z.string().min(1, { message: 'Batch number is required' }),
+            expiration: z.coerce.date({ required_error: 'Expiration date is required' }),
+            quantity: z.coerce.number().min(1, { message: 'Quantity must be greater than 0' }),
+          });
+      }
       return baseStockOperationItemSchema
         .omit({
           batchNo: true,
@@ -201,11 +254,10 @@ export const getStockOperationItemFormSchema = (operationType: OperationType) =>
           purchasePrice: true,
         })
         .extend({
-          // Override quantity to allow negative values for negative adjustment operation
-          quantity: z.coerce.number().refine((value) => value !== 0, {
-            message: 'Quantity cannot be zero.',
-          }),
+          stockBatchUuid: z.string().min(1, { message: 'Batch selection is required' }),
+          quantity: z.coerce.number().min(1, { message: 'Quantity must be greater than 0' }),
         });
+
     case OperationType.STOCK_ISSUE_OPERATION_TYPE:
       return stockIssueSchemaWithValidation;
     case OperationType.DISPOSED_OPERATION_TYPE:
@@ -224,7 +276,7 @@ export const getStockOperationItemFormSchema = (operationType: OperationType) =>
 };
 
 // Helper to get the base schema shape for field checking (without ZodEffects)
-export const getStockOperationItemBaseSchema = (operationType: OperationType) => {
+export const getStockOperationItemBaseSchema = (operationType: OperationType, options?: SchemaOptions) => {
   switch (operationType) {
     case OperationType.RECEIPT_OPERATION_TYPE:
     case OperationType.OPENING_STOCK_OPERATION_TYPE:
@@ -237,15 +289,12 @@ export const getStockOperationItemBaseSchema = (operationType: OperationType) =>
         purchasePrice: true,
       });
     case OperationType.ADJUSTMENT_OPERATION_TYPE:
-      return baseStockOperationItemSchema
-        .omit({
-          batchNo: true,
-          expiration: true,
-          purchasePrice: true,
-        })
-        .extend({
-          quantity: z.coerce.number(),
-        });
+      if (options?.adjustmentType !== 'positive') {
+        return negativeAdjustmentItemSchema;
+      }
+      return options?.positiveAdjustmentType === 'new_batch'
+        ? positiveAdjustmentNewBatchItemSchema
+        : positiveAdjustmentExistingBatchItemSchema;
     case OperationType.STOCK_ISSUE_OPERATION_TYPE:
       return stockIssueBaseSchema;
     case OperationType.DISPOSED_OPERATION_TYPE:
@@ -291,6 +340,7 @@ export const stockOperationItemDtoSchema = z.object({
 export const externalRequisitionExtraFieldsSchema = z.object({
   requestType: z.enum(['EMERGENCY', 'REGULAR']),
   reasonForRequestedQuantity: z.string().min(1, { message: 'Required' }),
+  positiveAdjustmentType: z.enum(['existing_batch', 'new_batch']).optional(),
 });
 
 export type ExternalRequisitionExtrafields = z.infer<typeof externalRequisitionExtraFieldsSchema>;
@@ -299,7 +349,7 @@ export type StockOperationItemDtoSchema = z.infer<typeof stockOperationItemDtoSc
 
 export type StockOperationFormData = z.infer<typeof stockOperationSchema>;
 
-export const getStockOperationFormSchema = (operation: OperationType): z.Schema => {
+export const getStockOperationFormSchema = (operation: OperationType, options?: SchemaOptions): z.Schema => {
   switch (operation) {
     case OperationType.OPENING_STOCK_OPERATION_TYPE:
       return stockOperationItemDtoSchema
@@ -314,8 +364,16 @@ export const getStockOperationFormSchema = (operation: OperationType): z.Schema 
               .nonempty('You must add atleast one stock item'),
           }),
         );
-    case OperationType.STOCK_TAKE_OPERATION_TYPE:
     case OperationType.ADJUSTMENT_OPERATION_TYPE:
+      return stockOperationItemDtoSchema.omit({ destinationUuid: true }).merge(
+        z.object({
+          // z.any() per item — no field validators run at this level.
+          // Positive/negative item shape is fully validated by StockItemForm's
+          // own resolver before any item is pushed into this array.
+          stockOperationItems: z.array(z.any()).nonempty('You must add at least one stock item'),
+        }),
+      );
+    case OperationType.STOCK_TAKE_OPERATION_TYPE:
     case OperationType.DISPOSED_OPERATION_TYPE:
     case OperationType.LOSS_OPERATION_TYPE:
       return stockOperationItemDtoSchema.omit({ destinationUuid: true }).merge(
@@ -325,6 +383,7 @@ export const getStockOperationFormSchema = (operation: OperationType): z.Schema 
             .nonempty('You must add atleast one stock item'),
         }),
       );
+
     case OperationType.TRANSFER_OUT_OPERATION_TYPE:
     case OperationType.STOCK_ISSUE_OPERATION_TYPE:
       return stockOperationItemDtoSchema.omit({ reasonUuid: true }).merge(
