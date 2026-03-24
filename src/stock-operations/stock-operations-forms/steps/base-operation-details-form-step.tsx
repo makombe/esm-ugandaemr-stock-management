@@ -9,6 +9,8 @@ import {
   TextArea,
   TextInput,
   Dropdown,
+  RadioButtonGroup,
+  RadioButton,
 } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
 import { ErrorState } from '@openmrs/esm-framework';
@@ -26,7 +28,7 @@ import StockOperationReasonSelector from '../input-components/stock-operation-re
 import UsersSelector from '../input-components/users-selector.component';
 import styles from '../stock-operation-form.scss';
 
-interface ExtendedStockOperationType extends StockOperationType {
+export interface ExtendedStockOperationType extends StockOperationType {
   adjustmentType?: 'positive' | 'negative';
 }
 type BaseOperationDetailsFormStepProps = {
@@ -55,6 +57,7 @@ const BaseOperationDetailsFormStep: FC<BaseOperationDetailsFormStepProps> = ({
     () => OperationType.STOCK_ISSUE_OPERATION_TYPE === stockOperationType.operationType,
     [stockOperationType],
   );
+  const isPositiveAdjustment = stockOperationType.adjustmentType === 'positive';
   const handleNext = async () => {
     const valid = await form.trigger([
       'responsiblePersonUuid',
@@ -227,6 +230,34 @@ const BaseOperationDetailsFormStep: FC<BaseOperationDetailsFormStepProps> = ({
         </Column>
       )}
       <UsersSelector />
+      {isPositiveAdjustment && (
+        <Column>
+          <Controller
+            control={form.control}
+            name="positiveAdjustmentType"
+            defaultValue="existing_batch"
+            render={({ field }) => (
+              <RadioButtonGroup
+                legendText={t('adjustmentBatchType', 'Batch Adjustment Type')}
+                name="positiveAdjustmentType"
+                valueSelected={field.value ?? 'existing_batch'}
+                onChange={(value) => {
+                  field.onChange(value);
+                  // Clear stock items when switching modes to avoid stale batch data
+                  form.setValue('stockOperationItems', [] as any);
+                }}
+              >
+                <RadioButton
+                  labelText={t('existingBatch', 'Adjust Existing Batch')}
+                  value="existing_batch"
+                  id="existing_batch"
+                />
+                <RadioButton labelText={t('newBatch', 'Add New Stock (New Batch)')} value="new_batch" id="new_batch" />
+              </RadioButtonGroup>
+            )}
+          />
+        </Column>
+      )}
       {operationTypePermision.requiresStockAdjustmentReason && (
         <Column>
           <StockOperationReasonSelector

@@ -30,6 +30,7 @@ import {
   getStockOperationItemFormSchema,
   getStockOperationItemBaseSchema,
   type ExternalRequisitionExtrafields,
+  type SchemaOptions,
 } from '../../validation-schema';
 import useOperationTypePermisions from '../hooks/useOperationTypePermisions';
 import BatchNoSelector from '../input-components/batch-no-selector.component';
@@ -41,21 +42,40 @@ export interface StockItemFormProps {
   stockOperationItem: BaseStockOperationItemFormData;
   onSave?: (data: BaseStockOperationItemFormData) => void;
   onBack?: () => void;
+  schemaOptions?: SchemaOptions;
 }
 
-const StockItemForm: React.FC<StockItemFormProps> = ({ stockOperationType, stockOperationItem, onSave, onBack }) => {
+const StockItemForm: React.FC<StockItemFormProps> = ({
+  stockOperationType,
+  stockOperationItem,
+  onSave,
+  onBack,
+  schemaOptions,
+}) => {
   const isTablet = useLayoutType() === 'tablet';
   const operationType = useMemo(() => {
     return operationFromString(stockOperationType.operationType);
   }, [stockOperationType]);
   const formSchema = useMemo(() => {
-    return getStockOperationItemFormSchema(operationType);
-  }, [operationType]);
+    return getStockOperationItemFormSchema(operationType, schemaOptions);
+  }, [operationType, schemaOptions]);
   const baseSchema = useMemo(() => {
-    return getStockOperationItemBaseSchema(operationType);
-  }, [operationType]);
+    return getStockOperationItemBaseSchema(operationType, schemaOptions);
+  }, [operationType, schemaOptions]);
   const operationTypePermision = useOperationTypePermisions(stockOperationType);
   const { useItemCommonNameAsDisplay } = useConfig<ConfigObject>();
+  const isNewBatchMode = schemaOptions?.positiveAdjustmentType === 'new_batch';
+  const isPositiveAdjustment = schemaOptions?.adjustmentType === 'positive';
+
+  const effectivePermission = useMemo(
+    () => ({
+      ...operationTypePermision,
+      requiresActualBatchInfo:
+        isPositiveAdjustment && isNewBatchMode ? true : operationTypePermision.requiresActualBatchInfo,
+      requiresBatchUuid: isPositiveAdjustment && isNewBatchMode ? false : operationTypePermision.requiresBatchUuid,
+    }),
+    [operationTypePermision, isNewBatchMode, isPositiveAdjustment],
+  );
 
   const fields = baseSchema.keyof().options;
   const form = useForm<z.infer<typeof formSchema>>({
@@ -133,12 +153,6 @@ const StockItemForm: React.FC<StockItemFormProps> = ({ stockOperationType, stock
   }, [form, isOutOfStock]);
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log('Form submission data:', {
-      ...data,
-      isOutOfStock,
-      isStockIssueOperation,
-    });
-
     // Ensure isOutOfStock is included in the saved data
     const dataToSave = {
       ...data,
@@ -152,7 +166,6 @@ const StockItemForm: React.FC<StockItemFormProps> = ({ stockOperationType, stock
         : {}),
     };
 
-    console.log('Saving data:', dataToSave);
     onSave?.(dataToSave);
   };
 
@@ -161,7 +174,7 @@ const StockItemForm: React.FC<StockItemFormProps> = ({ stockOperationType, stock
       <Stack gap={4} className={styles.grid}>
         <p className={styles.title}>{useItemCommonNameAsDisplay ? commonName : drugName}</p>
 
-        {(operationTypePermision.requiresActualBatchInfo || operationTypePermision.requiresBatchUuid) &&
+        {(effectivePermission.requiresActualBatchInfo || effectivePermission.requiresBatchUuid) &&
           fields.includes('batchNo' as any) && (
             <Column>
               <Controller
@@ -184,7 +197,7 @@ const StockItemForm: React.FC<StockItemFormProps> = ({ stockOperationType, stock
             </Column>
           )}
 
-        {operationTypePermision.requiresBatchUuid && !operationTypePermision.requiresActualBatchInfo && (
+        {effectivePermission.requiresBatchUuid && !effectivePermission.requiresActualBatchInfo && (
           <Column>
             <Controller
               control={form.control}
@@ -202,7 +215,7 @@ const StockItemForm: React.FC<StockItemFormProps> = ({ stockOperationType, stock
             />
           </Column>
         )}
-        {(operationTypePermision.requiresActualBatchInfo || operationTypePermision.requiresBatchUuid) &&
+        {(effectivePermission.requiresActualBatchInfo || effectivePermission.requiresBatchUuid) &&
           fields.includes('expiration' as any) && (
             <Column>
               <Controller
@@ -282,7 +295,7 @@ const StockItemForm: React.FC<StockItemFormProps> = ({ stockOperationType, stock
           />
         </Column>
 
-        {(operationTypePermision.requiresActualBatchInfo || operationTypePermision.requiresBatchUuid) &&
+        {(effectivePermission.requiresActualBatchInfo || effectivePermission.requiresBatchUuid) &&
           fields.includes('brandName') && (
             <Column>
               <Controller
@@ -304,7 +317,7 @@ const StockItemForm: React.FC<StockItemFormProps> = ({ stockOperationType, stock
             </Column>
           )}
 
-        {(operationTypePermision.requiresActualBatchInfo || operationTypePermision.requiresBatchUuid) &&
+        {(effectivePermission.requiresActualBatchInfo || effectivePermission.requiresBatchUuid) &&
           fields.includes('manufacturerName') && (
             <Column>
               <Controller

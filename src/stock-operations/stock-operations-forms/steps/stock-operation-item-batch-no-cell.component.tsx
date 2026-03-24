@@ -27,6 +27,12 @@ const StockOperationItemBatchNoCell: React.FC<StockOperationitemBatchNoCellProps
   );
 
   if (isLoading) <InlineLoading description={t('loading', 'Loading')} iconDescription={t('loading', 'Loading')} />;
+  // New-batch mode (positive adjustment): no stockBatchUuid was assigned because
+  // the user manually entered a batch number — render it directly without any
+  // UUID lookup or permission branching.
+  if (!stockBatchUuid && batchNo) {
+    return <p>{batchNo}</p>;
+  }
 
   if (operationTypePermision.requiresBatchUuid && !operationTypePermision.requiresActualBatchInfo)
     return <p>{_batchno ?? '--'}</p>;
