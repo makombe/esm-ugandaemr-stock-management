@@ -8,12 +8,16 @@ import type { StockOperationDTO } from '../../core/api/types/stockOperation/Stoc
 import {
   type LocalStatusResponse,
   submitExternalRequisition,
+  submitReceiptNote,
   useExternalRequisitionStation,
+  useExternalRequisitionStatusByReceiptNumber,
+  useFacilityCode,
   useProgramCodeAndProcessingPeriod,
+  useStockOperationAndItems,
 } from '../stock-operations.resource';
 import { extractErrorMessagesFromResponse } from '../../constants';
 
-export const StockOperationRetryButton: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
+const Requisition: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
   const { t } = useTranslation();
   const [submitting, setSubmitting] = useState(false);
   const { isLoading, status, facilityCode, mutate } = useExternalRequisitionStation(
@@ -109,4 +113,116 @@ export const StockOperationRetryButton: React.FC<{ operation: StockOperationDTO 
       {t('retry', 'Retry')}
     </Button>
   );
+};
+
+const Receipt: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
+  const { t } = useTranslation();
+  const [submitting, setSubmitting] = useState(false);
+  const { isLoading: isLoadingFacilityCode, error: facilityCodeError, facilityCode } = useFacilityCode();
+  const {
+    isLoading,
+    status,
+    mutate,
+    error: statusError,
+  } = useExternalRequisitionStatusByReceiptNumber(operation.operationNumber);
+  const { items: sourceExternalRequisition, isLoading: isLoadingSourceRequisition } = useStockOperationAndItems(
+    status?.[0]?.uuid ?? null,
+  );
+
+  const handleRetry = () => {
+    setSubmitting(true);
+    submitReceiptNote({
+      sourceOrderId: operation.operationNumber,
+      // rnrId: operation.uuid,
+      facilityCode: facilityCode,
+      deliveryStatus: 'DELIVERED',
+      deliveredBy: '',
+      deliveredDate: dayjs(operation.operationDate).toISOString(),
+      facility_gln: '',
+      read_point: '',
+      biz_location: '',
+      packingList: operation.stockOperationItems?.map((item) => ({
+        batchNumber: item.batchNo,
+        expiryDate: dayjs(item.expiration).toISOString(),
+        gtin: '',
+        productCode: item.etcdProductId,
+        // Get the quantity ordered from the source external requisition used to create the receipt operation
+        quantityOrdered: sourceExternalRequisition.stockOperationItems?.find(
+          (i) => i.etcdProductId === item.etcdProductId,
+        )?.quantity,
+        quantityShipped: item.quantity,
+      })),
+      metadata: {
+        carrier: '',
+        trackingNumber: '',
+      },
+    })
+      .then(({ data }) => {
+        showSnackbar({
+          title: t('success', 'Success'),
+          subtitle: t('receiptNoteSubmittedSuccessfully', 'Receipt note Submitted Successfully to nlmis'),
+          kind: 'success',
+        });
+        return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
+          method: 'POST',
+          body: {
+            uuid: status.at(-1).uuid,
+            receiptMessage: JSON.stringify(data),
+            podNotificationStatus: 'SUCCESS',
+          },
+          headers: { 'Content-Type': 'application/json' },
+        });
+      })
+      .then(({ data }) => {
+        showSnackbar({
+          title: t('success', 'Success'),
+          subtitle: t('reciptNoteSubmissionStatusUpdated', 'Receipt note Submision status updated Successfully'),
+          kind: 'success',
+        });
+      })
+      .catch((err) => {
+        const errorMessages = extractErrorMessagesFromResponse(err);
+        const message = errorMessages[0].replace(/[[\]]/g, '');
+        showSnackbar({
+          title: t('deliveryNoteSubmissionFailed', 'Delivery note Submission Failed'),
+          subtitle: t('submissionFailedDetails', 'Details: {{message}}', {
+            message,
+          }),
+          kind: 'error',
+        });
+        return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
+          method: 'POST',
+          body: {
+            uuid: status.at(-1).uuid,
+            podNotificationStatus: 'FAILED',
+          },
+          headers: { 'Content-Type': 'application/json' },
+        });
+      })
+      .finally(() => {
+        setSubmitting(false);
+        mutate();
+      });
+  };
+
+  if (isLoading || submitting || isLoadingFacilityCode || isLoadingSourceRequisition) {
+    return <InlineLoading description={t('loading', 'Loading...')} />;
+  }
+
+  if (facilityCodeError || statusError) return null;
+
+  if (!status.length || status.at(-1)?.podNotificationStatus === 'SUCCESS') {
+    return null;
+  }
+
+  return (
+    <Button onClick={handleRetry} renderIcon={Restart} kind="tertiary">
+      {t('retryDeliveryNoteSubmission', 'Retry Delivery Note Submission')}
+    </Button>
+  );
+};
+
+export default {
+  Receipt,
+  Requisition,
 };

@@ -6,6 +6,7 @@ import { type PageableResult } from '../core/api/types/PageableResult';
 import { type InventoryGroupBy } from '../core/api/types/stockItem/StockItem';
 import { type StockItemInventory } from '../core/api/types/stockItem/StockItemInventory';
 import {
+  type ReceiptNotePayload,
   type ExternalRequisitionPayload,
   type StopOperationAction,
 } from '../core/api/types/stockOperation/StockOperationAction';
@@ -227,7 +228,27 @@ export type LocalStatusResponse = {
   receiptNumber?: string;
   receiptMessage?: string;
   deliveryStatus?: 'RECEIVED' | 'PENDING' | 'FAILED';
-  podNotificationStatus?: string;
+  podNotificationStatus?: 'SUCCESS' | 'FAILED';
+};
+
+export const useExternalRequisitionStatusByReceiptNumber = (receiptNumber?: string) => {
+  const localStatusUrl = `${restBaseUrl}/stockmanagement/externalrequisitionstatus?receiptNumber=${receiptNumber}`;
+  const {
+    data: localData,
+    isLoading,
+    error,
+    mutate,
+  } = useSWR<FetchResponse<{ results: Array<LocalStatusResponse> }>>(
+    receiptNumber ? localStatusUrl : null,
+    openmrsFetch,
+  );
+
+  return {
+    status: localData?.data?.results ?? [],
+    isLoading,
+    error,
+    mutate,
+  };
 };
 export function useExternalRequisitionStation(operationNumber: string, operationUuid: string) {
   const { t } = useTranslation();
@@ -370,6 +391,19 @@ export const useProgramCodeAndProcessingPeriod = (enabled = true) => {
 };
 export function submitExternalRequisition(payload: ExternalRequisitionPayload) {
   const apiUrl = `${restBaseUrl}/kenyaemr/hmis-requisition/submit`;
+  const abortController = new AbortController();
+  return openmrsFetch<StatusResponse>(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    signal: abortController.signal,
+    body: payload,
+  });
+}
+
+export function submitReceiptNote(payload: ReceiptNotePayload) {
+  const apiUrl = `${restBaseUrl}/kenyaemr/nlmis/receiving-pods/submit`;
   const abortController = new AbortController();
   return openmrsFetch<StatusResponse>(apiUrl, {
     method: 'POST',

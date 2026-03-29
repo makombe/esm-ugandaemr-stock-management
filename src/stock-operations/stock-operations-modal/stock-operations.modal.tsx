@@ -15,10 +15,14 @@ import {
   executeStockOperationAction,
   type LocalStatusResponse,
   submitExternalRequisition,
+  submitReceiptNote,
+  useExternalRequisitionStatusByReceiptNumber,
   useFacilityCode,
   useProgramCodeAndProcessingPeriod,
+  useStockOperationAndItems,
 } from '../stock-operations.resource';
 import styles from './stock-operations.scss';
+import { mutate } from 'swr';
 
 interface StockOperationsModalProps {
   title: string;
@@ -41,12 +45,24 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
   const [isApproving, setIsApproving] = useState(false);
   const { error, facilityCode, isLoading } = useFacilityCode();
   const isExternalRequisition = operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE;
+  const isReceiptOperation = operationType === OperationType.RECEIPT_OPERATION_TYPE;
   const {
     error: periodOrProgramError,
     isLoading: isLoadingProgramAndPeriod,
     processingPeriod,
     programCode,
   } = useProgramCodeAndProcessingPeriod(isExternalRequisition);
+  // Check If is receipt operation created from external requisition
+  const {
+    status,
+    error: statusError,
+    isLoading: isLoadingStatus,
+  } = useExternalRequisitionStatusByReceiptNumber(isReceiptOperation ? operation.operationNumber : null);
+  const isReceiptDerivedFromExternalRequisition = isReceiptOperation && status?.length > 0;
+  // Find External requisition used to create the receipt operation(Used to retrive the quantity ordered)
+  const { items: sourceExternalRequisition, isLoading: isLoadingSourceRequisition } = useStockOperationAndItems(
+    status?.[0]?.uuid ?? null,
+  );
 
   const handleClick = async (event) => {
     event.preventDefault();
@@ -97,6 +113,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
     };
 
     try {
+      // Submit external requisition to nlimis
       if (isExternalRequisition) {
         submitExternalRequisition({
           sourceOrderId: operation.operationNumber,
@@ -157,12 +174,86 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
             const errorMessages = extractErrorMessagesFromResponse(err);
             const message = errorMessages[0].replace(/[[\]]/g, '');
             showSnackbar({
-              title: t('submissionFailed', 'Submission Failed'),
+              title: t('requisitionSubmissionFailed', 'Requisition Submission to Failed'),
               subtitle: t('submissionFailedDetails', 'Details: {{message}}', {
                 message,
               }),
               kind: 'error',
             });
+          });
+      }
+      // Submit Receipt note to nlmis
+      if (isReceiptDerivedFromExternalRequisition && status.at(-1).podNotificationStatus !== 'SUCCESS') {
+        submitReceiptNote({
+          sourceOrderId: operation.operationNumber,
+          // rnrId: operation.uuid,
+          facilityCode: facilityCode,
+          deliveryStatus: 'DELIVERED',
+          deliveredBy: '',
+          deliveredDate: dayjs(operation.operationDate).toISOString(),
+          facility_gln: '',
+          read_point: '',
+          biz_location: '',
+          packingList: operation.stockOperationItems?.map((item) => ({
+            batchNumber: item.batchNo,
+            expiryDate: dayjs(item.expiration).toISOString(),
+            gtin: '',
+            productCode: item.etcdProductId,
+            // Get the quantity ordered from the source external requisition used to create the receipt operation
+            quantityOrdered: sourceExternalRequisition?.stockOperationItems?.find(
+              (i) => i.etcdProductId === item.etcdProductId,
+            )?.quantity,
+            quantityShipped: item.quantity,
+          })),
+          metadata: {
+            carrier: '',
+            trackingNumber: '',
+          },
+        })
+          .then(({ data }) => {
+            showSnackbar({
+              title: t('success', 'Success'),
+              subtitle: t('receiptNoteSubmittedSuccessfully', 'Receipt note Submitted Successfully to nlmis'),
+              kind: 'success',
+            });
+            return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
+              method: 'POST',
+              body: {
+                uuid: status.at(-1).uuid,
+                receiptMessage: JSON.stringify(data),
+                podNotificationStatus: 'SUCCESS',
+              },
+              headers: { 'Content-Type': 'application/json' },
+            });
+          })
+          .then(({ data }) => {
+            showSnackbar({
+              title: t('success', 'Success'),
+              subtitle: t('reciptNoteSubmissionStatusUpdated', 'Receipt note Submision status updated Successfully'),
+              kind: 'success',
+            });
+          })
+          .catch((err) => {
+            const errorMessages = extractErrorMessagesFromResponse(err);
+            const message = errorMessages[0].replace(/[[\]]/g, '');
+            showSnackbar({
+              title: t('deliveryNoteSubmissionFailed', 'Delivery note Submission Failed'),
+              subtitle: t('submissionFailedDetails', 'Details: {{message}}', {
+                message,
+              }),
+              kind: 'error',
+            });
+            return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
+              method: 'POST',
+              body: {
+                uuid: status.at(-1).uuid,
+                podNotificationStatus: 'FAILED',
+              },
+              headers: { 'Content-Type': 'application/json' },
+            });
+          })
+          .finally(() => {
+            mutate((key) => typeof key === 'string' && key.includes('externalrequisitionstatus'));
           });
       }
       // submit action
@@ -173,8 +264,8 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
           title,
         }),
         kind: 'success',
-      }),
-        closeModal();
+      });
+      closeModal();
       handleMutate(`${restBaseUrl}/stockmanagement/stockoperation`);
     } catch (err) {
       const errorMessages = extractErrorMessagesFromResponse(err);
@@ -192,7 +283,11 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
     }
   };
 
-  if (isExternalRequisition && (isLoading || isLoadingProgramAndPeriod)) {
+  if (
+    (isExternalRequisition && (isLoading || isLoadingProgramAndPeriod)) ||
+    (isReceiptOperation && isLoadingStatus) ||
+    isLoadingSourceRequisition
+  ) {
     return (
       <div>
         <ModalHeader closeModal={closeModal} title={t('operationModalTitle', '{{title}} Operation', { title })} />
@@ -206,7 +301,19 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
   if (isExternalRequisition && (error || periodOrProgramError)) {
     return (
       <ErrorState
-        headerTitle={t('errorFetchingFacilityCode', 'Error retreiving facility code')}
+        headerTitle={
+          error
+            ? t('errorFetchingFacilityCode', 'Error retreiving facility code')
+            : t('errorFetchingProgramOrPeriod', 'Error fetching program or period')
+        }
+        error={error ?? periodOrProgramError}
+      />
+    );
+  }
+  if (isReceiptOperation && statusError) {
+    return (
+      <ErrorState
+        headerTitle={t('errorLoadingStatus', 'Error loading requisition status by receipt operation number')}
         error={error ?? periodOrProgramError}
       />
     );

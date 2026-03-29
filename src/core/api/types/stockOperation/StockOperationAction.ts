@@ -36,6 +36,30 @@ export interface ExternalRequisitionPayload {
   products: Product[];
 }
 
+export interface ReceiptNotePayload {
+  sourceOrderId: string;
+  rnrId?: string;
+  facilityCode: string;
+  deliveryStatus: string;
+  deliveredBy?: string;
+  deliveredDate?: string;
+  facility_gln: string;
+  read_point: string;
+  biz_location: string;
+  packingList: Array<{
+    productCode: string;
+    quantityOrdered: number;
+    quantityShipped: number;
+    batchNumber: string;
+    expiryDate: string;
+    gtin: string;
+  }>;
+  metadata: {
+    carrier: string;
+    trackingNumber: string;
+  };
+}
+
 export interface Product {
   productCode: string;
   quantityDispensed: number;

@@ -8,7 +8,7 @@ import {
 } from '../core/api/types/stockOperation/StockOperationType';
 import ViewPurchaseOrderAction from './purchase-order/view-purchase-order-btn.component';
 import useOperationTypePermisions from './stock-operations-forms/hooks/useOperationTypePermisions';
-import { StockOperationRetryButton } from './stock-operations-modal/stock-operation-retry-button.component';
+import StockOperationRetryButton from './stock-operations-modal/stock-operation-retry-button.component';
 import StockOperationApprovalButton from './stock-operations-modal/stock-operations-approve-button.component';
 import StockOperationApproveDispatchButton from './stock-operations-modal/stock-operations-approve-dispatch-button.component';
 import StockOperationCancelButton from './stock-operations-modal/stock-operations-cancel-button.component';
@@ -37,9 +37,17 @@ const StockoperationActions: React.FC<Props> = ({ stockOperation, stockOperation
         operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE &&
         (stockOperation.status as any) === 'AUTHORIZED' && (
           <>
-            <StockOperationRetryButton operation={stockOperation} />
+            <StockOperationRetryButton.Requisition operation={stockOperation} />
             <ViewPurchaseOrderAction stockOperation={stockOperation} />
             <StockOperationEditRequisitionButton operation={stockOperation} />
+          </>
+        )}
+      {stockOperation &&
+        operationType &&
+        operationType === OperationType.RECEIPT_OPERATION_TYPE &&
+        stockOperation.status === 'COMPLETED' && (
+          <>
+            <StockOperationRetryButton.Receipt operation={stockOperation} />
           </>
         )}
       {((!stockOperation.permission?.canEdit &&
