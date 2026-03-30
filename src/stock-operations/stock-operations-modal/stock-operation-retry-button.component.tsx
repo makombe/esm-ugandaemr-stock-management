@@ -160,7 +160,7 @@ const Receipt: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
       .then(({ data }) => {
         showSnackbar({
           title: t('success', 'Success'),
-          subtitle: t('receiptNoteSubmittedSuccessfully', 'Receipt note Submitted Successfully to nlmis'),
+          subtitle: t('proofOfDeliverySubmittedSuccessfully', 'Proof of Delivery Submitted Successfully to nlmis'),
           kind: 'success',
         });
         return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
@@ -176,7 +176,7 @@ const Receipt: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
       .then(({ data }) => {
         showSnackbar({
           title: t('success', 'Success'),
-          subtitle: t('reciptNoteSubmissionStatusUpdated', 'Receipt note Submision status updated Successfully'),
+          subtitle: t('proofOfDeliveryStatusUpdated', 'Proof of Delivery Status Updated Successfully'),
           kind: 'success',
         });
       })

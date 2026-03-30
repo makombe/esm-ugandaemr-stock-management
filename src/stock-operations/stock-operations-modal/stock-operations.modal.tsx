@@ -174,7 +174,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
             const errorMessages = extractErrorMessagesFromResponse(err);
             const message = errorMessages[0].replace(/[[\]]/g, '');
             showSnackbar({
-              title: t('requisitionSubmissionFailed', 'Requisition Submission to Failed'),
+              title: t('requisitionSubmissionFailed', 'Requisition Submission Failed'),
               subtitle: t('submissionFailedDetails', 'Details: {{message}}', {
                 message,
               }),
@@ -213,7 +213,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
           .then(({ data }) => {
             showSnackbar({
               title: t('success', 'Success'),
-              subtitle: t('receiptNoteSubmittedSuccessfully', 'Receipt note Submitted Successfully to nlmis'),
+              subtitle: t('proofOfDeliverySubmittedSuccessfully', 'Proof of Delivery Submitted Successfully to nlmis'),
               kind: 'success',
             });
             return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
@@ -229,7 +229,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
           .then(({ data }) => {
             showSnackbar({
               title: t('success', 'Success'),
-              subtitle: t('reciptNoteSubmissionStatusUpdated', 'Receipt note Submision status updated Successfully'),
+              subtitle: t('proofOfDeliveryStatusUpdated', 'Proof of Delivery Status Updated Successfully'),
               kind: 'success',
             });
           })
