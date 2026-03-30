@@ -21,10 +21,17 @@ const StockOperationApprovalButton: React.FC<StockOperationApprovalButtonProps> 
       title: operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE ? 'Authorize' : 'Approve',
       operation: operation,
       requireReason: false,
-      operationType: OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE,
+      operationType,
       closeModal: () => dispose(),
     });
   }, [operation, operationType]);
+
+  if (
+    operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE &&
+    (operation as any).status === 'AUTHORIZED'
+  ) {
+    return null;
+  }
 
   return (
     <Button onClick={launchApprovalModal} renderIcon={(props) => <CheckmarkOutline size={16} {...props} />}>
