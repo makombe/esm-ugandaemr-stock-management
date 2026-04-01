@@ -7,7 +7,13 @@ import { type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { getCoreTranslation, restBaseUrl, showSnackbar, useLayoutType } from '@openmrs/esm-framework';
 import { createStockItem, updateStockItem } from '../../stock-items.resource';
-import { expirationOptions, radioOptions, StockItemType } from './stock-item-details.resource';
+import {
+  expirationOptions,
+  radioOptions,
+  StockItemType,
+  resolveItemType,
+  itemTypeToIsDrug,
+} from './stock-item-details.resource';
 import { handleMutate } from '../../../utils';
 import { launchAddOrEditStockItemWorkspace } from '../../stock-item.utils';
 import { stockItemDetailsSchema, type StockItemFormData } from '../../validationSchema';
@@ -34,18 +40,43 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
     const { t } = useTranslation();
     const isTablet = useLayoutType() === 'tablet';
 
+    /*
+    Resolve the initial itemType from the DTO.
+    For new items it starts null (user must choose).
+    For existing items we derive from itemType first, then fall back to
+    the legacy isDrug boolean so older records display correctly.
+    */
+    const initialItemType = useMemo(() => resolveItemType(stockItem?.itemType, stockItem?.isDrug), [stockItem]);
+
     const { handleSubmit, control, formState, watch } = useForm<StockItemFormData>({
-      defaultValues: stockItem ?? {},
+      defaultValues: {
+        ...stockItem,
+        // Populate the form field with the resolved itemType string
+        itemType: initialItemType ?? undefined,
+      },
       mode: 'all',
       resolver: zodResolver(stockItemDetailsSchema),
     });
 
     const { errors } = formState;
+
     const handleSave: SubmitHandler<StockItemFormData> = async (formValues) => {
       try {
-        const response = stockItem
-          ? await updateStockItem(stockItem?.uuid, formValues)
-          : await createStockItem(formValues);
+        /*
+        Build the payload with itemType as the canonical field.
+        Also include the legacy isDrug boolean for API backward compat –
+        the server-side setIsDrug setter will accept it and keep things in
+        sync, but itemType is what actually drives persistence.
+        */
+        const payload = {
+          ...formValues,
+          itemType: formValues.itemType,
+          // Legacy field kept for backward compat with older server versions
+          isDrug: itemTypeToIsDrug(formValues.itemType as StockItemType),
+        };
+
+        const response = stockItem ? await updateStockItem(stockItem?.uuid, payload) : await createStockItem(payload);
+
         if (response?.data) {
           showSnackbar({
             isLowContrast: true,
@@ -55,11 +86,17 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
               ? `${t('stockItemEdited', 'Stock Item Edited Successfully')}`
               : `${t('stockItemAdded', 'Stock Item Added Successfully')}`,
           });
+
           if (!stockItem) {
             onCloseWorkspace?.();
-            // launch edit stock item workspace
+            // Launch the edit workspace after creation.
+            // Populate both itemType and the legacy isDrug flag on the item
+            // so launchAddOrEditStockItemWorkspace continues to work during
+            // the transition period when it may still read isDrug.
             const item = response.data;
-            item.isDrug = !!item.drugUuid;
+            const resolvedType = resolveItemType(item.itemType, item.isDrug);
+            item.itemType = resolvedType;
+            item.isDrug = itemTypeToIsDrug(resolvedType); // backward compat
             launchAddOrEditStockItemWorkspace(t, item);
           }
         }
@@ -67,7 +104,6 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
         handleTabChange(1);
         handleMutate(`${restBaseUrl}/stockmanagement/stockitem`);
       } catch (e) {
-        // Show notification
         showSnackbar({
           title: stockItem
             ? t('errorEditingStockItem', 'Error editing a stock Item')
@@ -78,16 +114,28 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
         });
       }
     };
-    const [observableIsDrug, observableHasExpiration] = watch(['isDrug', 'hasExpiration']);
-    const selectedItemType = useMemo<StockItemType | null>(() => {
-      if (observableIsDrug === true) return StockItemType.PHARMACEUTICALS;
-      else if (observableIsDrug === false) return StockItemType.NONE_PHARMACEUTICALS;
-      return null;
-    }, [observableIsDrug]);
+
+    const [observableItemType, observableHasExpiration] = watch(['itemType', 'hasExpiration']);
+
+    // Derive a typed enum value from the watched string for clean comparisons
+    const selectedItemType = useMemo<StockItemType | null>(
+      () => resolveItemType(observableItemType as string),
+      [observableItemType],
+    );
+
+    // A drug selector is shown only for pharmaceutical items
+    const isPharmaceutical = selectedItemType === StockItemType.PHARMACEUTICAL;
+    // A concept selector is shown for non-pharmaceutical and lab commodity items
+    const isConceptBased =
+      selectedItemType === StockItemType.NON_PHARMACEUTICAL || selectedItemType === StockItemType.LAB_COMMODITY;
 
     return (
       <form className={styles.formContainer}>
         <Stack className={styles.stack} gap={5}>
+          {/* ------------------------------------------------------------------
+              Item Type radio group – shown only when creating a new item.
+              For existing items the type is locked (displayed read-only below).
+          ------------------------------------------------------------------ */}
           {!stockItem && (
             <FormGroup
               className="clear-margin-bottom"
@@ -96,16 +144,30 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
             >
               <ControlledRadioButtonGroup
                 control={control}
-                name="isDrug"
-                controllerName="isDrug"
+                name="itemType"
+                controllerName="itemType"
                 legendText=""
-                invalid={!!errors.isDrug}
-                invalidText={errors.isDrug && errors?.isDrug?.message}
-                options={radioOptions} // Pass radioOptions directly
+                invalid={!!errors.itemType}
+                invalidText={errors.itemType && errors?.itemType?.message}
+                options={radioOptions}
               />
             </FormGroup>
           )}
-          {selectedItemType === StockItemType.PHARMACEUTICALS ? (
+
+          {/* Read-only type badge for existing items */}
+          {stockItem && initialItemType && (
+            <p className={styles.itemTypeBadge}>
+              <strong>{t('itemType', 'Item Type')}:</strong>{' '}
+              {initialItemType === StockItemType.PHARMACEUTICAL
+                ? t('pharmaceuticals', 'Pharmaceuticals')
+                : initialItemType === StockItemType.NON_PHARMACEUTICAL
+                ? t('nonPharmaceuticals', 'Non Pharmaceuticals')
+                : t('labCommodities', 'Lab Commodities')}
+            </p>
+          )}
+
+          {/* Drug selector – only for PHARMACEUTICAL items */}
+          {isPharmaceutical && (
             <DrugSelector
               name="drugUuid"
               controllerName="drugUuid"
@@ -116,17 +178,25 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
               invalid={!!errors.drugUuid}
               invalidText={errors.drugUuid && errors?.drugUuid?.message}
             />
-          ) : selectedItemType === StockItemType.NONE_PHARMACEUTICALS ? (
+          )}
+
+          {/* Concept selector – for NON_PHARMACEUTICAL and LAB_COMMODITY items */}
+          {isConceptBased && (
             <ConceptsSelector
               name="conceptUuid"
               controllerName="conceptUuid"
               control={control}
               title={t('pleaseSpecify', 'Please specify') + ':'}
-              placeholder={t('chooseAnItem', 'Choose an item')}
-              invalid={!!errors.drugUuid}
-              invalidText={errors.drugUuid && errors?.drugUuid?.message}
+              placeholder={
+                selectedItemType === StockItemType.LAB_COMMODITY
+                  ? t('chooseALabCommodity', 'Choose a lab commodity')
+                  : t('chooseAnItem', 'Choose an item')
+              }
+              invalid={!!errors.conceptUuid}
+              invalidText={errors.conceptUuid && errors?.conceptUuid?.message}
             />
-          ) : null}
+          )}
+
           <ControlledTextInput
             id="commonName"
             name="commonName"
@@ -150,6 +220,7 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
             invalid={!!errors.acronym}
             invalidText={errors.acronym && errors?.acronym?.message}
           />
+
           <div
             style={{
               display: 'grid',
@@ -169,7 +240,7 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
                 legendText=""
                 invalid={!!errors.hasExpiration}
                 invalidText={errors.hasExpiration && errors?.hasExpiration?.message}
-                options={expirationOptions} // Pass expirationOptions directly
+                options={expirationOptions}
               />
             </FormGroup>
 
@@ -191,6 +262,7 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
               </FormGroup>
             )}
           </div>
+
           <PreferredVendorSelector
             name="preferredVendorUuid"
             controllerName="preferredVendorUuid"
@@ -200,15 +272,18 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
             invalid={!!errors.preferredVendorUuid}
             invalidText={errors.preferredVendorUuid && errors?.preferredVendorUuid?.message}
           />
+
           <StockItemCategorySelector
             name="categoryUuid"
             controllerName="categoryUuid"
             control={control}
             itemType={
-              selectedItemType === StockItemType.PHARMACEUTICALS
+              isPharmaceutical
                 ? 'Drugs'
-                : selectedItemType === StockItemType.NONE_PHARMACEUTICALS
+                : selectedItemType === StockItemType.NON_PHARMACEUTICAL
                 ? 'Non Drugs'
+                : selectedItemType === StockItemType.LAB_COMMODITY
+                ? 'Lab Commodities'
                 : undefined
             }
             title={t('category', 'Category') + ':'}
@@ -216,7 +291,9 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
             invalid={!!errors.categoryUuid}
             invalidText={errors.categoryUuid && errors?.categoryUuid?.message}
           />
-          {observableIsDrug && (
+
+          {/* Dispensing unit is relevant for pharmaceutical AND lab commodity items */}
+          {(isPharmaceutical || selectedItemType === StockItemType.LAB_COMMODITY) && (
             <DispensingUnitSelector
               name="dispensingUnitUuid"
               controllerName="dispensingUnitUuid"
@@ -227,10 +304,14 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
               invalidText={errors.dispensingUnitUuid && errors?.dispensingUnitUuid?.message}
             />
           )}
-          {observableIsDrug && stockItem && (
+
+          {/* Stock item packaging units – shown for existing items that have a
+              drug (pharmaceutical) or are a lab commodity */}
+          {(isPharmaceutical || selectedItemType === StockItemType.LAB_COMMODITY) && stockItem && (
             <StockItemUnitsEdit control={control} formState={formState} stockItemUuid={stockItem?.uuid} />
           )}
         </Stack>
+
         <ButtonSet
           className={classNames(styles.buttonSet, {
             [styles.tablet]: isTablet,

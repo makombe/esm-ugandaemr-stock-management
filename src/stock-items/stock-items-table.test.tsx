@@ -56,8 +56,8 @@ describe('StockItemsTableComponent', () => {
       pageSizes: [10, 20, 30],
       currentPage: 1,
       setCurrentPage: jest.fn(),
-      isDrug: '',
-      setDrug: jest.fn(),
+      itemType: '',
+      setItemType: jest.fn(),
       setSearchString: jest.fn(),
     });
   });
@@ -105,8 +105,8 @@ describe('StockItemsTableComponent', () => {
       },
       pageSizes: [],
       error: undefined,
-      isDrug: '',
-      setDrug: undefined,
+      itemType: '',
+      setItemType: undefined,
       setSearchString: function (value: any): void {
         throw new Error('Function not implemented.');
       },
