@@ -6,14 +6,17 @@ import { ResourceRepresentation } from '../core/api/api';
 
 export function useStockItemsPages(v?: ResourceRepresentation) {
   const { t } = useTranslation();
-
   const pageSizes = [10, 20, 30, 40, 50];
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageSize, setPageSize] = useState(10);
   const [searchString, setSearchString] = useState(null);
 
-  // Drug filter type
-  const [isDrug, setDrug] = useState('');
+  // ------------------------------------------------------------------
+  // CHANGED: itemType replaces the legacy isDrug boolean string.
+  // Values: "" (all) | "PHARMACEUTICAL" | "NON_PHARMACEUTICAL" | "LAB_COMMODITY"
+  // Empty string means no filter – all item types are returned.
+  // ------------------------------------------------------------------
+  const [itemType, setItemTypeState] = useState('');
 
   const [stockItemFilter, setStockItemFilter] = useState<StockItemFilter>({
     startIndex: currentPage - 1,
@@ -33,9 +36,12 @@ export function useStockItemsPages(v?: ResourceRepresentation) {
       limit: currentPageSize,
       q: searchString,
       totalCount: true,
-      isDrug: isDrug,
+      // CHANGED: send itemType to the API instead of isDrug.
+      // An empty string means "no filter" so we pass undefined in that case
+      // to avoid sending an empty query parameter.
+      itemType: itemType || undefined,
     });
-  }, [searchString, currentPage, currentPageSize, isDrug]);
+  }, [searchString, currentPage, currentPageSize, itemType]);
 
   return {
     items: pagination.results,
@@ -48,10 +54,13 @@ export function useStockItemsPages(v?: ResourceRepresentation) {
     pageSizes,
     isLoading,
     error,
-    isDrug,
-    setDrug: (drug: string) => {
+    // CHANGED: expose itemType / setItemType instead of isDrug / setDrug
+    itemType,
+    setItemType: (type: string) => {
+      // Reset to page 1 whenever the filter changes so the user always
+      // sees results from the beginning of the filtered set
       setCurrentPage(1);
-      setDrug(drug);
+      setItemTypeState(type);
     },
     setSearchString,
   };

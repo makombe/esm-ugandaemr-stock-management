@@ -35,4 +35,5 @@ export const initialValues: StockItemDTO = {
   expiryNotice: undefined,
   etcdProductId: undefined,
   genericConceptCode: undefined,
+  itemType: undefined,
 };

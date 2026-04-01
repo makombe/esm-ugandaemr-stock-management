@@ -105,6 +105,7 @@ describe('AddEditStockItem', () => {
     creatorFamilyName: 'Doe',
     voided: false,
     expiryNotice: 30,
+    itemType: 'PHARMACEUTICAL',
   };
 
   it('renders correctly with initial state and default selected tab', () => {

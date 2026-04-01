@@ -118,6 +118,7 @@ describe('QtyUOMSelector', () => {
     resourceVersion: '1.8',
     uuid: '33225466-93c8-4720-b110-4f445f3764c6',
     voided: false,
+    itemType: 'PHARMACEUTICAL',
   };
 
   beforeEach(() => {

@@ -33,9 +33,38 @@ import EditStockItemActionsMenu from './edit-stock-item/edit-stock-item-action-m
 import FilterStockItems from './components/filter-stock-items/filter-stock-items.component';
 import styles from './stock-items-table.scss';
 import StockAvailability from '../stock-operations/stock-operations-forms/steps/stock-availability-cell.component';
+import {
+  itemTypeToIsDrug,
+  resolveItemType,
+  StockItemType,
+} from './add-stock-item/stock-item-details/stock-item-details.resource';
 
 interface StockItemsTableProps {
   from?: string;
+}
+
+/**
+ * Returns a human-readable type label for a stock item.
+ * Uses itemType when available, falls back to the legacy drugUuid presence
+ * for rows that pre-date the item_type column.
+ */
+function resolveTypeLabel(
+  t: (key: string, fallback: string) => string,
+  itemType?: string | null,
+  drugUuid?: string | null,
+): string {
+  const resolved = resolveItemType(itemType, drugUuid != null ? !!drugUuid : undefined);
+  switch (resolved) {
+    case StockItemType.PHARMACEUTICAL:
+      return t('drug', 'Drug');
+    case StockItemType.LAB_COMMODITY:
+      return t('labCommodity', 'Lab Commodity');
+    case StockItemType.NON_PHARMACEUTICAL:
+      return t('other', 'Other');
+    default:
+      // Last-resort legacy fallback
+      return drugUuid ? t('drug', 'Drug') : t('other', 'Other');
+  }
 }
 
 const StockItemsTableComponent: React.FC<StockItemsTableProps> = () => {
@@ -49,12 +78,12 @@ const StockItemsTableComponent: React.FC<StockItemsTableProps> = () => {
   const {
     currentPage,
     currentPageSize,
-    isDrug,
+    itemType, // replaces: isDrug
     isLoading,
     items,
     pageSizes,
     setCurrentPage,
-    setDrug,
+    setItemType, // replaces: setDrug
     setPageSize,
     setSearchString,
     totalCount,
@@ -74,51 +103,15 @@ const StockItemsTableComponent: React.FC<StockItemsTableProps> = () => {
 
   const tableHeaders = useMemo(
     () => [
-      {
-        id: 0,
-        header: t('type', 'Type'),
-        key: 'type',
-      },
-      {
-        id: 1,
-        header: t('genericName', 'Generic Name'),
-        key: 'genericName',
-      },
-      {
-        id: 2,
-        header: t('commonName', 'Common Name'),
-        key: 'commonName',
-      },
-      {
-        id: 3,
-        header: t('tradeName', 'Trade Name'),
-        key: 'tradeName',
-      },
-      {
-        id: 4,
-        header: t('stockAvailability', 'Stock Availability'),
-        key: 'stockAvailability',
-      },
-      {
-        id: 5,
-        header: t('dispensingUnitName', 'Dispensing UoM'),
-        key: 'dispensingUnitName',
-      },
-      {
-        id: 6,
-        header: t('defaultStockOperationsUoMName', 'Bulk Packaging'),
-        key: 'defaultStockOperationsUoMName',
-      },
-      {
-        id: 7,
-        header: t('reorderLevel', 'Reorder Level'),
-        key: 'reorderLevel',
-      },
-      {
-        id: 8,
-        header: t('actions', 'Actions'),
-        key: 'actions',
-      },
+      { id: 0, header: t('type', 'Type'), key: 'type' },
+      { id: 1, header: t('genericName', 'Generic Name'), key: 'genericName' },
+      { id: 2, header: t('commonName', 'Common Name'), key: 'commonName' },
+      { id: 3, header: t('tradeName', 'Trade Name'), key: 'tradeName' },
+      { id: 4, header: t('stockAvailability', 'Stock Availability'), key: 'stockAvailability' },
+      { id: 5, header: t('dispensingUnitName', 'Dispensing UoM'), key: 'dispensingUnitName' },
+      { id: 6, header: t('defaultStockOperationsUoMName', 'Bulk Packaging'), key: 'defaultStockOperationsUoMName' },
+      { id: 7, header: t('reorderLevel', 'Reorder Level'), key: 'reorderLevel' },
+      { id: 8, header: t('actions', 'Actions'), key: 'actions' },
     ],
     [t],
   );
@@ -129,7 +122,10 @@ const StockItemsTableComponent: React.FC<StockItemsTableProps> = () => {
       id: stockItem?.uuid,
       key: `key-${stockItem?.uuid}`,
       uuid: `${stockItem?.uuid}`,
-      type: stockItem?.drugUuid ? t('drug', 'Drug') : t('other', 'Other'),
+      // CHANGED: derive the display label from itemType (canonical) with a
+      // drugUuid fallback for legacy records that lack itemType.
+      type: resolveTypeLabel(t, stockItem?.itemType, stockItem?.drugUuid),
+
       genericName: <EditStockItemActionsMenu data={items[index]} />,
       commonName: stockItem?.commonName,
       tradeName: stockItem?.drugUuid ? stockItem?.conceptName : '',
@@ -142,12 +138,18 @@ const StockItemsTableComponent: React.FC<StockItemsTableProps> = () => {
         stockItem?.reorderLevelUoMName && stockItem?.reorderLevel
           ? `${stockItem?.reorderLevel?.toLocaleString()} ${stockItem?.reorderLevelUoMName}`
           : '',
+
       actions: (
         <IconButton
           kind="ghost"
           label={t('editStockItem', 'Edit stock item')}
           onClick={() => {
-            stockItem.isDrug = !!stockItem.drugUuid;
+            // CHANGED: populate itemType on the item before opening the editor.
+            // Also populate the legacy isDrug boolean so any code inside
+            // launchAddOrEditStockItemWorkspace that still reads isDrug works.
+            const resolved = resolveItemType(stockItem.itemType, stockItem.isDrug ?? !!stockItem.drugUuid);
+            stockItem.itemType = resolved;
+            stockItem.isDrug = itemTypeToIsDrug(resolved); // backward compat
             launchAddOrEditStockItemWorkspace(t, stockItem);
           }}
         >
@@ -193,7 +195,8 @@ const StockItemsTableComponent: React.FC<StockItemsTableProps> = () => {
                   placeholder={t('searchStockItems', 'Search stock items')}
                   value={searchInput}
                 />
-                <FilterStockItems filterType={isDrug} changeFilterType={setDrug} />
+                {/* CHANGED: pass itemType / setItemType instead of isDrug / setDrug */}
+                <FilterStockItems filterType={itemType} changeFilterType={setItemType} />
                 <AddStockItemsBulktImportActionButton />
                 <TableToolbarMenu data-testid="stock-items-menu">
                   <TableToolbarAction className={styles.toolbarAction} onClick={handleRefresh}>
@@ -226,22 +229,19 @@ const StockItemsTableComponent: React.FC<StockItemsTableProps> = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => {
-                  return (
-                    <React.Fragment key={row.id}>
-                      <TableRow
-                        {...getRowProps({ row })}
-                        className={isDesktop ? styles.desktopRow : styles.tabletRow}
-                        key={row.id}
-                      >
-                        {row.cells.map(
-                          (cell) =>
-                            cell?.info?.header !== 'details' && <TableCell key={cell.id}>{cell.value}</TableCell>,
-                        )}
-                      </TableRow>
-                    </React.Fragment>
-                  );
-                })}
+                {rows.map((row) => (
+                  <React.Fragment key={row.id}>
+                    <TableRow
+                      {...getRowProps({ row })}
+                      className={isDesktop ? styles.desktopRow : styles.tabletRow}
+                      key={row.id}
+                    >
+                      {row.cells.map(
+                        (cell) => cell?.info?.header !== 'details' && <TableCell key={cell.id}>{cell.value}</TableCell>,
+                      )}
+                    </TableRow>
+                  </React.Fragment>
+                ))}
               </TableBody>
             </Table>
             {rows.length === 0 ? (
@@ -256,7 +256,7 @@ const StockItemsTableComponent: React.FC<StockItemsTableProps> = () => {
             ) : null}
           </TableContainer>
         )}
-      ></DataTable>
+      />
       <Pagination
         className={styles.paginationOverride}
         onChange={({ page, pageSize }) => {
