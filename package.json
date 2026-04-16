@@ -19,7 +19,7 @@
     "coverage": "yarn test --coverage",
     "prepare": "husky install",
     "release": "yarn workspaces foreach --all --topological version",
-    "extract-translations": "i18next 'src/**/*.component.tsx' 'src/**/*.tsx' --config ./tools/i18next-parser.config.js",
+    "extract-translations": "i18next 'src/**/*.{ts,tsx}' --config ./tools/i18next-parser.config.js",
     "postinstall": "husky",
     "test-e2e": "playwright test"
   },
