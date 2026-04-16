@@ -101,7 +101,7 @@ const StockOperationExpandedRow: React.FC<StockOperationExpandedRowProps> = (pro
           )}
         </Row>
         <Row className={styles.statusContainerRow}>
-          <StockItemsTable items={props.model.stockOperationItems} />
+          <StockItemsTable items={props.model.stockOperationItems} operationType={props.model.operationType} />
         </Row>
         <Row className={styles.statusContainerRow}>
           {isLoading && (

@@ -40,6 +40,7 @@ type StockOperationItemsFormStepProps = {
   onLaunchItemsForm?: (stockOperationItem?: BaseStockOperationItemFormData) => void;
   schemaOptions?: SchemaOptions;
 };
+
 const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = ({
   stockOperationType,
   stockOperation,
@@ -63,11 +64,14 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
   );
 
   const uniqueId = useId();
-
   const form = useFormContext<StockOperationItemDtoSchema>();
   const observableOperationItems = form.watch('stockOperationItems');
+
   const isStockIssueOperation = stockOperationType?.operationType === OperationType.STOCK_ISSUE_OPERATION_TYPE;
   const isAdjustmentOperation = stockOperationType?.operationType === OperationType.ADJUSTMENT_OPERATION_TYPE;
+  const isRequisitionOperation =
+    stockOperationType?.operationType === OperationType.REQUISITION_OPERATION_TYPE ||
+    stockOperationType?.operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE;
 
   const headers = useMemo(() => {
     return [
@@ -90,23 +94,8 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
             },
           ]
         : []),
-      ...(effectivePermission.requiresActualBatchInfo
-        ? [
-            {
-              key: 'expiry',
-              header: t('expiry', 'Expiry'),
-            },
-          ]
-        : []),
-      ...(effectivePermission.requiresBatchUuid
-        ? [
-            {
-              key: 'expiry',
-              header: t('expiry', 'Expiry'),
-            },
-          ]
-        : []),
-
+      ...(effectivePermission.requiresActualBatchInfo ? [{ key: 'expiry', header: t('expiry', 'Expiry') }] : []),
+      ...(effectivePermission.requiresBatchUuid ? [{ key: 'expiry', header: t('expiry', 'Expiry') }] : []),
       {
         key: 'quantity',
         header: t('qty', 'Qty'),
@@ -115,7 +104,8 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
         key: 'quantityuom',
         header: t('quantityUom', 'Qty UoM'),
       },
-      ...(effectivePermission.requiresBatchUuid || effectivePermission.requiresActualBatchInfo
+      ...((effectivePermission.requiresBatchUuid || effectivePermission.requiresActualBatchInfo) &&
+      !isRequisitionOperation
         ? [
             {
               key: 'brand',
@@ -125,16 +115,11 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
           ]
         : []),
       ...(operationTypePermision.canCaptureQuantityPrice
-        ? [
-            {
-              key: 'purchasePrice',
-              header: t('purchasePrice', 'Purchase Price'),
-            },
-          ]
+        ? [{ key: 'purchasePrice', header: t('purchasePrice', 'Purchase Price') }]
         : []),
       { key: 'actions', header: t('actions', 'Actions') },
     ];
-  }, [operationTypePermision, t, effectivePermission]);
+  }, [operationTypePermision, t, effectivePermission, isRequisitionOperation]);
 
   const tableRows = useMemo(() => {
     return observableOperationItems?.map((item, index) => {
@@ -152,8 +137,18 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
 
       return {
         id: uuid || `${uniqueId}-${index}`,
-        item: stockItemUuid ? <StockOperationItemCell stockItemUuid={stockItemUuid} /> : '--',
+
+        item: stockItemUuid ? (
+          <StockOperationItemCell
+            stockItemUuid={stockItemUuid}
+            displayMode={isRequisitionOperation ? 'generic' : 'brand'}
+          />
+        ) : (
+          '--'
+        ),
+
         itemDetails: stockItemUuid ? <StockAvailability stockItemUuid={stockItemUuid} /> : '--',
+
         batch: (
           <StockOperationItemBatchNoCell
             operation={stockOperationType}
@@ -162,14 +157,18 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
             stockItemUuid={stockItemUuid}
           />
         ),
-        brand: (
+
+        brand: !isRequisitionOperation ? (
           <StockOperationItemBrandNameCell
             operation={stockOperationType}
             stockBatchUuid={stockBatchUuid}
             brandName={brandName}
             stockItemUuid={stockItemUuid}
           />
+        ) : (
+          '--'
         ),
+
         expiry: (
           <StockoperationItemExpiryCell
             operation={stockOperationType}
@@ -194,9 +193,7 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
               iconDescription={'Edit'}
               kind="ghost"
               renderIcon={Edit}
-              onClick={() => {
-                onLaunchItemsForm?.(item);
-              }}
+              onClick={() => onLaunchItemsForm?.(item)}
             />
             <Button
               type="button"
@@ -207,15 +204,14 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
               renderIcon={TrashCan}
               onClick={() => {
                 const items = form.getValues('stockOperationItems') as Array<BaseStockOperationItemFormData>;
-                const filteredItems = items.filter((i) => i.uuid !== item.uuid);
-                form.setValue('stockOperationItems', filteredItems as any);
+                form.setValue('stockOperationItems', items.filter((i) => i.uuid !== item.uuid) as any);
               }}
             />
           </>
         ),
       };
     });
-  }, [observableOperationItems, onLaunchItemsForm, stockOperationType, uniqueId, form]);
+  }, [observableOperationItems, onLaunchItemsForm, stockOperationType, uniqueId, form, isRequisitionOperation]);
 
   const handleNext = async () => {
     const valid = await form.trigger(['stockOperationItems']);
@@ -224,7 +220,6 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
       const errors = form.formState.errors;
       const items = observableOperationItems ?? [];
 
-      // ── No items at all ─────────────────────────────────────────────────────
       if (items.length === 0) {
         showSnackbar({
           kind: 'error',
@@ -234,14 +229,12 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
         return;
       }
 
-      // ── Stock issue: surface specific batch-related errors ───────────────────
       if (isStockIssueOperation && errors.stockOperationItems) {
         const itemErrors = errors.stockOperationItems as any;
         const hasInStockItemWithoutBatch = items.some((item: any, index: number) => {
           const itemError = itemErrors[index];
           return itemError?.stockBatchUuid && !item.isOutOfStock;
         });
-
         showSnackbar({
           kind: 'error',
           title: t('validationError', 'Validation error'),
@@ -252,17 +245,11 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
         return;
       }
 
-      // ── Adjustment with items already saved by StockItemForm ─────────────────
-      // Items were individually validated by StockItemForm before being pushed
-      // into the array — if items exist, treat the step as valid and proceed.
-      if (
-        isAdjustmentOperation && // ← pass this down as a prop or derive from stockOperationType
-        items.length > 0 &&
-        !errors.stockOperationItems?.message // only block on the "non-empty" error, not item shape
-      ) {
+      if (isAdjustmentOperation && items.length > 0 && !errors.stockOperationItems?.message) {
         onNext?.();
         return;
       }
+
       showSnackbar({
         kind: 'error',
         title: t('validationError', 'Validation error'),
@@ -274,15 +261,14 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
     onNext?.();
   };
 
-  const headerTitle = t('stockoperationItems', 'Stock operation items');
-
   return (
     <div style={{ margin: '10px' }}>
       <div className={styles.tableContainer}>
         <div className={styles.heading}>
-          <h4>{headerTitle}</h4>
+          <h4>{t('stockoperationItems', 'Stock operation items')}</h4>
         </div>
         <StockItemSearch
+          displayMode={isRequisitionOperation ? 'generic' : 'brand'}
           onSelectedItem={(stockItem) =>
             onLaunchItemsForm({
               uuid: `new-item-${getStockOperationUniqueId()}`,
@@ -305,10 +291,7 @@ const StockOperationItemsFormStep: React.FC<StockOperationItemsFormStepProps> = 
                   <TableRow>
                     {headers.map((header) => (
                       <TableHeader
-                        {...getHeaderProps({
-                          header,
-                          isSortable: false,
-                        })}
+                        {...getHeaderProps({ header, isSortable: false })}
                         style={header?.styles}
                         key={header.key}
                       >

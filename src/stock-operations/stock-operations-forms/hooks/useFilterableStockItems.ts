@@ -4,7 +4,7 @@ import { type UserFilterCriteria } from '../../../stock-lookups/stock-lookups.re
 import { ResourceRepresentation } from '../../../core/api/api';
 
 export function useFilterableStockItems(filter?: StockItemFilter) {
-  const [conceptFilter, setConceptFilter] = useState<UserFilterCriteria>(
+  const [conceptFilter, setConceptFilter] = useState<StockItemFilter>(
     filter || {
       v: ResourceRepresentation.Default,
       limit: 10,
@@ -18,19 +18,19 @@ export function useFilterableStockItems(filter?: StockItemFilter) {
   } = useStockItemsData(conceptFilter);
 
   const [searchString, setSearchString] = useState(null);
-
-  // Drug filter type
   const [limit, setLimit] = useState(filter?.limit || 10);
   const [representation, setRepresentation] = useState(filter?.v || ResourceRepresentation.Default);
 
+  const [groupByFormulary] = useState<boolean>(filter?.groupByFormulary ?? false);
   useEffect(() => {
     setConceptFilter({
       startIndex: 0,
       v: representation,
       limit: limit,
       q: searchString,
+      ...(groupByFormulary ? { groupByFormulary: true } : {}),
     });
-  }, [searchString, limit, representation]);
+  }, [searchString, limit, representation, groupByFormulary]);
 
   return {
     stockItemsList,

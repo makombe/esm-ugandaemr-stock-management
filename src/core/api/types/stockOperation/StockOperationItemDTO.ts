@@ -29,4 +29,5 @@ export interface StockOperationItemDTO {
   etcdProductId?: string | null | undefined;
   reasonForRequestedQuantity?: string | null | undefined;
   genericConceptCode?: string | null | undefined;
+  displayName?: string | null | undefined;
 }
