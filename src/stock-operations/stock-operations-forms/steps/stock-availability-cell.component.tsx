@@ -42,7 +42,7 @@ const StockAvailability: React.FC<{ stockItemUuid: string }> = ({ stockItemUuid 
           Available: {totalQuantity.toLocaleString()} {commonUOM}
         </span>
       ) : (
-        <span className={styles.outOfStock}>Out of Stock</span>
+        <span className={styles.outOfStock}>{t('outOfStock', 'Out of Stock')}</span>
       )}
     </div>
   );

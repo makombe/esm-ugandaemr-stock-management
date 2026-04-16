@@ -85,48 +85,48 @@ export const stockNavMenu = getSyncLifecycle(SideMenu, options);
 // t("overview","Overview")
 export const stockOverview = getSyncLifecycle(StockHomeLandingPage, options);
 export const stockOverviewLink = getSyncLifecycle(
-  createDashboardLink({ title: 'Overview', name: 'stock-management' }),
+  createDashboardLink({ title: 'overview', name: 'stock-management' }),
   options,
 );
 
 // t("operations","Operations")
 export const stockOperations = getSyncLifecycle(StockOperationsComponent, options);
 export const stockOperationsLink = getSyncLifecycle(
-  createDashboardLink({ title: 'Operations', name: 'operations' }),
+  createDashboardLink({ title: 'operations', name: 'operations' }),
   options,
 );
 
 // t("items","Items")
 export const stockItems = getSyncLifecycle(StockItems, options);
 
-export const stockItemsLink = getSyncLifecycle(createDashboardLink({ title: 'Items', name: 'items' }), options);
+export const stockItemsLink = getSyncLifecycle(createDashboardLink({ title: 'items', name: 'items' }), options);
 
-// t("useScopes","User role scopes")
+// t("userRoleScopes","User role scopes")
 export const stockUserScopes = getSyncLifecycle(StockUserScopes, options);
 export const stockUserScopesLink = getSyncLifecycle(
-  createDashboardLink({ title: 'User role scopes', name: 'user-scopes' }),
+  createDashboardLink({ title: 'userRoleScopes', name: 'user-scopes' }),
   options,
 );
 
 // t("sources","Sources")
 export const stockSources = getSyncLifecycle(StockSources, options);
-export const stockSourcesLink = getSyncLifecycle(createDashboardLink({ title: 'Sources', name: 'sources' }), options);
+export const stockSourcesLink = getSyncLifecycle(createDashboardLink({ title: 'sources', name: 'sources' }), options);
 
 // t("locations","Locations")
 export const stockLocations = getSyncLifecycle(StockLocations, options);
 export const stockLocationsLink = getSyncLifecycle(
-  createDashboardLink({ title: 'Locations', name: 'locations' }),
+  createDashboardLink({ title: 'locations', name: 'locations' }),
   options,
 );
 
 // t("reports","Reports")
 export const stockReports = getSyncLifecycle(StockReports, options);
-export const stockReportsLink = getSyncLifecycle(createDashboardLink({ title: 'Reports', name: 'reports' }), options);
+export const stockReportsLink = getSyncLifecycle(createDashboardLink({ title: 'reports', name: 'reports' }), options);
 
 // t("settings","Settings")
 export const stockSettings = getSyncLifecycle(StockSettings, options);
 export const stockSettingsLink = getSyncLifecycle(
-  createDashboardLink({ title: 'Settings', name: 'settings' }),
+  createDashboardLink({ title: 'settings', name: 'settings' }),
   options,
 );
 
