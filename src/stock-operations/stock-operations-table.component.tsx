@@ -111,10 +111,30 @@ const StockOperations: React.FC<StockOperationsTableProps> = () => {
       filteredOperationsByLocation?.map((stockOperation, index) => {
         const threshHold = 1;
         const itemCountGreaterThanThreshhold = (stockOperation?.stockOperationItems?.length ?? 0) > threshHold;
+        const isRequisition =
+          stockOperation?.operationType === 'requisition' || stockOperation?.operationType === 'externalrequisition';
+        const resolveItemName = (item: any): string => {
+          if (isRequisition) {
+            if (item?.displayName) {
+              return item.displayName;
+            }
+            if (item?.drugName) {
+              const sep = item.drugName.indexOf(' - ');
+              return sep > -1 ? item.drugName.substring(0, sep).trim() : item.drugName;
+            }
+            if (item?.commonName) {
+              const sep = item.commonName.indexOf(' - ');
+              return sep > -1 ? item.commonName.substring(0, sep).trim() : item.commonName;
+            }
+            return '';
+          }
+          return item?.commonName ?? '';
+        };
+
         const commonNames =
           stockOperation?.stockOperationItems
             ?.slice(0, itemCountGreaterThanThreshhold ? threshHold : undefined)
-            .map((item) => item.commonName)
+            .map(resolveItemName)
             .join(', ') ?? '';
 
         return {
@@ -154,7 +174,6 @@ const StockOperations: React.FC<StockOperationsTableProps> = () => {
       }),
     [filteredOperationsByLocation],
   );
-
   if (isLoading && !filterApplied) {
     return (
       <DataTableSkeleton className={styles.dataTableSkeleton} showHeader={false} rowCount={5} columnCount={5} zebra />

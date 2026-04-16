@@ -18,25 +18,45 @@ import styles from './stock-items-table.scss';
 
 type Props = {
   items: Array<StockOperationItemDTO>;
+  operationType?: string | null | undefined; // e.g. 'REQUISITION' | 'RECEIPT' | 'ISSUE' etc.
 };
-const StockItemsTable: React.FC<Props> = ({ items }) => {
+
+const REQUISITION_TYPES = ['requisition', 'externalrequisition'];
+
+const StockItemsTable: React.FC<Props> = ({ items, operationType }) => {
   const { t } = useTranslation();
   const [pageSize, setPageSize] = useState(10);
   const pageSizesOptions = useMemo(() => [5, 10, 20, 50, 100], []);
-  const [searchText, setSearchText] = useState();
+  const [searchText, setSearchText] = useState<string>();
+
+  const isRequisition = REQUISITION_TYPES.includes(operationType ?? '');
+
+  /**
+   * For requisitions show the generic name (displayName).
+   * For all other operations show the brand/common name (commonName).
+   */
+  const getItemName = (item: StockOperationItemDTO): string => {
+    if (isRequisition) {
+      return item.displayName ?? item.commonName ?? '--';
+    }
+    return item.commonName ?? item.displayName ?? '--';
+  };
 
   const handleSearch = (item: StockOperationItemDTO) => {
     if (!searchText) return true;
-    return item.commonName.toLowerCase().includes(searchText);
+    // Search across both name fields so nothing is missed
+    const nameToSearch = getItemName(item).toLowerCase();
+    return nameToSearch.includes(searchText.toLowerCase());
   };
+
   const filtered = items.filter(handleSearch);
-  const { results, totalPages, currentPage, goTo } = usePagination(filtered, pageSize);
+  const { results, currentPage, goTo } = usePagination(filtered, pageSize);
 
   const headers = useMemo(
     () => [
       {
         header: t('item', 'Item'),
-        key: 'commonName',
+        key: 'itemName',
       },
       {
         header: t('batchNo', 'Batch No'),
@@ -61,30 +81,38 @@ const StockItemsTable: React.FC<Props> = ({ items }) => {
   const tableRows = useMemo(
     () =>
       results.map((item, index) => ({
-        id: index,
+        id: String(index),
         ...item,
+        itemName: getItemName(item), // ← resolved name
         expiration: item.expiration ? formatDate(parseDate(`${item.expiration}`)) : '--',
       })),
-    [results],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [results, isRequisition],
   );
 
   return (
     <Tile className={styles.container}>
       <span className={styles.title}>{t('stockItems', 'Stock items')}</span>
-      <Search value={searchText} onChange={({ target: { value } }) => setSearchText(value)} />
-      <DataTable useZebraStyles={true} rows={tableRows} headers={headers}>
+      <Search
+        value={searchText}
+        onChange={({ target: { value } }) => setSearchText(value)}
+        placeholder={t('searchItems', 'Search items...')}
+      />
+      <DataTable useZebraStyles rows={tableRows} headers={headers}>
         {({ rows, headers, getTableProps, getHeaderProps, getRowProps }) => (
           <Table {...getTableProps()}>
             <TableHead>
               <TableRow>
                 {headers.map((header) => (
-                  <TableHeader {...getHeaderProps({ header })}>{header.header}</TableHeader>
+                  <TableHeader key={header.key} {...getHeaderProps({ header })}>
+                    {header.header}
+                  </TableHeader>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <TableRow {...getRowProps({ row })}>
+                <TableRow key={row.id} {...getRowProps({ row })}>
                   {row.cells.map((cell) => (
                     <TableCell key={cell.id}>{cell.value}</TableCell>
                   ))}

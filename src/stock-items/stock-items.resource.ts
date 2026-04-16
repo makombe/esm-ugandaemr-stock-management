@@ -30,6 +30,7 @@ export interface StockItemFilter extends ResourceFilterCriteria {
 
   drugUuid?: string | null;
   conceptUuid?: string | null;
+  groupByFormulary?: boolean | null;
 }
 
 export interface StockItemTransactionFilter extends ResourceFilterCriteria {
@@ -87,8 +88,10 @@ export function useStockItems(filter: StockItemFilter) {
    * we never accidentally send both isDrug and itemType to the API.
    * The itemType field is the only one the updated server understands.
    */
-  const { isDrug: _ignored, ...cleanFilter } = filter;
-  const apiUrl = `${restBaseUrl}/stockmanagement/stockitem${toQueryParams(cleanFilter)}`;
+  const { isDrug: _ignored, groupByFormulary, ...cleanFilter } = filter;
+  const apiUrl =
+    `${restBaseUrl}/stockmanagement/stockitem${toQueryParams(cleanFilter)}` +
+    (groupByFormulary ? '&groupByFormulary=true' : '');
 
   const { data, error, isLoading } = useSWR<{ data: PageableResult<StockItemDTO> }, Error>(apiUrl, openmrsFetch);
 
