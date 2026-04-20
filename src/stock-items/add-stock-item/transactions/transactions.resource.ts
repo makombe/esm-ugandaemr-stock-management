@@ -5,8 +5,10 @@ import {
   useStockItemInventory,
   useStockItemTransactions,
 } from '../../stock-items.resource';
+import { useTranslation } from 'react-i18next';
 
 export function useStockItemsTransactions(filter?: StockItemInventoryFilter) {
+  const { t } = useTranslation();
   const [stockItemFilter, setStockItemFilter] = useState<StockItemInventoryFilter>({
     startIndex: 0,
     v: filter?.v || ResourceRepresentation.Default,
@@ -47,80 +49,80 @@ export function useStockItemsTransactions(filter?: StockItemInventoryFilter) {
     () => [
       {
         key: 'date',
-        header: 'Date',
+        header: t('date', 'Date'),
       },
       {
         key: 'location',
-        header: 'Location',
+        header: t('location', 'Location'),
       },
       {
         key: 'transaction',
-        header: 'Transaction',
+        header: t('transaction', 'Transaction'),
       },
       {
         key: 'in',
-        header: 'IN',
+        header: t('in', 'IN'),
       },
       {
         key: 'out',
-        header: 'OUT',
+        header: t('out', 'OUT'),
       },
       {
         key: 'batch',
-        header: 'Batch',
+        header: t('batch', 'Batch'),
       },
       {
         key: 'reference',
-        header: 'Reference',
+        header: t('reference', 'Reference'),
       },
       {
         key: 'status',
-        header: 'Status',
+        header: t('status', 'Status'),
       },
     ],
-    [],
+    [t],
   );
 
   const binCardHeaders = useMemo(
     () => [
       {
         key: 'date',
-        header: 'Date',
+        header: t('date', 'Date'),
       },
       {
         key: 'location',
-        header: 'Location',
+        header: t('location', 'Location'),
       },
       {
         key: 'transaction',
-        header: 'Transaction',
+        header: t('transaction', 'Transaction'),
       },
       {
         key: 'totalin',
-        header: 'IN',
+        header: t('in', 'IN'),
       },
       {
         key: 'totalout',
-        header: 'OUT',
+        header: t('out', 'OUT'),
       },
       {
         key: 'batch',
-        header: 'Batch',
+        header: t('batch', 'Batch'),
       },
       {
         key: 'balance',
-        header: 'Balance',
+        header: t('balance', 'Balance'),
       },
       {
         key: 'reference',
-        header: 'Reference',
+        header: t('reference', 'Reference'),
       },
       {
         key: 'status',
-        header: 'Status',
+        header: t('status', 'Status'),
       },
     ],
-    [],
+    [t],
   );
 
   return {

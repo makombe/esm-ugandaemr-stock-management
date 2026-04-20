@@ -63,42 +63,42 @@ const TransactionsPrintAction: React.FC<Props> = ({ columns, data, itemUuid, fil
     () => [
       {
         key: 'patientId',
-        header: 'Patient ID',
+        header: t('patientId', 'Patient ID'),
       },
       {
         key: 'patientName',
-        header: 'Patient Name',
+        header: t('patientName', 'Patient Name'),
       },
       {
         key: 'patientIdentifier',
-        header: 'Patient Identifier',
+        header: t('patientIdentifier', 'Patient Identifier'),
       },
       {
         key: 'date',
-        header: 'Date',
+        header: t('date', 'Date'),
       },
       {
         key: 'location',
-        header: 'Location',
+        header: t('location', 'Location'),
       },
       {
         key: 'transaction',
-        header: 'Transaction',
+        header: t('transaction', 'Transaction'),
       },
       {
         key: 'balance',
-        header: 'Balance',
+        header: t('balance', 'Balance'),
       },
       {
         key: 'totalout',
-        header: 'OUT',
+        header: t('out', 'OUT'),
       },
       {
         key: 'batch',
-        header: 'Batch',
+        header: t('batch', 'Batch'),
       },
     ],
-    [],
+    [t],
   );
 
   const handleBincardClick = () => {
@@ -126,14 +126,14 @@ const TransactionsPrintAction: React.FC<Props> = ({ columns, data, itemUuid, fil
           <MenuItem
             label={t('printStockCard', 'Print Stock Card')}
             renderIcon={(props) => <Printer size={24} {...props} />}
-            iconDescription="Print Stock Card"
+            iconDescription={t('printStockCard', 'Print Stock Card')}
             onClick={handleStockcardClick}
             disabled={isStockItemLoading || isStockCardLoading}
           />
           <MenuItem
             label={t('printBinCard', 'Print Bin Card')}
             renderIcon={(props) => <Printer size={24} {...props} />}
-            iconDescription="Print Bin Card"
+            iconDescription={t('printBinCard', 'Print Bin Card')}
             onClick={handleBincardClick}
             disabled={isStockItemLoading}
           />
