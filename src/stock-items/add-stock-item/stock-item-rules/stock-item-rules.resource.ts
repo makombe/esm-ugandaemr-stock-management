@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import { type StockRuleFilter, useStockRules } from '../../stock-items.resource';
 import { usePagination } from '@openmrs/esm-framework';
+import { useTranslation } from 'react-i18next';
 
 export function useStockItemRules(filter: StockRuleFilter) {
+  const { t } = useTranslation();
   const { items, isLoading, error } = useStockRules(filter);
 
   const pageSizes = [10, 20, 30, 40, 50];
@@ -13,43 +15,43 @@ export function useStockItemRules(filter: StockRuleFilter) {
     () => [
       {
         key: 'location',
-        header: 'Location',
+        header: t('location', 'Location'),
       },
       {
         key: 'name',
-        header: 'Name',
+        header: t('name', 'Name'),
       },
       {
         key: 'quantity',
-        header: 'Quantity Threshold',
+        header: t('quantityThreshold', 'Quantity Threshold'),
       },
       {
         key: 'evaluationFrequency',
-        header: 'Frequency Check',
+        header: t('frequencyCheck', 'Frequency Check'),
       },
       {
         key: 'actionFrequency',
-        header: 'Notification Frequency',
+        header: t('notificationFrequency', 'Notification Frequency'),
       },
       {
         key: 'alertRole',
-        header: 'Alert Role',
+        header: t('alertRole', 'Alert Role'),
       },
       {
         key: 'mailRole',
-        header: 'Mail Role',
+        header: t('mailRole', 'Mail Role'),
       },
       {
         key: 'enabled',
-        header: 'Enabled?',
+        header: t('enabled', 'Enabled?'),
       },
       {
         // id: 4,
-        header: 'actions',
+        header: t('actions', 'Actions'),
         key: 'actions',
       },
     ],
-    [],
+    [t],
   );
 
   return {
