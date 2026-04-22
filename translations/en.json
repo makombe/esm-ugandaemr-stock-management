@@ -156,6 +156,7 @@
   "externalRequisitionStatusUpdateFailed": "Failed to update external requisition status",
   "fetchPurchaseOrderFailed": "Failed to fetch purchase order status",
   "filter": "Filter...",
+  "filterBy": "Filter by {{filterName}}",
   "filterByLocation": "Filter by Location",
   "findItems": "Find your items",
   "formCreated": "Add Location",
