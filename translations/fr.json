@@ -156,6 +156,7 @@
   "externalRequisitionStatusUpdateFailed": "Échec de la mise à jour du statut externe",
   "fetchPurchaseOrderFailed": "Échec de récupération du statut de commande",
   "filter": "Filtrer...",
+  "filterBy": "Filtrer par {{filterName}}",
   "filterByLocation": "Filtrer par emplacement",
   "findItems": "Trouver vos articles",
   "formCreated": "Ajouter un emplacement",

@@ -4,6 +4,7 @@ import { getStockOperationTypes, useConcept } from '../stock-lookups/stock-looku
 import { StockFilters } from '../constants';
 import { StockOperationStatusTypes } from '../core/api/types/stockOperation/StockOperationStatus';
 import styles from '../stock-items/stock-items-table.scss';
+import { useTranslation } from 'react-i18next';
 
 interface StockOperationFiltersProps {
   conceptUuid?: string;
@@ -12,6 +13,7 @@ interface StockOperationFiltersProps {
 }
 
 const StockOperationsFilters: React.FC<StockOperationFiltersProps> = ({ conceptUuid, onFilterChange, filterName }) => {
+  const { t } = useTranslation();
   const { items, isLoading } = useConcept(conceptUuid);
   const [isDataLoading, setIsDataLoading] = useState(false);
   const [dataItems, setDataItems] = useState([]);
@@ -23,7 +25,7 @@ const StockOperationsFilters: React.FC<StockOperationFiltersProps> = ({ conceptU
         setDataItems(
           StockOperationStatusTypes.map((option) => ({
             uuid: option,
-            display: option,
+            display: t(option),
           })),
         );
         break;
@@ -50,7 +52,7 @@ const StockOperationsFilters: React.FC<StockOperationFiltersProps> = ({ conceptU
         });
     }
     setIsDataLoading(false);
-  }, [filterName, isLoading, items.answers]);
+  }, [filterName, isLoading, items.answers, t]);
 
   if (isDataLoading) {
     return <DropdownSkeleton />;
@@ -62,10 +64,10 @@ const StockOperationsFilters: React.FC<StockOperationFiltersProps> = ({ conceptU
       className={styles.filtersAlign}
       disabled={!dataItems.length}
       id="multiSelect"
-      label={filterName}
+      label={t(filterName)}
       labelInline
       items={dataItems}
-      itemToString={(item) => (item ? item.display : 'Not Set')}
+      itemToString={(item) => (item ? item.display : t('notSet', 'Not Set'))}
       onChange={({ selectedItems }) => {
         if (selectedItems) {
           onFilterChange(
@@ -74,7 +76,7 @@ const StockOperationsFilters: React.FC<StockOperationFiltersProps> = ({ conceptU
           );
         }
       }}
-      placeholder={`Filter by ${filterName}`}
+      placeholder={t('filterBy', 'Filter by {{filterName}}', { filterName })}
     />
   );
 };

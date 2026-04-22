@@ -14,31 +14,6 @@ export enum StockItemType {
 }
 
 /**
- * Human-readable labels for each item type, used in the UI radio group
- * and anywhere a display string is needed.
- */
-export const StockItemTypeLabels: Record<StockItemType, string> = {
-  [StockItemType.PHARMACEUTICAL]: 'Pharmaceuticals',
-  [StockItemType.NON_PHARMACEUTICAL]: 'Non Pharmaceuticals',
-  [StockItemType.LAB_COMMODITY]: 'Lab Commodities',
-};
-
-/**
- * Radio options for the Item Type selector.
- * The `value` is the StockItemType string sent to the API.
- */
-export const radioOptions: RadioOption[] = [
-  { label: StockItemTypeLabels[StockItemType.PHARMACEUTICAL], value: StockItemType.PHARMACEUTICAL },
-  { label: StockItemTypeLabels[StockItemType.NON_PHARMACEUTICAL], value: StockItemType.NON_PHARMACEUTICAL },
-  { label: StockItemTypeLabels[StockItemType.LAB_COMMODITY], value: StockItemType.LAB_COMMODITY },
-];
-
-export const expirationOptions: RadioOption[] = [
-  { label: 'Yes', value: 'true' },
-  { label: 'No', value: 'false' },
-];
-
-/**
  * Derives a StockItemType from the legacy isDrug boolean that may be present
  * on older DTO objects loaded before the itemType field was introduced.
  * Returns null when neither field is available.

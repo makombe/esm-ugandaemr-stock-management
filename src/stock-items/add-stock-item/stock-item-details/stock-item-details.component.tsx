@@ -1,33 +1,27 @@
-import React, { forwardRef, useMemo } from 'react';
-import classNames from 'classnames';
 import { Button, ButtonSet, FormGroup, InlineLoading, Stack } from '@carbon/react';
 import { Save } from '@carbon/react/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { getCoreTranslation, restBaseUrl, showSnackbar, useLayoutType } from '@openmrs/esm-framework';
+import classNames from 'classnames';
+import React, { forwardRef, useMemo } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { getCoreTranslation, restBaseUrl, showSnackbar, useLayoutType } from '@openmrs/esm-framework';
-import { createStockItem, updateStockItem } from '../../stock-items.resource';
-import {
-  expirationOptions,
-  radioOptions,
-  StockItemType,
-  resolveItemType,
-  itemTypeToIsDrug,
-} from './stock-item-details.resource';
-import { handleMutate } from '../../../utils';
-import { launchAddOrEditStockItemWorkspace } from '../../stock-item.utils';
-import { stockItemDetailsSchema, type StockItemFormData } from '../../validationSchema';
 import { type StockItemDTO } from '../../../core/api/types/stockItem/StockItem';
-import ConceptsSelector from '../concepts-selector/concepts-selector.component';
 import ControlledNumberInput from '../../../core/components/carbon/controlled-number-input.component';
 import ControlledRadioButtonGroup from '../../../core/components/carbon/controlled-radio-button-group.component';
 import ControlledTextInput from '../../../core/components/carbon/controlled-text-input.component';
+import { handleMutate } from '../../../utils';
+import styles from '../../add-stock-item/add-stock-item.scss';
+import { launchAddOrEditStockItemWorkspace } from '../../stock-item.utils';
+import { createStockItem, updateStockItem } from '../../stock-items.resource';
+import { stockItemDetailsSchema, type StockItemFormData } from '../../validationSchema';
+import ConceptsSelector from '../concepts-selector/concepts-selector.component';
 import DispensingUnitSelector from '../dispensing-unit-selector/dispensing-unit-selector.component';
 import DrugSelector from '../drug-selector/drug-selector.component';
 import PreferredVendorSelector from '../preferred-vendor-selector/preferred-vendor-selector.component';
 import StockItemCategorySelector from '../stock-item-category-selector/stock-item-category-selector.component';
 import StockItemUnitsEdit from '../stock-item-units-edit/stock-item-units-edit.component';
-import styles from '../../add-stock-item/add-stock-item.scss';
+import { itemTypeToIsDrug, type RadioOption, resolveItemType, StockItemType } from './stock-item-details.resource';
 
 interface StockItemDetailsProps {
   stockItem?: StockItemDTO;
@@ -39,6 +33,15 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
   ({ stockItem, handleTabChange, onCloseWorkspace }) => {
     const { t } = useTranslation();
     const isTablet = useLayoutType() === 'tablet';
+    const expirationOptions: RadioOption[] = [
+      { label: t('yes', 'Yes'), value: 'true' },
+      { label: t('no', 'No'), value: 'false' },
+    ];
+    const radioOptions: RadioOption[] = [
+      { label: t('pharmaceuticals', 'Pharmaceuticals'), value: StockItemType.PHARMACEUTICAL },
+      { label: t('nonPharmaceuticals', 'Non Pharmaceuticals'), value: StockItemType.NON_PHARMACEUTICAL },
+      { label: t('labCommodities', 'Lab Commodities'), value: StockItemType.LAB_COMMODITY },
+    ];
 
     /*
     Resolve the initial itemType from the DTO.
