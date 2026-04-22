@@ -151,7 +151,7 @@ const StockOperations: React.FC<StockOperationsTableProps> = () => {
             commonNames,
             more: itemCountGreaterThanThreshhold ? stockOperation?.stockOperationItems?.length - threshHold : 0,
           },
-          status: `${stockOperation?.status}`,
+          status: stockOperation?.status ? t(stockOperation.status) : '',
           source: `${stockOperation?.sourceName ?? ''}`,
           destination: `${stockOperation?.destinationName ?? ''}`,
           location: (
@@ -172,7 +172,7 @@ const StockOperations: React.FC<StockOperationsTableProps> = () => {
           actions: <EditStockOperationActionMenu stockOperation={stockOperation} showIcon={true} showprops={false} />,
         };
       }),
-    [filteredOperationsByLocation],
+    [filteredOperationsByLocation, t],
   );
   if (isLoading && !filterApplied) {
     return (
