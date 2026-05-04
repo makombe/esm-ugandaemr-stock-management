@@ -112,6 +112,21 @@ jobs:
             dist
           overwrite: true
 
+  Trigger_server_build:
+      runs-on: ubuntu-latest
+      needs: pre_release
+      steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v2
+  
+        - name: Invoke workflow without inputs. Don't wait for result
+          uses: the-actions-org/workflow-dispatch@v4
+          with:
+            workflow: KenyaEMR CI
+            repo: Palladium-hub/openmrs-config-kenyaemr
+            token: ${{ secrets.PERSONAL_TOKENS }}
+            wait-for-completion: false 
+            
   release:
     runs-on: ubuntu-latest
 
@@ -146,17 +161,4 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
-  Trigger_server_build:
-      runs-on: ubuntu-latest
-      needs: release
-      steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v2
   
-        - name: Invoke workflow without inputs. Don't wait for result
-          uses: the-actions-org/workflow-dispatch@v4
-          with:
-            workflow: KenyaEMR CI
-            repo: Palladium-hub/openmrs-config-kenyaemr
-            token: ${{ secrets.PERSONAL_TOKENS }}
-            wait-for-completion: false 
