@@ -41,6 +41,7 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
       { label: t('pharmaceuticals', 'Pharmaceuticals'), value: StockItemType.PHARMACEUTICAL },
       { label: t('nonPharmaceuticals', 'Non Pharmaceuticals'), value: StockItemType.NON_PHARMACEUTICAL },
       { label: t('labCommodities', 'Lab Commodities'), value: StockItemType.LAB_COMMODITY },
+      { label: t('other', 'Other'), value: StockItemType.OTHER },
     ];
 
     /*
@@ -128,9 +129,11 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
 
     // A drug selector is shown only for pharmaceutical items
     const isPharmaceutical = selectedItemType === StockItemType.PHARMACEUTICAL;
-    // A concept selector is shown for non-pharmaceutical and lab commodity items
+    // A concept selector is shown for non-pharmaceutical, lab commodity, and other items
     const isConceptBased =
-      selectedItemType === StockItemType.NON_PHARMACEUTICAL || selectedItemType === StockItemType.LAB_COMMODITY;
+      selectedItemType === StockItemType.NON_PHARMACEUTICAL ||
+      selectedItemType === StockItemType.LAB_COMMODITY ||
+      selectedItemType === StockItemType.OTHER;
 
     return (
       <form className={styles.formContainer}>
@@ -165,7 +168,9 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
                 ? t('pharmaceuticals', 'Pharmaceuticals')
                 : initialItemType === StockItemType.NON_PHARMACEUTICAL
                 ? t('nonPharmaceuticals', 'Non Pharmaceuticals')
-                : t('labCommodities', 'Lab Commodities')}
+                : initialItemType === StockItemType.LAB_COMMODITY
+                ? t('labCommodities', 'Lab Commodities')
+                : t('other', 'Other')}
             </p>
           )}
 
@@ -287,6 +292,8 @@ const StockItemDetails = forwardRef<never, StockItemDetailsProps>(
                 ? 'Non Drugs'
                 : selectedItemType === StockItemType.LAB_COMMODITY
                 ? 'Lab Commodities'
+                : selectedItemType === StockItemType.OTHER
+                ? 'Other'
                 : undefined
             }
             title={t('category', 'Category') + ':'}

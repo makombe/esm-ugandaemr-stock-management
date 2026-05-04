@@ -11,6 +11,7 @@ export enum StockItemType {
   PHARMACEUTICAL = 'PHARMACEUTICAL',
   NON_PHARMACEUTICAL = 'NON_PHARMACEUTICAL',
   LAB_COMMODITY = 'LAB_COMMODITY',
+  OTHER = 'OTHER',
 }
 
 /**
@@ -40,6 +41,12 @@ export function resolveItemType(itemType?: string | null, isDrug?: boolean | nul
  */
 export function itemTypeToIsDrug(itemType: StockItemType | null): boolean | null {
   if (itemType === StockItemType.PHARMACEUTICAL) return true;
-  if (itemType === StockItemType.NON_PHARMACEUTICAL || itemType === StockItemType.LAB_COMMODITY) return false;
+  // NON_PHARMACEUTICAL, LAB_COMMODITY, and OTHER all have no drug association
+  if (
+    itemType === StockItemType.NON_PHARMACEUTICAL ||
+    itemType === StockItemType.LAB_COMMODITY ||
+    itemType === StockItemType.OTHER
+  )
+    return false;
   return null;
 }

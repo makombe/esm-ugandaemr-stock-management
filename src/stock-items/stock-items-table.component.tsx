@@ -60,9 +60,11 @@ function resolveTypeLabel(
     case StockItemType.LAB_COMMODITY:
       return t('labCommodity', 'Lab Commodity');
     case StockItemType.NON_PHARMACEUTICAL:
+      return t('nonPharmaceutical', 'Non Pharmaceutical');
+    case StockItemType.OTHER:
       return t('other', 'Other');
     default:
-      // Last-resort legacy fallback
+      // Legacy fallback: derive from drugUuid presence
       return drugUuid ? t('drug', 'Drug') : t('other', 'Other');
   }
 }
