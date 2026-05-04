@@ -44,6 +44,8 @@ const FilterStockItems: React.FC<FilterStockItemsProps> = ({ filterType, changeF
         value={StockItemType.LAB_COMMODITY}
         id="item-type-lab-commodity"
       />
+      {/* OTHER – new fourth type */}
+      <RadioButton labelText={t('other', 'Other')} value={StockItemType.OTHER} id="item-type-other" />
     </RadioButtonGroup>
   );
 };

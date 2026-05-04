@@ -10,7 +10,12 @@ export const stockItemDetailsSchema = z
     // Required on create (user must pick a type); optional on update because
     // the type is locked and not re-submitted by the edit form.
     itemType: z
-      .enum([StockItemType.PHARMACEUTICAL, StockItemType.NON_PHARMACEUTICAL, StockItemType.LAB_COMMODITY])
+      .enum([
+        StockItemType.PHARMACEUTICAL,
+        StockItemType.NON_PHARMACEUTICAL,
+        StockItemType.LAB_COMMODITY,
+        StockItemType.OTHER,
+      ])
       .nullish(),
 
     /**
@@ -92,6 +97,7 @@ export const stockItemDetailsSchema = z
       const isConceptBased =
         itemType === StockItemType.NON_PHARMACEUTICAL ||
         itemType === StockItemType.LAB_COMMODITY ||
+        itemType === StockItemType.OTHER ||
         (itemType == null && isDrug === false);
       return isConceptBased ? !!conceptUuid : true;
     },
