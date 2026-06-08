@@ -7,4 +7,7 @@ export interface StockBatch extends BaseOpenmrsData {
   stockItem: StockItem;
   brandName?: string;
   manufacturerName?: string;
+  sscc?: string;
+  sgtin?: string;
+  sgln?: string;
 }

@@ -129,6 +129,9 @@ export const baseStockOperationItemSchema = z.object({
   hasExpiration: z.boolean().nullish(),
   brandName: z.string().nullish(),
   manufacturerName: z.string().nullish(),
+  sscc: z.string().nullish(),
+  sgtin: z.string().nullish(),
+  sgln: z.string().nullish(),
   isOutOfStock: z.boolean().optional(), // Track if item is out of stock
 });
 
