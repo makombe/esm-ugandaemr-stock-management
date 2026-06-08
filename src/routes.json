@@ -262,6 +262,10 @@
     {
       "component": "root",
       "route": "stock-management"
+    },
+    {
+      "component": "tntRoot",
+      "route": "tnt"
     }
   ]
 }
