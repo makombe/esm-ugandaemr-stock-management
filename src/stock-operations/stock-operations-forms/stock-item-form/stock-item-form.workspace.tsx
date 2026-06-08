@@ -359,6 +359,72 @@ const StockItemForm: React.FC<StockItemFormProps> = ({
             </Column>
           )}
 
+        {(effectivePermission.requiresActualBatchInfo || effectivePermission.requiresBatchUuid) &&
+          fields.includes('sscc') && (
+            <Column>
+              <Controller
+                control={form.control}
+                defaultValue={stockOperationItem?.sscc}
+                name={'sscc'}
+                render={({ field, fieldState: { error } }) => (
+                  <TextInput
+                    maxLength={50}
+                    {...field}
+                    invalidText={error?.message}
+                    invalid={error?.message}
+                    placeholder={t('sscc', 'SSCC')}
+                    labelText={t('sscc', 'SSCC')}
+                    id="sscc"
+                  />
+                )}
+              />
+            </Column>
+          )}
+
+        {(effectivePermission.requiresActualBatchInfo || effectivePermission.requiresBatchUuid) &&
+          fields.includes('sgtin') && (
+            <Column>
+              <Controller
+                control={form.control}
+                defaultValue={stockOperationItem?.sgtin}
+                name={'sgtin'}
+                render={({ field, fieldState: { error } }) => (
+                  <TextInput
+                    maxLength={50}
+                    {...field}
+                    invalidText={error?.message}
+                    invalid={error?.message}
+                    placeholder={t('sgtin', 'SGTIN')}
+                    labelText={t('sgtin', 'SGTIN')}
+                    id="sgtin"
+                  />
+                )}
+              />
+            </Column>
+          )}
+
+        {(effectivePermission.requiresActualBatchInfo || effectivePermission.requiresBatchUuid) &&
+          fields.includes('sgln') && (
+            <Column>
+              <Controller
+                control={form.control}
+                defaultValue={stockOperationItem?.sgln}
+                name={'sgln'}
+                render={({ field, fieldState: { error } }) => (
+                  <TextInput
+                    maxLength={50}
+                    {...field}
+                    invalidText={error?.message}
+                    invalid={error?.message}
+                    placeholder={t('sgln', 'SGLN')}
+                    labelText={t('sgln', 'SGLN')}
+                    id="sgln"
+                  />
+                )}
+              />
+            </Column>
+          )}
+
         {operationTypePermision?.canCaptureQuantityPrice && fields.includes('purchasePrice' as any) && (
           <Column>
             <Controller

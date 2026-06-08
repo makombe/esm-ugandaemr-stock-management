@@ -7,6 +7,9 @@ export interface StockBatchDTO {
   voided: boolean;
   brandName?: string;
   manufacturerName?: string;
+  sscc?: string;
+  sgtin?: string;
+  sgln?: string;
 }
 
 export interface StockBatchWithUoM extends StockBatchDTO {

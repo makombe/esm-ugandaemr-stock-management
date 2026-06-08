@@ -61,6 +61,9 @@ export const usePurchaseOrderItems = (productCodes: string[]) => {
             uuid: `new-item-${getStockOperationUniqueId()}`,
             brandName: undefined,
             manufacturerName: undefined,
+            sscc: undefined,
+            sgtin: undefined,
+            sgln: undefined,
             isOutOfStock: false,
           };
           return stockOperationItem;
