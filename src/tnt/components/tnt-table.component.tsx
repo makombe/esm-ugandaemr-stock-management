@@ -50,7 +50,7 @@ const TntTable = () => {
   );
 
   if (isLoading) return <DataTableSkeleton />;
-  if (error) return <ErrorState headerTitle={t('trackAndtrace', 'Track and Trace')} error={error} />;
+  if (error) return <ErrorState headerTitle={t('trackAndTrace', 'Track and Trace')} error={error} />;
 
   return (
     <DataTable rows={rows} headers={headers}>
