@@ -208,6 +208,10 @@
     {
       "name": "transactions-print-stockcard-preview-modal",
       "component": "transactionStockcardPrintPreviewModal"
+    },
+    {
+      "name": "tnt-message-view-modal",
+      "component": "tntMessageViewModal"
     }
   ],
   "workspaces": [

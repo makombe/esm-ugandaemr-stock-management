@@ -21,6 +21,7 @@ import { ErrorState, formatDatetime, parseDate } from '@openmrs/esm-framework';
 import { useTntEvents } from '../track-and-trace.resource';
 import TntStatusFilter from './tnt-status-filter.component';
 import TntStepFilter from './tnt-step-filter.component';
+import TntMessageViewAction from './tnt-view-message-action.component';
 
 const TntTable = () => {
   const { error, events, isLoading } = useTntEvents();
@@ -28,11 +29,11 @@ const TntTable = () => {
   const headers = useMemo(
     () => [
       { key: 'eventId', header: t('eventId', 'Event ID') },
-      { key: 'type', header: t('type', 'Type') },
-      { key: 'bizStep', header: t('bizStep', 'Biz Step') },
+      { key: 'eventType', header: t('type', 'Type') },
+      { key: 'bizType', header: t('bizStep', 'Biz Step') },
       { key: 'status', header: t('status', 'Status') },
       { key: 'reference', header: t('reference', 'Reference') },
-      { key: 'date', header: t('date', 'Date') },
+      { key: 'eventTime', header: t('eventTime', 'Event time') },
       { key: 'actions', header: t('actions', 'Actions') },
     ],
     [t],
@@ -41,12 +42,13 @@ const TntTable = () => {
   const rows = useMemo(
     () =>
       events.map((event) => ({
-        id: event.eventId,
+        id: event.uuid,
         ...event,
-        date: formatDatetime(parseDate(event.date)),
-        actions: <Button hasIconOnly renderIcon={View} kind="ghost" iconDescription={t('view', 'View')} />,
+        bizType: event.bizType ?? '--',
+        eventTime: event.eventTime ? formatDatetime(parseDate(event.eventTime)) : '--',
+        actions: <TntMessageViewAction event={event} />,
       })),
-    [events, t],
+    [events],
   );
 
   if (isLoading) return <DataTableSkeleton />;
@@ -78,14 +80,6 @@ const TntTable = () => {
               />
               <TntStepFilter />
               <TntStatusFilter />
-              {/* <FilterStockItems filterType={itemType} changeFilterType={setItemType} />
-              <AddStockItemsBulktImportActionButton />
-              <TableToolbarMenu data-testid="stock-items-menu">
-                <TableToolbarAction className={styles.toolbarAction} onClick={handleRefresh}>
-                  {t('refresh', 'Refresh')}
-                </TableToolbarAction>
-              </TableToolbarMenu>
-              <AddStockItemActionButton /> */}
             </TableToolbarContent>
           </TableToolbar>
           <Table {...getTableProps()}>

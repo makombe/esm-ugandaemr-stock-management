@@ -1,25 +1,23 @@
 import useSWR from 'swr';
-import { restBaseUrl } from '@openmrs/esm-framework';
-import tntEvents from './__mock__/tnt-events';
+import { type FetchResponse, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 
-type TntEvent = {
+export type TntEvent = {
+  uuid: string;
   eventId: string;
-  type: string;
-  bizStep: string;
+  eventType: string;
+  bizType?: string;
   status: string;
   reference: string;
-  date: string;
+  eventTime?: string;
+  message?: string;
+  retired: number;
+  dateCreated: string;
+  dateUpdated: string;
 };
 
 export const useTntEvents = () => {
-  const url = `${restBaseUrl}/tnt-events`;
-  const { data, error, isLoading } = useSWR<{ data: { results: Array<TntEvent> } }>(
-    url,
-    (_: string) =>
-      new Promise<{ data: { results: Array<TntEvent> } }>((resolve, _) => {
-        setTimeout(() => resolve({ data: { results: tntEvents } }), 3000);
-      }),
-  );
+  const url = `${restBaseUrl}/stockmanagement/trackandtraceevent`;
+  const { data, error, isLoading } = useSWR<FetchResponse<{ results: Array<TntEvent> }>>(url, openmrsFetch);
 
   return {
     events: data?.data?.results ?? [],
