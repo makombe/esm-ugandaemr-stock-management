@@ -1,0 +1,7 @@
+@use '@carbon/layout';
+@use '@carbon/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.tntContent {
+  padding: layout.$spacing-05;
+}
