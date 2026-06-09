@@ -154,6 +154,14 @@
     {
       "name": "delete-packaging-unit-button",
       "component": "deletePackagingUnitButton"
+    },
+    {
+      "name": "tnt-module-link",
+      "slot": "navbar-items-slot",
+      "component": "tntNavLink",
+      "meta": {
+        "search": ["tnt", "Track and trace"]
+      }
     }
   ],
   "modals": [
