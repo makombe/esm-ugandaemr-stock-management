@@ -183,11 +183,11 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
           });
       }
       // Submit Receipt note to nlmis
-      if (isReceiptDerivedFromExternalRequisition && status.at(-1).podNotificationStatus !== 'SUCCESS') {
+      if (isReceiptDerivedFromExternalRequisition && status?.at(-1)?.podNotificationStatus !== 'SUCCESS') {
         submitReceiptNote({
-          sourceOrderId: operation.operationNumber,
+          sourceOrderId: operation.operationNumber as string,
           // rnrId: operation.uuid,
-          facilityCode: facilityCode,
+          facilityCode: facilityCode as string,
           deliveryStatus: 'DELIVERED',
           deliveredBy: '',
           deliveredDate: dayjs(operation.operationDate).toISOString(),
@@ -195,15 +195,15 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
           read_point: '',
           biz_location: '',
           packingList: operation.stockOperationItems?.map((item) => ({
-            batchNumber: item.batchNo,
+            batchNumber: item.batchNo as string,
             expiryDate: dayjs(item.expiration).toISOString(),
             gtin: '',
-            productCode: item.etcdProductId,
+            productCode: item.etcdProductId as string,
             // Get the quantity ordered from the source external requisition used to create the receipt operation
             quantityOrdered: sourceExternalRequisition?.stockOperationItems?.find(
               (i) => i.etcdProductId === item.etcdProductId,
-            )?.quantity,
-            quantityShipped: item.quantity,
+            )?.quantity as number,
+            quantityShipped: item.quantity as number,
           })),
           metadata: {
             carrier: '',

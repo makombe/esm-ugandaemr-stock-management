@@ -32,17 +32,17 @@ const Requisition: React.FC<{ operation: StockOperationDTO }> = ({ operation }) 
   const handleRetry = () => {
     setSubmitting(true);
     submitExternalRequisition({
-      sourceOrderId: operation.operationNumber,
+      sourceOrderId: operation.operationNumber as string,
       // rnrId: operation.uuid,
-      facilityCode: facilityCode,
+      facilityCode: facilityCode as string,
       programCode,
-      periodId: processingPeriod,
+      periodId: processingPeriod as string,
       clientSubmitedTime: dayjs().toISOString(),
       sourceApplication: 'KenyaEMR',
       emergency: operation.requestType === 'EMERGENCY' ? true : false,
       status: 'AUTHORIZED',
       products: operation.stockOperationItems.map((item) => ({
-        productCode: item.etcdProductId,
+        productCode: item.etcdProductId as string,
         quantityDispensed: operation?.quantityDispensed ?? 805,
         quantityReceived: operation.quantityReceived ?? 942,
         beginningBalance: operation?.beginningBalance ?? 81,
@@ -56,8 +56,8 @@ const Requisition: React.FC<{ operation: StockOperationDTO }> = ({ operation }) 
           },
         ],
 
-        quantityRequested: item.quantity,
-        reasonForRequestedQuantity: item.reasonForRequestedQuantity,
+        quantityRequested: item.quantity as number,
+        reasonForRequestedQuantity: item.reasonForRequestedQuantity as string,
         genericConceptCode: item.genericConceptCode,
       })),
     })
@@ -136,7 +136,8 @@ const Receipt: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
     setSubmitting(true);
     submitReceiptNote({
       supplierOrderId: supplier?.supplierOrderId as string,
-      sourceOrderId: operation.operationNumber,
+      // sourceOrderId: operation.operationNumber as string,
+      supplierCode: supplier?.code as string,
       rnrId: statusRemoteMessages?.[0]?.data?.requisition?.rnrId,
       facilityCode: facilityCode as string,
       deliveryStatus: 'DELIVERED',
@@ -146,15 +147,15 @@ const Receipt: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
       read_point: '',
       biz_location: '',
       packingList: operation.stockOperationItems?.map((item) => ({
-        batchNumber: item.batchNo,
+        batchNumber: item.batchNo as string,
         expiryDate: dayjs(item.expiration).toISOString(),
         gtin: '',
-        productCode: item.etcdProductId,
+        productCode: item.etcdProductId as string,
         // Get the quantity ordered from the source external requisition used to create the receipt operation
         quantityOrdered: sourceExternalRequisition?.stockOperationItems?.find(
           (i) => i.etcdProductId === item.etcdProductId,
-        )?.quantity,
-        quantityShipped: item.quantity,
+        )?.quantity as number,
+        quantityShipped: item.quantity as number,
       })),
       metadata: {
         carrier: '',
