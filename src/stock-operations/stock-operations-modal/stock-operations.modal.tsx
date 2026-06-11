@@ -57,6 +57,8 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
     status,
     error: statusError,
     isLoading: isLoadingStatus,
+    statusRemoteMessages,
+    supplier,
   } = useExternalRequisitionStatusByReceiptNumber(isReceiptOperation ? operation.operationNumber : null);
   const isReceiptDerivedFromExternalRequisition = isReceiptOperation && status?.length > 0;
   // Find External requisition used to create the receipt operation(Used to retrive the quantity ordered)
@@ -183,11 +185,14 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
           });
       }
       // Submit Receipt note to nlmis
-      if (isReceiptDerivedFromExternalRequisition && status.at(-1).podNotificationStatus !== 'SUCCESS') {
+      if (isReceiptDerivedFromExternalRequisition && status?.at(-1)?.podNotificationStatus !== 'SUCCESS') {
         submitReceiptNote({
-          sourceOrderId: operation.operationNumber,
-          // rnrId: operation.uuid,
-          facilityCode: facilityCode,
+          // sourceOrderId: operation.operationNumber as string,
+          supplierOrderId: supplier?.supplierOrderId as string,
+          // sourceOrderId: operation.operationNumber as string,
+          supplierCode: supplier?.code as string,
+          rnrId: statusRemoteMessages?.[0]?.data?.requisition?.rnrId,
+          facilityCode: facilityCode as string,
           deliveryStatus: 'DELIVERED',
           deliveredBy: '',
           deliveredDate: dayjs(operation.operationDate).toISOString(),
@@ -195,15 +200,15 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
           read_point: '',
           biz_location: '',
           packingList: operation.stockOperationItems?.map((item) => ({
-            batchNumber: item.batchNo,
+            batchNumber: item.batchNo as string,
             expiryDate: dayjs(item.expiration).toISOString(),
             gtin: '',
-            productCode: item.etcdProductId,
+            productCode: item.etcdProductId as string,
             // Get the quantity ordered from the source external requisition used to create the receipt operation
             quantityOrdered: sourceExternalRequisition?.stockOperationItems?.find(
               (i) => i.etcdProductId === item.etcdProductId,
-            )?.quantity,
-            quantityShipped: item.quantity,
+            )?.quantity as number,
+            quantityShipped: item.quantity as number,
           })),
           metadata: {
             carrier: '',
@@ -219,7 +224,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
             return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
               method: 'POST',
               body: {
-                uuid: status.at(-1).uuid,
+                uuid: status?.at(-1)?.uuid,
                 receiptMessage: JSON.stringify(data),
                 podNotificationStatus: 'SUCCESS',
               },

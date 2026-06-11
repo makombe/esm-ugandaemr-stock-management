@@ -31,7 +31,7 @@ export const StockOperationEditRequisitionButton: React.FC<{ operation: StockOpe
     return null;
   }
 
-  if (status.status !== 'FAIL') return null;
+  if (status?.status !== 'FAIL') return null;
 
   return <Button onClick={handleLaunchWorkspace}>{t('edit', 'Edit')}</Button>;
 };

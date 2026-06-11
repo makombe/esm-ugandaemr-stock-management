@@ -37,8 +37,9 @@ export interface ExternalRequisitionPayload {
 }
 
 export interface ReceiptNotePayload {
-  sourceOrderId: string;
+  supplierOrderId: string;
   rnrId?: string;
+  supplierCode: string;
   facilityCode: string;
   deliveryStatus: string;
   deliveredBy?: string;

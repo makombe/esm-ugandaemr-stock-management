@@ -1,19 +1,20 @@
-import { type FetchResponse, openmrsFetch, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
 import { useEffect, useMemo, useRef } from 'react';
-import useSWR, { mutate } from 'swr';
+import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
+import { type FetchResponse, openmrsFetch, restBaseUrl, showSnackbar, useConfig } from '@openmrs/esm-framework';
+import { type ConfigObject } from '../config-schema';
 import { type ResourceFilterCriteria, toQueryParams } from '../core/api/api';
 import { type PageableResult } from '../core/api/types/PageableResult';
 import { type InventoryGroupBy } from '../core/api/types/stockItem/StockItem';
 import { type StockItemInventory } from '../core/api/types/stockItem/StockItemInventory';
 import {
-  type ReceiptNotePayload,
   type ExternalRequisitionPayload,
+  type ReceiptNotePayload,
   type StopOperationAction,
 } from '../core/api/types/stockOperation/StockOperationAction';
 import { type StockOperationDTO } from '../core/api/types/stockOperation/StockOperationDTO';
 import { type StockOperationItemCost } from '../core/api/types/stockOperation/StockOperationItemCost';
 import { type StockOperationItemDtoSchema } from './validation-schema';
-import { useTranslation } from 'react-i18next';
 
 export interface StockOperationFilter extends ResourceFilterCriteria {
   status?: string | null | undefined;
@@ -189,6 +190,26 @@ export function useFacilityCode() {
   };
 }
 
+export enum ExternalRequisitionStatus {
+  PR_CREATED = 'PR_CREATED',
+  PENDING_MATCH = 'PENDING_MATCH',
+  AUTO_MATCHED = 'AUTO_MATCHED',
+  PARTIALLY_MATCHED = 'PARTIALLY_MATCHED',
+  OVERRIDE = 'OVERRIDE',
+  PENDING_APPROVAL = 'PENDING_APPROVAL',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  RETURNED = 'RETURNED',
+  PO_GENERATED = 'PO_GENERATED',
+  SUPPLIED_APPROVED = 'SUPPLIED_APPROVED',
+  SUPPLIED_REJECTED = 'SUPPLIED_REJECTED',
+  FULFILLED = 'FULFILLED',
+  SHIPPED_IN_TRANSIT = 'SHIPPED_IN_TRANSIT',
+  DELIVERED = 'DELIVERED',
+  FACILITY_POD = 'FACILITY_POD',
+  MISSING = 'MISSING',
+}
+
 export interface StatusResponse {
   status: 'FAIL' | 'SUCCESS' | 'DELIVERED';
   statusCode: number;
@@ -196,24 +217,35 @@ export interface StatusResponse {
   data?: StatusResponseData;
 }
 
+export interface RequisitionItem {
+  productCode: string;
+  genericConceptCode: string;
+  uom: string;
+  quantityRequested: number;
+  quantityApproved: number;
+  orderId: string;
+  supplier?: {
+    code: string;
+    name: string;
+    supplierOrderId: string;
+    orderNumber: string;
+  };
+  status: ExternalRequisitionStatus;
+  price?: number;
+}
+
 export interface StatusResponseData {
   sourceSystem: string;
   submissionStatus: string;
+  hasMissingProducts?: any;
   requisition: {
     sourceOrderId: string;
-    rnrId: any;
-    status: 'RELEASED' | string;
-    submissionStatus?: string; // For Failed
-    approvalDate: any;
-    supplier: { code: string; name: string };
-    items: Array<{
-      productCode: string;
-      genericConceptCode: string;
-      uom: string;
-      quantityRequested: number;
-      quantityApproved: number;
-    }>;
+    rnrId?: string;
+    status: ExternalRequisitionStatus;
+    approvalDate?: string;
+    items: Array<RequisitionItem>;
     errorMessage: string; // For Failed
+    missingProducts?: any;
   };
 }
 
@@ -242,9 +274,22 @@ export const useExternalRequisitionStatusByReceiptNumber = (receiptNumber?: stri
     receiptNumber ? localStatusUrl : null,
     openmrsFetch,
   );
+  const statusRemoteMessages = useMemo<Array<StatusResponse>>(
+    () => (localData?.data?.results ?? []).map((d) => JSON.parse(d.message)),
+    [localData],
+  );
+
+  const supplier = useMemo(
+    () =>
+      statusRemoteMessages?.find((st) => st?.data?.requisition?.status !== ExternalRequisitionStatus.MISSING)?.data
+        ?.requisition?.items?.[0]?.supplier,
+    [statusRemoteMessages],
+  );
 
   return {
     status: localData?.data?.results ?? [],
+    statusRemoteMessages,
+    supplier,
     isLoading,
     error,
     mutate,
@@ -252,6 +297,7 @@ export const useExternalRequisitionStatusByReceiptNumber = (receiptNumber?: stri
 };
 export function useExternalRequisitionStation(operationNumber: string, operationUuid: string) {
   const { t } = useTranslation();
+  const { lastRequisitionStatus } = useConfig<ConfigObject>();
   const isSyncing = useRef(false); // Prevent duplicate concurrent syncs
 
   // 1. Fetch Local Status
@@ -278,10 +324,10 @@ export function useExternalRequisitionStation(operationNumber: string, operation
     if (isLoadingLocal || isloadingFacilityCode || !facilityCode) return false;
 
     if (!localStatus || localStatus?.status === 'FAIL') return true;
-    if (localStatus?.data?.requisition?.status !== 'RELEASED') return true;
+    if (localStatus?.data?.requisition?.status !== lastRequisitionStatus) return true;
 
     return false;
-  }, [facilityCode, isLoadingLocal, isloadingFacilityCode, localStatus]);
+  }, [facilityCode, isLoadingLocal, isloadingFacilityCode, lastRequisitionStatus, localStatus]);
 
   const remoteUrl = shouldFetchRemote
     ? `${restBaseUrl}/kenyaemr/nlmis/requisition-status?sourceOrderId=${operationNumber}&facilityCode=${facilityCode}`
@@ -303,9 +349,7 @@ export function useExternalRequisitionStation(operationNumber: string, operation
     if (!remoteStatus || isSyncing.current) return;
 
     // Logic: Sync if remote data differs from local
-    const needsSync =
-      !localStatus ||
-      remoteStatus.data?.requisition?.submissionStatus !== localStatus.data?.requisition?.submissionStatus;
+    const needsSync = !localStatus || remoteStatus.data?.submissionStatus !== localStatus.data?.submissionStatus;
 
     if (needsSync) {
       isSyncing.current = true;

@@ -23,7 +23,7 @@ export const usePurchaseOrderItems = (productCodes: string[]) => {
       }),
     );
     const items = tasks.reduce<Array<StockItemDTO>>((prev, curr) => {
-      if (curr.status === 'rejected' || curr.value.some((item) => !productCodes.includes(item.etcdProductId))) {
+      if (curr.status === 'rejected' || curr.value.some((item) => !productCodes.includes(item.etcdProductId ?? ''))) {
         return prev;
       }
       prev.push(...curr.value);
@@ -55,7 +55,7 @@ export const usePurchaseOrderItems = (productCodes: string[]) => {
             batchNo: undefined,
             expiration: undefined,
             quantity: _item.quantityApproved,
-            purchasePrice: undefined,
+            purchasePrice: _item?.price ?? undefined,
             hasExpiration: false,
             id: undefined,
             uuid: `new-item-${getStockOperationUniqueId()}`,
