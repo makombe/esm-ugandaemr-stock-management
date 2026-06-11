@@ -57,6 +57,8 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
     status,
     error: statusError,
     isLoading: isLoadingStatus,
+    statusRemoteMessages,
+    supplier,
   } = useExternalRequisitionStatusByReceiptNumber(isReceiptOperation ? operation.operationNumber : null);
   const isReceiptDerivedFromExternalRequisition = isReceiptOperation && status?.length > 0;
   // Find External requisition used to create the receipt operation(Used to retrive the quantity ordered)
@@ -185,8 +187,11 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
       // Submit Receipt note to nlmis
       if (isReceiptDerivedFromExternalRequisition && status?.at(-1)?.podNotificationStatus !== 'SUCCESS') {
         submitReceiptNote({
-          sourceOrderId: operation.operationNumber as string,
-          // rnrId: operation.uuid,
+          // sourceOrderId: operation.operationNumber as string,
+          supplierOrderId: supplier?.supplierOrderId as string,
+          // sourceOrderId: operation.operationNumber as string,
+          supplierCode: supplier?.code as string,
+          rnrId: statusRemoteMessages?.[0]?.data?.requisition?.rnrId,
           facilityCode: facilityCode as string,
           deliveryStatus: 'DELIVERED',
           deliveredBy: '',
@@ -219,7 +224,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
             return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
               method: 'POST',
               body: {
-                uuid: status.at(-1).uuid,
+                uuid: status?.at(-1)?.uuid,
                 receiptMessage: JSON.stringify(data),
                 podNotificationStatus: 'SUCCESS',
               },
