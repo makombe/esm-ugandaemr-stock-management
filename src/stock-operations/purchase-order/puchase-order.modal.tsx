@@ -1,14 +1,16 @@
-import { Button, ButtonSet, InlineLoading, ModalBody, ModalFooter, ModalHeader, Tag } from '@carbon/react';
-import React, { useMemo, type FC } from 'react';
+import React, { useMemo, useState, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button, ButtonSet, Dropdown, InlineLoading, ModalBody, ModalFooter, ModalHeader, Tag } from '@carbon/react';
+import { useConfig } from '@openmrs/esm-framework';
+import { type ConfigObject } from '../../config-schema';
 import type { StockItemDTO } from '../../core/api/types/stockItem/StockItem';
 import { type StockOperationDTO } from '../../core/api/types/stockOperation/StockOperationDTO';
-import { type StatusResponse, type StatusResponseData } from '../stock-operations.resource';
+import { OperationType, type StockOperationType } from '../../core/api/types/stockOperation/StockOperationType';
+import { useStockOperationTypes } from '../../stock-lookups/stock-lookups.resource';
+import { launchStockoperationAddOrEditWorkSpace } from '../stock-operation.utils';
+import { type RequisitionItem, type StatusResponse } from '../stock-operations.resource';
 import styles from './puchase-order.scss';
 import { usePurchaseOrderItems } from './purchase-order.resources';
-import { launchStockoperationAddOrEditWorkSpace } from '../stock-operation.utils';
-import { OperationType } from '../../core/api/types/stockOperation/StockOperationType';
-import { useStockOperationTypes } from '../../stock-lookups/stock-lookups.resource';
 
 type PurchaseOrderModalProps = {
   onClose?: () => void;
@@ -18,15 +20,32 @@ type PurchaseOrderModalProps = {
 };
 
 const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stockOperation, delivered }) => {
+  const { requisitionReceiptStatus } = useConfig<ConfigObject>();
   const { t } = useTranslation();
   const requisition = status?.data?.requisition;
-  const items = requisition?.items || [];
+  const items = useMemo(() => requisition?.items || [], [requisition]);
+  const [currentSupplier, setCurrentSupplier] = useState<RequisitionItem['supplier']>();
+  const suppliers = useMemo(
+    () =>
+      items.reduce<Array<RequisitionItem['supplier']>>((prev, curr) => {
+        const exist = prev.findIndex((i: RequisitionItem['supplier']) => i?.code === curr.supplier?.code) !== -1;
+        if (!exist && curr.supplier) {
+          prev.push(curr.supplier);
+        }
+        return prev;
+      }, []),
+    [items],
+  );
+  const filteredBySupplier = useMemo(() => {
+    if (!currentSupplier) return items;
+    return items.filter((i) => i.supplier?.code === currentSupplier.code);
+  }, [currentSupplier, items]);
   const {
     error,
     isLoading,
     stockItems: purchaseOrderItems,
     createReceiptPayload,
-  } = usePurchaseOrderItems(items.map((item) => item.productCode));
+  } = usePurchaseOrderItems(filteredBySupplier.map((item) => item.productCode));
   const { types, isLoading: typesLoading } = useStockOperationTypes();
   const receiptType = useMemo(
     () => types?.results?.find((type) => type.operationType === OperationType.RECEIPT_OPERATION_TYPE),
@@ -35,14 +54,14 @@ const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stoc
   const modalTitle = t('purchaseOrder', 'Purchase Order');
 
   const onReceipt = () => {
-    const receiptPayload = createReceiptPayload(items);
+    const receiptPayload = createReceiptPayload(filteredBySupplier);
     launchStockoperationAddOrEditWorkSpace(
       t,
-      receiptType,
+      receiptType as StockOperationType,
       undefined,
       undefined,
       receiptPayload as unknown as Partial<StockOperationDTO>,
-      stockOperation?.uuid,
+      stockOperation?.uuid ?? undefined,
     );
     onClose?.();
   };
@@ -61,10 +80,6 @@ const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stoc
                 <span className={styles.detailLabel}>{t('sourceOrderId', 'Order ID')}</span>
                 <span className={styles.detailValue}>{requisition?.sourceOrderId || '-'}</span>
               </div>
-              <div className={styles.detailRow}>
-                <span className={styles.detailLabel}>{t('supplier', 'Supplier')}</span>
-                <span className={styles.detailValue}>{requisition?.supplier?.name || '-'}</span>
-              </div>
               {requisition?.approvalDate && (
                 <div className={styles.detailRow}>
                   <span className={styles.detailLabel}>{t('approvalDate', 'Approval Date')}</span>
@@ -74,15 +89,28 @@ const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stoc
               <div className={styles.detailRow}>
                 <span className={styles.detailLabel}>{t('status', 'Status')}</span>
                 <Tag type={'blue'}>
-                  {status?.data?.requisition?.status || requisition?.submissionStatus || status?.status}
+                  {status?.data?.requisition?.status || status?.data?.submissionStatus || status?.status}
                 </Tag>
               </div>
             </div>
 
-            {items.length > 0 && (
+            <Dropdown
+              id="default"
+              itemToString={(item: RequisitionItem['supplier']) => item?.name ?? ''}
+              items={suppliers}
+              label={t('selectSupplier', 'Select supplier')}
+              titleText={t('supplier', 'Supplier')}
+              type="default"
+              selectedItem={currentSupplier}
+              onChange={({ selectedItem }: { selectedItem?: RequisitionItem['supplier'] }) =>
+                setCurrentSupplier(selectedItem)
+              }
+            />
+
+            {filteredBySupplier.length > 0 && (
               <div className={styles.itemsContainer}>
                 <h5 className={styles.sectionTitle}>{t('items', 'Items')}</h5>
-                {items.map((item, index) => (
+                {filteredBySupplier.map((item, index) => (
                   <Item
                     key={index}
                     item={item}
@@ -104,7 +132,12 @@ const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stoc
           <Button
             onClick={onReceipt}
             className={styles.btn}
-            disabled={status?.data?.requisition?.status !== 'RELEASED' || delivered}
+            disabled={
+              status?.data?.requisition?.status !== requisitionReceiptStatus ||
+              delivered ||
+              !currentSupplier ||
+              filteredBySupplier.length === 0
+            }
           >
             {t('receipt', 'Receipt')}
           </Button>
@@ -116,13 +149,7 @@ const PurchaseOrderModal: FC<PurchaseOrderModalProps> = ({ onClose, status, stoc
 
 export default PurchaseOrderModal;
 
-const Item = ({
-  item,
-  stockItem,
-}: {
-  stockItem: StockItemDTO;
-  item: StatusResponseData['requisition']['items'][number];
-}) => {
+const Item = ({ item, stockItem }: { stockItem?: StockItemDTO; item: RequisitionItem }) => {
   const { t } = useTranslation();
 
   return (
@@ -141,6 +168,14 @@ const Item = ({
         <div className={styles.detailRow} style={{ alignItems: 'flex-end' }}>
           <span className={styles.detailLabel}>{t('approved', 'Approved')}</span>
           <span className={styles.itemQuantity}>{item.quantityApproved}</span>
+        </div>
+        <div className={styles.detailRow} style={{ alignItems: 'flex-end' }}>
+          <span className={styles.detailLabel}>{t('supplier', 'Supplier')}</span>
+          <span className={styles.itemQuantity}>{item.supplier?.name ?? '--'}</span>
+        </div>
+        <div className={styles.detailRow} style={{ alignItems: 'flex-end' }}>
+          <span className={styles.detailLabel}>{t('price', 'Price')}</span>
+          <span className={styles.itemQuantity}>{item.price ?? '--'}</span>
         </div>
       </div>
     </div>

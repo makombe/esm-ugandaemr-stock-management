@@ -55,7 +55,7 @@ export const usePurchaseOrderItems = (productCodes: string[]) => {
             batchNo: undefined,
             expiration: undefined,
             quantity: _item.quantityApproved,
-            purchasePrice: undefined,
+            purchasePrice: _item?.price ?? undefined,
             hasExpiration: false,
             id: undefined,
             uuid: `new-item-${getStockOperationUniqueId()}`,

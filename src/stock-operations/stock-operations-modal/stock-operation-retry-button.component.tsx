@@ -21,8 +21,8 @@ const Requisition: React.FC<{ operation: StockOperationDTO }> = ({ operation }) 
   const { t } = useTranslation();
   const [submitting, setSubmitting] = useState(false);
   const { isLoading, status, facilityCode, mutate } = useExternalRequisitionStation(
-    operation.operationNumber,
-    operation.uuid,
+    operation.operationNumber as string,
+    operation.uuid as string,
   );
   const {
     isLoading: isLoadingProgramAndPeriod,
@@ -107,7 +107,7 @@ const Requisition: React.FC<{ operation: StockOperationDTO }> = ({ operation }) 
     return <InlineLoading description={t('loading', 'Loading...')} />;
   }
 
-  if (status.status !== 'FAIL') return null;
+  if (status?.status !== 'FAIL') return null;
   return (
     <Button onClick={handleRetry} renderIcon={Restart} kind="tertiary">
       {t('retry', 'Retry')}
@@ -124,7 +124,10 @@ const Receipt: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
     status,
     mutate,
     error: statusError,
-  } = useExternalRequisitionStatusByReceiptNumber(operation.operationNumber);
+    supplier,
+    statusRemoteMessages,
+  } = useExternalRequisitionStatusByReceiptNumber(operation.operationNumber as string);
+  const lastStatus = status.at(-1);
   const { items: sourceExternalRequisition, isLoading: isLoadingSourceRequisition } = useStockOperationAndItems(
     status?.[0]?.uuid ?? null,
   );
@@ -132,9 +135,10 @@ const Receipt: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
   const handleRetry = () => {
     setSubmitting(true);
     submitReceiptNote({
+      supplierOrderId: supplier?.supplierOrderId as string,
       sourceOrderId: operation.operationNumber,
-      // rnrId: operation.uuid,
-      facilityCode: facilityCode,
+      rnrId: statusRemoteMessages?.[0]?.data?.requisition?.rnrId,
+      facilityCode: facilityCode as string,
       deliveryStatus: 'DELIVERED',
       deliveredBy: '',
       deliveredDate: dayjs(operation.operationDate).toISOString(),
@@ -147,7 +151,7 @@ const Receipt: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
         gtin: '',
         productCode: item.etcdProductId,
         // Get the quantity ordered from the source external requisition used to create the receipt operation
-        quantityOrdered: sourceExternalRequisition.stockOperationItems?.find(
+        quantityOrdered: sourceExternalRequisition?.stockOperationItems?.find(
           (i) => i.etcdProductId === item.etcdProductId,
         )?.quantity,
         quantityShipped: item.quantity,
@@ -166,7 +170,7 @@ const Receipt: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
         return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
           method: 'POST',
           body: {
-            uuid: status.at(-1).uuid,
+            uuid: lastStatus?.uuid,
             receiptMessage: JSON.stringify(data),
             podNotificationStatus: 'SUCCESS',
           },
@@ -193,7 +197,7 @@ const Receipt: React.FC<{ operation: StockOperationDTO }> = ({ operation }) => {
         return openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
           method: 'POST',
           body: {
-            uuid: status.at(-1).uuid,
+            uuid: status?.at(-1)?.uuid,
             podNotificationStatus: 'FAILED',
           },
           headers: { 'Content-Type': 'application/json' },

@@ -92,6 +92,17 @@ export const configSchema = {
       _description: 'The organization name displayed when image is absent',
     },
   },
+  requisitionReceiptStatus: {
+    _type: Type.String,
+    description:
+      'External requisition status where receipt is allowed(The receipt button is enabled when status equals to it)',
+    _default: 'DELIVERED',
+  },
+  lastRequisitionStatus: {
+    _type: Type.String,
+    description: 'The final/termina External requisition status. This prevent fetching status from nlmis servers',
+    _default: 'FACILITY_POD',
+  },
 };
 
 export type ConfigObject = {
@@ -115,4 +126,6 @@ export type ConfigObject = {
   stockTakeReasonUUID: string;
   stockDisposalReasonUUID: string;
   stockLossReasonUUID: string;
+  requisitionReceiptStatus: string;
+  lastRequisitionStatus: string;
 };

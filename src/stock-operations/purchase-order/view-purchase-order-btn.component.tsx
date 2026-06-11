@@ -8,8 +8,8 @@ import { useExternalRequisitionStation } from '../stock-operations.resource';
 
 const ViewPurchaseOrderAction: FC<{ stockOperation: StockOperationDTO }> = ({ stockOperation }) => {
   const { error, status, isLoading, deliveryStatus } = useExternalRequisitionStation(
-    stockOperation.operationNumber,
-    stockOperation.uuid,
+    stockOperation.operationNumber as string,
+    stockOperation.uuid as string,
   );
   const { t } = useTranslation();
 

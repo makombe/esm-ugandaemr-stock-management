@@ -11,7 +11,7 @@ const ExtrenalRequisitionRemoteStatus: FC<Pick<StockOperationDTO, 'operationNumb
   uuid,
 }) => {
   const { t } = useTranslation();
-  const { error, status, isLoading } = useExternalRequisitionStation(operationNumber, uuid);
+  const { error, status, isLoading } = useExternalRequisitionStation(operationNumber as string, uuid as string);
 
   if (isLoading) return <InlineLoading />;
 
@@ -29,15 +29,7 @@ const ExtrenalRequisitionRemoteStatus: FC<Pick<StockOperationDTO, 'operationNumb
       )}
       {status?.status === 'SUCCESS' && status?.data?.requisition?.approvalDate && (
         <>
-          <span>{`${t('dateApproved', 'Date approved')}: ${formatDate(
-            dayjs(status?.data?.requisition?.approvalDate).toDate(),
-          )}.`}</span>
-          <br />
-        </>
-      )}
-      {status?.status === 'SUCCESS' && status?.data?.requisition?.supplier?.name && (
-        <>
-          <span>{`${t('supplier', 'Supplier')}: ${status?.data?.requisition?.supplier?.name}.`}</span>
+          <span>{`${t('dateApproved', 'Date approved')}: ${status?.data?.requisition?.approvalDate}.`}</span>
           <br />
         </>
       )}
