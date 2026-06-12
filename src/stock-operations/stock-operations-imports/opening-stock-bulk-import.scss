@@ -1,0 +1,19 @@
+@use '@carbon/layout';
+@use '@carbon/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.ulOpeningStock {
+  margin-top: 0.5rem;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-left: 1.25rem;
+  font-size: 0.8125rem;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--cds-text-error, #da1e28);
+}
+.openingStockInlineErrors {
+  margin-bottom: 0.25rem;
+}
+.openingStockContainer {
+  margin-top: 1rem;
+}

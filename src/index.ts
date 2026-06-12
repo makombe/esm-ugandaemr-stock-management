@@ -66,6 +66,14 @@ export const importBulkStockItemsModal = getAsyncLifecycle(
   },
 );
 
+export const importBulkOpeningStockItemsModal = getAsyncLifecycle(
+  () => import('./stock-operations/stock-operations-imports/opening-stock-items-bulk-import.modal'),
+  {
+    featureName: 'import-bulk-opening-stock-items-modal',
+    moduleName,
+  },
+);
+
 export const issuingStockModal = getAsyncLifecycle(() => import('./stock-home/issuing-stock.modal'), {
   featureName: 'issuing-stock-modal',
   moduleName,

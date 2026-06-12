@@ -190,6 +190,10 @@
       "component": "importBulkStockItemsModal"
     },
     {
+      "name": "import-bulk-opening-stock-items",
+      "component": "importBulkOpeningStockItemsModal"
+    },
+    {
       "name": "receiving-stock-modal",
       "component": "receivingStockModal"
     },
