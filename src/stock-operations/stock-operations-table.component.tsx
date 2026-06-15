@@ -37,6 +37,7 @@ import StockOperationTypesSelector from './stock-operation-types-selector/stock-
 import StockOperationsFilters from './stock-operations-filters.component';
 import StockOperationExpandedRow from './add-stock-operation/stock-operations-expanded-row/stock-operation-expanded-row.component';
 import styles from './stock-operations-table.scss';
+import OpeningStockOperationBulkImportActionButton from './stock-operations-imports/opening-stock-operation-bulk-import-action-button.component';
 
 interface StockOperationsTableProps {
   status?: string;
@@ -185,6 +186,7 @@ const StockOperations: React.FC<StockOperationsTableProps> = () => {
       <h2 className={styles.tableHeader}>
         {t('stockOperationsTableHeader', 'Stock operations to track movement of stock.')}
       </h2>
+      <OpeningStockOperationBulkImportActionButton />
       <DataTable
         headers={tableHeaders}
         isSortable
