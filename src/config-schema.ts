@@ -100,8 +100,13 @@ export const configSchema = {
   },
   lastRequisitionStatus: {
     _type: Type.String,
-    description: 'The final/termina External requisition status. This prevent fetching status from nlmis servers',
+    _description: 'The final/termina External requisition status. This prevent fetching status from nlmis servers',
     _default: 'FACILITY_POD',
+  },
+  enableTrackAndTrace: {
+    _type: Type.Boolean,
+    _default: false,
+    _description: 'Enable or disable the Track and Trace feature',
   },
 };
 
@@ -128,4 +133,5 @@ export type ConfigObject = {
   stockLossReasonUUID: string;
   requisitionReceiptStatus: string;
   lastRequisitionStatus: string;
+  enableTrackAndTrace: boolean;
 };
