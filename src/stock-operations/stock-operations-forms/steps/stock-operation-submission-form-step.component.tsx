@@ -1,9 +1,9 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Button, Column, InlineLoading, RadioButton, RadioButtonGroup, Stack } from '@carbon/react';
 import { ArrowLeft, ArrowRight, Departure, ListChecked, Save, SendFilled } from '@carbon/react/icons';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { openmrsFetch, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
+import { openmrsFetch, restBaseUrl, showSnackbar, useConfig } from '@openmrs/esm-framework';
 import {
   createStockOperation,
   deleteStockOperationItem,
@@ -19,7 +19,18 @@ import { type StockOperationDTO } from '../../../core/api/types/stockOperation/S
 import { type StockOperationItemDTO } from '../../../core/api/types/stockOperation/StockOperationItemDTO';
 import { type ExternalRequisitionExtrafields, type StockOperationItemDtoSchema } from '../../validation-schema';
 import useOperationTypePermisions from '../hooks/useOperationTypePermisions';
+import { type ConfigObject } from '../../../config-schema';
 import styles from '../stock-operation-form.scss';
+
+interface BatchNumberItem {
+  uuid: string;
+  batchNo: string | null;
+  sscc: string | null;
+  sgtin: string | null;
+  sgln: string | null;
+}
+
+type ModalAction = 'Complete' | 'Submit' | 'Dispatch';
 
 type StockOperationSubmissionFormStepProps = {
   onPrevious?: () => void;
@@ -30,6 +41,116 @@ type StockOperationSubmissionFormStepProps = {
   externalRequsitionUuid?: string;
 };
 
+async function fetchOperationBatchNumbers(operationUuid: string): Promise<BatchNumberItem[]> {
+  try {
+    const resp = await openmrsFetch<{ uuid: string; batchNumbers: BatchNumberItem[] }>(
+      `${restBaseUrl}/stockmanagement/stockoperationbatchnumbers/${operationUuid}`,
+    );
+    return resp?.data?.batchNumbers ?? [];
+  } catch {
+    return [];
+  }
+}
+
+async function persistReceiptTrackAndTraceEvent(
+  operation: StockOperationDTO,
+  operationTypeName: string,
+  enableTrackAndTrace: boolean,
+  persistedRefs: Set<string>,
+): Promise<void> {
+  // All guards up front — zero network calls when any condition fails
+  if (!enableTrackAndTrace || operationTypeName !== OperationType.RECEIPT_OPERATION_TYPE || !operation?.uuid) return;
+
+  const operationRef = operation.operationNumber ?? operation.uuid;
+  if (persistedRefs.has(operationRef)) return;
+
+  const batchNumbers = await fetchOperationBatchNumbers(operation.uuid);
+
+  const operationDestinationUuid = (operation as any).destinationUuid ?? (operation as any).sourceUuid ?? 'unknown';
+  const operationSourceUuid = (operation as any).sourceUuid ?? 'unknown';
+  const now = new Date().toISOString();
+  const operationTime = (operation as any).operationDate ?? now;
+  const operationRef2 = operation.operationNumber ?? operation.uuid;
+
+  const eventList = batchNumbers
+    .map((batch) => {
+      const itemEpcList: string[] = [];
+      if (batch.sscc) itemEpcList.push(`urn:epc:id:sscc:${batch.sscc}`);
+      if (batch.sgtin) itemEpcList.push(`urn:epc:id:sgtin:${batch.sgtin}`);
+      if (itemEpcList.length === 0) return null;
+
+      const itemLocationGln = batch.sgln ?? operationDestinationUuid;
+      const itemEventId =
+        typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${operation.uuid}-${batch.uuid}`;
+
+      return {
+        type: 'ObjectEvent',
+        eventID: `urn:uuid:${itemEventId}`,
+        eventTime: operationTime,
+        eventTimeZoneOffset: '+03:00',
+        epcList: itemEpcList,
+        action: 'OBSERVE',
+        bizStep: 'receiving',
+        disposition: 'active',
+        readPoint: { id: `urn:epc:id:sgln:${itemLocationGln}` },
+        bizLocation: { id: `urn:epc:id:sgln:${itemLocationGln}` },
+        bizTransactionList: [
+          {
+            type: 'recadv',
+            bizTransaction: `urn:epcglobal:cbv:bt:${itemLocationGln}:${operationRef2}`,
+          },
+        ],
+        sourceList: [{ type: 'owning_party', source: `urn:epc:id:sgln:${operationSourceUuid}` }],
+        destinationList: [{ type: 'owning_party', destination: `urn:epc:id:sgln:${itemLocationGln}` }],
+      };
+    })
+    .filter(Boolean);
+
+  if (eventList.length === 0) {
+    console.info(`[TrackAndTrace] No GS1 identifiers found on receipt ${operationRef} — skipping EPCIS event`);
+    return;
+  }
+
+  const epcisDocument = {
+    '@context': ['https://ref.gs1.org/standards/epcis/epcis-context.jsonld'],
+    type: 'EPCISDocument',
+    schemaVersion: '2.0',
+    creationDate: now,
+    epcisBody: { eventList },
+  };
+
+  const envelopeEventId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : operation.uuid;
+
+  try {
+    await openmrsFetch(`${restBaseUrl}/stockmanagement/trackandtraceevent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: {
+        eventId: envelopeEventId,
+        eventType: 'receiving',
+        bizType: 'receipt',
+        status: 'queued',
+        reference: operationRef,
+        eventTime: operationTime,
+        message: JSON.stringify(epcisDocument),
+      },
+    });
+    persistedRefs.add(operationRef);
+    showSnackbar({
+      kind: 'success',
+      isLowContrast: true,
+      title: 'Track & Trace',
+      subtitle: `GS1 receiving event queued for receipt ${operation.operationNumber}`,
+    });
+  } catch (error) {
+    showSnackbar({
+      kind: 'warning',
+      title: 'Track & Trace Warning',
+      subtitle: `Receipt saved, but GS1 event could not be queued: ${(error as any)?.message ?? 'unknown error'}`,
+    });
+  }
+}
+
 const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormStepProps> = ({
   onPrevious,
   stockOperationType,
@@ -39,6 +160,7 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
   externalRequsitionUuid,
 }) => {
   const { t } = useTranslation();
+  const { enableTrackAndTrace } = useConfig<ConfigObject>();
   const operationTypePermision = useOperationTypePermisions(stockOperationType);
   const editable = useMemo(
     () =>
@@ -55,27 +177,35 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
     () => OperationType.STOCK_ISSUE_OPERATION_TYPE === stockOperationType.operationType,
     [stockOperationType],
   );
+  const persistedOperationRefs = useRef<Set<string>>(new Set());
+
+  const trackAndTraceContext = useMemo(
+    () => ({
+      enable: enableTrackAndTrace,
+      type: stockOperationType.operationType,
+      refs: persistedOperationRefs.current,
+    }),
+    [enableTrackAndTrace, stockOperationType.operationType],
+  );
+
   const handleRadioButtonChange = (selectedItem: boolean) => {
     setApprovalRequired(selectedItem);
   };
 
-  const handleSave = useCallback(async () => {
-    let result: StockOperationDTO; // To store the result for returning
+  const handleSave = useCallback(async (): Promise<StockOperationDTO> => {
+    let result: StockOperationDTO;
+
     await form.handleSubmit(async (formData) => {
       try {
-        // Get deleted items (items in stock operation bt not i form data)
         const itemsToDelete =
           stockOperation?.stockOperationItems?.reduce<Array<StockOperationItemDTO>>((prev, curr) => {
             const itemDoNotExistInFormData =
               formData.stockOperationItems.findIndex((item) => item.uuid === curr.uuid) === -1;
-            if (itemDoNotExistInFormData) {
-              return [...prev, curr];
-            }
-            return prev;
+            return itemDoNotExistInFormData ? [...prev, curr] : prev;
           }, []) ?? [];
-        // Delete them from backend asynchronosely
+
         const deleted = await Promise.allSettled(itemsToDelete.map((item) => deleteStockOperationItem(item.uuid)));
-        // Give delete status on completion
+
         deleted.forEach((del, index) => {
           showSnackbar({
             kind: del.status === 'rejected' ? 'error' : 'success',
@@ -93,30 +223,30 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
                   }),
           });
         });
+
         const orderReason = formData.reasonForRequestedQuantity;
-        // construct update payload
         const payload = {
           ...formData,
           reasonForRequestedQuantity: undefined,
-          // Remove other uuid if responsible person is set to other
           responsiblePersonUuid:
             formData.responsiblePersonUuid === otherUser.uuid ? undefined : formData.responsiblePersonUuid,
           approvalRequired: approvalRequired ? true : false,
-          stockOperationItems: [
-            ...formData.stockOperationItems.map((item) => ({
-              ...item,
-              reasonForRequestedQuantity: orderReason,
-              uuid:
-                item.uuid.startsWith('new-item-') || (!stockOperation && isStockIssueOperation) ? undefined : item.uuid, // Remove uuid for newly inserted items and stock issue items derived from requisition to avoid foreign key constraint lookup error
-            })),
-          ],
+          stockOperationItems: formData.stockOperationItems.map((item) => ({
+            ...item,
+            reasonForRequestedQuantity: orderReason,
+            uuid:
+              item.uuid.startsWith('new-item-') || (!stockOperation && isStockIssueOperation) ? undefined : item.uuid,
+          })),
         };
+
         const resp = await (stockOperation
           ? updateStockOperation(stockOperation, payload as any)
           : createStockOperation(payload as any));
-        result = resp.data; // Store the response data
+
+        result = resp.data;
         handleMutate(`${restBaseUrl}/stockmanagement/stockoperation`);
         dismissWorkspace?.();
+
         showSnackbar({
           isLowContrast: true,
           title: stockOperation
@@ -128,17 +258,17 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
             : t('stockOperationAdded', 'Stock operation added successfully'),
         });
       } catch (error) {
-        const errorMessages = extractErrorMessagesFromResponse(error);
         showSnackbar({
-          subtitle: errorMessages.join(', '),
+          subtitle: extractErrorMessagesFromResponse(error).join(', '),
           title: t('errorSavingForm', 'Error on saving form'),
           kind: 'error',
           isLowContrast: true,
         });
         throw error;
       }
-    })(); // Call handleSubmit to trigger validation and submission
-    // Update externa requisition status to RECEIVED
+    })();
+
+    // Update external requisition status if applicable
     if (externalRequsitionUuid) {
       try {
         await openmrsFetch<LocalStatusResponse>(`${restBaseUrl}/stockmanagement/externalrequisitionstatus`, {
@@ -163,24 +293,32 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
         });
       }
     }
-    return result; // Return the result after handleSubmit completes
+
+    return result;
   }, [form, stockOperation, t, approvalRequired, isStockIssueOperation, dismissWorkspace, externalRequsitionUuid]);
 
-  const handleComplete = useCallback(() => {
-    handleSave().then((operation) => {
-      launchStockOperationsModal('Complete', false, { ...operation, status: 'COMPLETED' });
-    });
-  }, [handleSave]);
-  const handleSubmitForReview = useCallback(() => {
-    handleSave().then((operation) => {
-      launchStockOperationsModal('Submit', false, { ...operation, status: 'SUBMITTED' });
-    });
-  }, [handleSave]);
-  const handleDispatch = useCallback(() => {
-    handleSave().then((operation) => {
-      launchStockOperationsModal('Dispatch', false, { ...operation, status: 'DISPATCHED' });
-    });
-  }, [handleSave]);
+  const handleAction = useCallback(
+    (modalAction?: ModalAction, nextStatus?: StockOperationDTO['status']) => {
+      const { enable, type, refs } = trackAndTraceContext;
+
+      handleSave()
+        .then((operation) => {
+          // Only launch modal for action buttons (Complete/Submit/Dispatch),
+          if (modalAction && nextStatus) {
+            launchStockOperationsModal(modalAction, false, { ...operation, status: nextStatus });
+          }
+          // T&T pipeline — only runs when it is enabled.;
+          if (enable) {
+            void persistReceiptTrackAndTraceEvent(operation, type, enable, refs);
+          }
+        })
+        .catch(() => {
+          // handleSave already shows an error snackbar — nothing more to do here.
+          // Catch prevents an unhandled promise rejection console warning.
+        });
+    },
+    [handleSave, trackAndTraceContext],
+  );
 
   return (
     <Stack gap={4} className={styles.grid}>
@@ -191,6 +329,7 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
             : t('submitAndComplete', 'Submit/Complete')}
         </h4>
       </div>
+
       <Column>
         <RadioButtonGroup
           name="rbgApprovelRequired"
@@ -203,6 +342,7 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
           <RadioButton value="false" id="rbgApprovelRequired-false" labelText={t('no', 'No')} />
         </RadioButtonGroup>
       </Column>
+
       {editable && (
         <Column>
           {approvalRequired != null && (
@@ -215,12 +355,13 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
                   style={{ margin: '4px' }}
                   className="submitButton"
                   kind="primary"
-                  onClick={handleComplete}
+                  onClick={() => handleAction('Complete', 'COMPLETED')}
                   renderIcon={ListChecked}
                 >
                   {t('complete', 'Complete')}
                 </Button>
               )}
+
               {operationTypePermision.requiresDispatchAcknowledgement && !approvalRequired && (
                 <Button
                   name="dispatch"
@@ -229,7 +370,7 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
                   data-testid="dipatch-button"
                   className="submitButton"
                   kind="primary"
-                  onClick={handleDispatch}
+                  onClick={() => handleAction('Dispatch', 'DISPATCHED')}
                   renderIcon={Departure}
                 >
                   {form.formState.isSubmitting ? (
@@ -239,6 +380,7 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
                   )}
                 </Button>
               )}
+
               {approvalRequired && (
                 <Button
                   name="submit"
@@ -246,7 +388,7 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
                   style={{ margin: '4px' }}
                   className="submitButton"
                   kind="primary"
-                  onClick={handleSubmitForReview}
+                  onClick={() => handleAction('Submit', 'SUBMITTED')}
                   renderIcon={SendFilled}
                 >
                   {form.formState.isSubmitting ? (
@@ -258,6 +400,8 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
               )}
             </>
           )}
+
+          {/* Save only — no modal, T&T still fires if enabled */}
           <Button
             name="save"
             type="button"
@@ -265,13 +409,14 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
             style={{ margin: '4px' }}
             disabled={form.formState.isSubmitting}
             kind="secondary"
-            onClick={handleSave}
+            onClick={() => handleAction()}
             renderIcon={Save}
           >
             {form.formState.isSubmitting ? <InlineLoading /> : t('save', 'Save')}
           </Button>
         </Column>
       )}
+
       <div className={styles.btnSet}>
         {typeof onNext === 'function' && (
           <Button kind="tertiary" onClick={onNext} renderIcon={ArrowRight}>
