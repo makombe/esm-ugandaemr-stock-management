@@ -1,0 +1,21 @@
+name: Run KenyaEMR ESM Single CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-shared-ci:
+    uses: Palladium-hub/platform-ci/.github/workflows/kenyaemr-esm-single-ci.yaml@main
+    with:
+      esm_name: "@kenyaemr/esm-stock-management"
+      js_name: "openmrs-esm-stock-management-app.js"
+      node_version: "20"
+      artifact_name: "dist"
+      artifact_path: "dist"
+      enable_server_dispatch: true
+      dispatch_workflow: "dev-server-ci.yml"
+      dispatch_repo: "Palladium-hub/openmrs-config-kenyaemr"
+      dispatch_ref: "main"
+    secrets: inherit
