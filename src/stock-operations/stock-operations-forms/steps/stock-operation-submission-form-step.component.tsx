@@ -131,7 +131,7 @@ async function persistReceiptTrackAndTraceEvent(
         bizType: 'receipt',
         status: 'queued',
         reference: operationRef,
-        eventTime: operationTime,
+        eventTime: new Date(),
         message: JSON.stringify(epcisDocument),
       },
     });

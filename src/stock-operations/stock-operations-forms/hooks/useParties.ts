@@ -6,8 +6,6 @@ import { LocationTypeLocation, LocationTypeOther } from '../../../core/api/types
 import { type StockOperationType } from '../../../core/api/types/stockOperation/StockOperationType';
 
 const useParties = (stockOperationType: StockOperationType) => {
-  const apiUrl = `${restBaseUrl}/stockmanagement/party?v=default`;
-  const { data, isLoading, mutate, error } = useSWR<FetchResponse<{ results: Array<Party> }>>(apiUrl, openmrsFetch);
   const sourceTags = useMemo(() => {
     return (
       stockOperationType?.stockOperationTypeLocationScopes
@@ -23,6 +21,9 @@ const useParties = (stockOperationType: StockOperationType) => {
         .map((p) => p.locationTag) ?? []
     );
   }, [stockOperationType]);
+  const tagsParam = useMemo(() => [...sourceTags, ...destinationTags].join(','), [sourceTags, destinationTags]);
+  const apiUrl = `${restBaseUrl}/stockmanagement/party?v=default${tagsParam ? `&tags=${tagsParam}` : ''}`;
+  const { data, isLoading, mutate, error } = useSWR<FetchResponse<{ results: Array<Party> }>>(apiUrl, openmrsFetch);
 
   const sourcePartiesFilter = useCallback(
     (p: Party) => {
