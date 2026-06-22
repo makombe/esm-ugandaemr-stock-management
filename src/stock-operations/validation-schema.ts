@@ -266,6 +266,7 @@ export const getStockOperationItemFormSchema = (operationType: OperationType, op
     case OperationType.DISPOSED_OPERATION_TYPE:
     case OperationType.LOSS_OPERATION_TYPE:
     case OperationType.RETURN_OPERATION_TYPE:
+    case OperationType.RECALL:
     case OperationType.STOCK_TAKE_OPERATION_TYPE:
     case OperationType.TRANSFER_OUT_OPERATION_TYPE:
       return baseStockOperationItemSchema.omit({
@@ -303,6 +304,7 @@ export const getStockOperationItemBaseSchema = (operationType: OperationType, op
     case OperationType.DISPOSED_OPERATION_TYPE:
     case OperationType.LOSS_OPERATION_TYPE:
     case OperationType.RETURN_OPERATION_TYPE:
+    case OperationType.RECALL:
     case OperationType.STOCK_TAKE_OPERATION_TYPE:
     case OperationType.TRANSFER_OUT_OPERATION_TYPE:
       return baseStockOperationItemSchema.omit({
@@ -401,6 +403,7 @@ export const getStockOperationFormSchema = (operation: OperationType, options?: 
         }),
       );
     case OperationType.RETURN_OPERATION_TYPE:
+    case OperationType.RECALL:
     case OperationType.REQUISITION_OPERATION_TYPE:
     case OperationType.RECEIPT_OPERATION_TYPE:
       return stockOperationItemDtoSchema.omit({ reasonUuid: true }).merge(
