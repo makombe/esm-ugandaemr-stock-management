@@ -266,9 +266,11 @@ export const getStockOperationItemFormSchema = (operationType: OperationType, op
     case OperationType.DISPOSED_OPERATION_TYPE:
     case OperationType.LOSS_OPERATION_TYPE:
     case OperationType.RETURN_OPERATION_TYPE:
-    case OperationType.RECALL:
+    case OperationType.RECALL_OPERATION_TYPE:
     case OperationType.STOCK_TAKE_OPERATION_TYPE:
     case OperationType.TRANSFER_OUT_OPERATION_TYPE:
+    case OperationType.EXTERNAL_RETURN_OPERATION_TYPE:
+    case OperationType.EXTERNAL_RECALL_OPERATION_TYPE:
       return baseStockOperationItemSchema.omit({
         batchNo: true,
         expiration: true,
@@ -304,9 +306,11 @@ export const getStockOperationItemBaseSchema = (operationType: OperationType, op
     case OperationType.DISPOSED_OPERATION_TYPE:
     case OperationType.LOSS_OPERATION_TYPE:
     case OperationType.RETURN_OPERATION_TYPE:
-    case OperationType.RECALL:
+    case OperationType.RECALL_OPERATION_TYPE:
     case OperationType.STOCK_TAKE_OPERATION_TYPE:
     case OperationType.TRANSFER_OUT_OPERATION_TYPE:
+    case OperationType.EXTERNAL_RETURN_OPERATION_TYPE:
+    case OperationType.EXTERNAL_RECALL_OPERATION_TYPE:
       return baseStockOperationItemSchema.omit({
         batchNo: true,
         expiration: true,
@@ -391,6 +395,8 @@ export const getStockOperationFormSchema = (operation: OperationType, options?: 
 
     case OperationType.TRANSFER_OUT_OPERATION_TYPE:
     case OperationType.STOCK_ISSUE_OPERATION_TYPE:
+    case OperationType.EXTERNAL_RETURN_OPERATION_TYPE:
+    case OperationType.EXTERNAL_RECALL_OPERATION_TYPE:
       return stockOperationItemDtoSchema.omit({ reasonUuid: true }).merge(
         z.object({
           // Merged to overid initial one with error message having  location instead of destination
@@ -403,7 +409,7 @@ export const getStockOperationFormSchema = (operation: OperationType, options?: 
         }),
       );
     case OperationType.RETURN_OPERATION_TYPE:
-    case OperationType.RECALL:
+    case OperationType.RECALL_OPERATION_TYPE:
     case OperationType.REQUISITION_OPERATION_TYPE:
     case OperationType.RECEIPT_OPERATION_TYPE:
       return stockOperationItemDtoSchema.omit({ reasonUuid: true }).merge(

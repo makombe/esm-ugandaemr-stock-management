@@ -35,7 +35,9 @@ export enum OperationType {
   RETURN_OPERATION_TYPE = 'return',
   ADJUSTMENT_OPERATION_TYPE = 'adjustment',
   LOSS_OPERATION_TYPE = 'loss',
-  RECALL = 'recall',
+  RECALL_OPERATION_TYPE = 'recall',
+  EXTERNAL_RETURN_OPERATION_TYPE = 'externalreturn',
+  EXTERNAL_RECALL_OPERATION_TYPE = 'externalrecall',
 }
 
 export function operationFromString(str: string): OperationType | undefined {
@@ -52,7 +54,9 @@ export function operationFromString(str: string): OperationType | undefined {
   if (str === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE)
     return OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE;
   if (str === OperationType.LOSS_OPERATION_TYPE) return OperationType.LOSS_OPERATION_TYPE;
-  if (str === OperationType.RECALL) return OperationType.RECALL;
+  if (str === OperationType.RECALL_OPERATION_TYPE) return OperationType.RECALL_OPERATION_TYPE;
+  if (str === OperationType.EXTERNAL_RETURN_OPERATION_TYPE) return OperationType.EXTERNAL_RETURN_OPERATION_TYPE;
+  if (str === OperationType.EXTERNAL_RECALL_OPERATION_TYPE) return OperationType.EXTERNAL_RECALL_OPERATION_TYPE;
 }
 
 export const StockOperationTypeRequiresStockAdjustmentReason = (operationType: OperationType) => {
@@ -105,7 +109,7 @@ export const StockOperationTypeRequiresDispatchAcknowledgement = (operationType:
   return (
     operationType === OperationType.STOCK_ISSUE_OPERATION_TYPE ||
     operationType === OperationType.RETURN_OPERATION_TYPE ||
-    operationType === OperationType.RECALL
+    operationType === OperationType.RECALL_OPERATION_TYPE
   );
 };
 
