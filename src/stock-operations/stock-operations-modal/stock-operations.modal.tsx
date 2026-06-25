@@ -284,6 +284,7 @@ async function persistReturnTrackAndTraceEvent(
 
 const LOSS_REASON_STOLEN_CONCEPT_UUID = 'e8090476-87e5-4d43-9ba5-cea93245fb64';
 const LOSS_REASON_LOST_CONCEPT_UUID = 'f46d3b5e-3c51-4f1b-9a7a-be136b97b3f3';
+const LOSS_REASON_DAMAGED_CONCEPT_UUID = '02a54cbb-a773-4746-bd5b-ed981d034da1';
 const DISPOSED_REASON_EXPIRED_CONCEPT_UUID = '38474360-39ab-49e5-a817-702c79ccdc58';
 
 async function persistLossTrackAndTraceEvent(
@@ -296,8 +297,16 @@ async function persistLossTrackAndTraceEvent(
   const reasonUuid = (operation as any).reasonUuid;
   const isStolenReason = reasonUuid === LOSS_REASON_STOLEN_CONCEPT_UUID;
   const isLostReason = reasonUuid === LOSS_REASON_LOST_CONCEPT_UUID;
+  const isDamagedReason = reasonUuid === LOSS_REASON_DAMAGED_CONCEPT_UUID;
 
-  if (!enableTrackAndTrace || !isLossType || (!isStolenReason && !isLostReason) || !operation?.uuid) return;
+  if (
+    !enableTrackAndTrace ||
+    !isLossType ||
+    (!isStolenReason && !isLostReason && !isDamagedReason) ||
+    !operation?.uuid
+  ) {
+    return;
+  }
 
   const operationRef = operation.operationNumber ?? operation.uuid;
   if (persistedRefs.has(operationRef)) return;
@@ -309,6 +318,7 @@ async function persistLossTrackAndTraceEvent(
   const operationTime = (operation as any).operationDate ?? now;
 
   const stolenCaseRef = (operation as any).caseReferenceNumber ?? operationRef;
+  const damagedQualityReportRef = (operation as any).qualityReportNumber ?? operationRef;
 
   const eventList = batchNumbers
     .map((batch) => {
@@ -330,8 +340,8 @@ async function persistLossTrackAndTraceEvent(
         eventTimeZoneOffset: '+03:00',
         epcList: [`urn:epc:id:sgtin:${batch.sgtin}`],
         action: 'OBSERVE',
-        bizStep: 'decommissioning',
-        disposition: isStolenReason ? 'stolen' : 'inactive',
+        bizStep: isDamagedReason ? 'inspecting' : 'decommissioning',
+        disposition: isStolenReason ? 'stolen' : isDamagedReason ? 'damaged' : 'inactive',
         readPoint: { id: `urn:epc:id:sgln:${itemLocationGln}` },
         bizLocation: { id: `urn:epc:id:sgln:${itemLocationGln}` },
       };
@@ -340,6 +350,15 @@ async function persistLossTrackAndTraceEvent(
         return {
           ...baseEvent,
           bizTransactionList: [{ type: 'cert', bizTransaction: stolenCaseRef }],
+        };
+      }
+
+      if (isDamagedReason) {
+        return {
+          ...baseEvent,
+          bizTransactionList: [
+            { type: 'cert', bizTransaction: `urn:epcglobal:cbv:bt:${itemLocationGln}:${damagedQualityReportRef}` },
+          ],
         };
       }
 
@@ -362,6 +381,8 @@ async function persistLossTrackAndTraceEvent(
 
   const envelopeEventId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : operation.uuid;
 
+  const bizType = isStolenReason ? 'stolen' : isDamagedReason ? 'damaged' : 'loss';
+
   try {
     await openmrsFetch(`${restBaseUrl}/stockmanagement/trackandtraceevent`, {
       method: 'POST',
@@ -369,7 +390,7 @@ async function persistLossTrackAndTraceEvent(
       body: {
         eventId: envelopeEventId,
         eventType: 'ObjectEvent',
-        bizType: isStolenReason ? 'stolen' : 'loss',
+        bizType,
         status: 'queued',
         reference: operationRef,
         eventTime: new Date(),
@@ -381,7 +402,7 @@ async function persistLossTrackAndTraceEvent(
       kind: 'success',
       isLowContrast: true,
       title: 'Track & Trace',
-      subtitle: `GS1 ${isStolenReason ? 'stolen' : 'loss'} event queued for ${operationRef}`,
+      subtitle: `GS1 ${bizType} event queued for ${operationRef}`,
     });
   } catch (error) {
     showSnackbar({
