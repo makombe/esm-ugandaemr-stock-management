@@ -190,6 +190,28 @@ export function useFacilityCode() {
   };
 }
 
+export async function fetchOperationBatchNumbers(operationUuid: string): Promise<BatchNumberItem[]> {
+  try {
+    const resp = await openmrsFetch<{ uuid: string; batchNumbers: BatchNumberItem[] }>(
+      `${restBaseUrl}/stockmanagement/stockoperationbatchnumbers/${operationUuid}`,
+    );
+    return resp?.data?.batchNumbers ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchOperationTransactions(operationUuid: string): Promise<StockItemTransactionForRecall[]> {
+  try {
+    const resp = await openmrsFetch<{ results: StockItemTransactionForRecall[] }>(
+      `${restBaseUrl}/stockmanagement/stockitemtransaction?stockOperationUuid=${operationUuid}&v=default`,
+    );
+    return resp?.data?.results ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export enum ExternalRequisitionStatus {
   PR_CREATED = 'PR_CREATED',
   PENDING_MATCH = 'PENDING_MATCH',
@@ -247,6 +269,22 @@ export interface StatusResponseData {
     errorMessage: string; // For Failed
     missingProducts?: any;
   };
+}
+
+export interface BatchNumberItem {
+  uuid: string;
+  batchNo: string | null;
+  sscc: string | null;
+  sgtin: string | null;
+  sgln: string | null;
+}
+
+export interface StockItemTransactionForRecall {
+  stockBatchNo: any;
+  uuid: string;
+  stockBatchUuid: string | null;
+  quantity: number;
+  packagingUomName: string | null;
 }
 
 export type LocalStatusResponse = {
