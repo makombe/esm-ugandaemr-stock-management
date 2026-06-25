@@ -1,5 +1,12 @@
 import { Button, Form, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextArea } from '@carbon/react';
-import { ErrorState, getCoreTranslation, openmrsFetch, restBaseUrl, showSnackbar } from '@openmrs/esm-framework';
+import {
+  ErrorState,
+  getCoreTranslation,
+  openmrsFetch,
+  restBaseUrl,
+  showSnackbar,
+  useConfig,
+} from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +20,8 @@ import { OperationType } from '../../core/api/types/stockOperation/StockOperatio
 import { handleMutate } from '../../utils';
 import {
   executeStockOperationAction,
+  fetchOperationBatchNumbers,
+  fetchOperationTransactions,
   type LocalStatusResponse,
   submitExternalRequisition,
   submitReceiptNote,
@@ -23,6 +32,7 @@ import {
 } from '../stock-operations.resource';
 import styles from './stock-operations.scss';
 import { mutate } from 'swr';
+import { type ConfigObject } from '../../config-schema';
 
 interface StockOperationsModalProps {
   title: string;
@@ -30,6 +40,355 @@ interface StockOperationsModalProps {
   operation: StockOperationDTO;
   operationType: OperationType;
   closeModal: () => void;
+}
+
+async function persistRecallTrackAndTraceEvent(
+  operation: StockOperationDTO,
+  operationTypeName: string,
+  enableTrackAndTrace: boolean,
+  persistedRefs: Set<string>,
+): Promise<void> {
+  const isRecallType = operationTypeName === OperationType.EXTERNAL_RECALL_OPERATION_TYPE;
+
+  if (!enableTrackAndTrace || !isRecallType || !operation?.uuid) return;
+
+  const operationRef = operation.operationNumber ?? operation.uuid;
+  if (persistedRefs.has(operationRef)) return;
+
+  const [batchNumbers, transactions] = await Promise.all([
+    fetchOperationBatchNumbers(operation.uuid),
+    fetchOperationTransactions(operation.uuid),
+  ]);
+
+  const transactionsByBatchNo = new Map(transactions.map((txn) => [txn.stockBatchNo, txn]));
+
+  const recallLocationUuid = (operation as any).sourceUuid ?? (operation as any).destinationUuid ?? 'unknown';
+  const now = new Date().toISOString();
+  const operationTime = (operation as any).operationDate ?? now;
+
+  const recallNoticeRef =
+    (operation as any).recallNoticeNumber ?? (operation as any).requisitionTransactionDate ?? operationRef;
+
+  const eventList = batchNumbers
+    .map((batch) => {
+      if (!batch.sgtin) {
+        console.info(
+          `[TrackAndTrace] Recall batch ${batch.uuid} (lot ${batch.batchNo}) has no sgtin — skipping GS1 event for this batch`,
+        );
+        return null;
+      }
+
+      const matchingTransaction = batch.batchNo ? transactionsByBatchNo.get(batch.batchNo) : undefined;
+      const quantity = matchingTransaction ? Math.abs(matchingTransaction.quantity) : 0;
+      const uom = matchingTransaction?.packagingUomName ?? 'EA';
+
+      const itemLocationGln = batch.sgln ?? recallLocationUuid;
+      const eventId =
+        typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${operation.uuid}-${batch.uuid}`;
+
+      return {
+        type: 'ObjectEvent',
+        eventID: `urn:uuid:${eventId}`,
+        eventTime: operationTime,
+        eventTimeZoneOffset: '+03:00',
+        epcList: [],
+        action: 'OBSERVE',
+        bizStep: 'holding',
+        disposition: 'recalled',
+        readPoint: { id: `urn:epc:id:sgln:${itemLocationGln}` },
+        bizLocation: { id: `urn:epc:id:sgln:${itemLocationGln}` },
+        bizTransactionList: [
+          {
+            type: 'cert',
+            bizTransaction: `urn:epc:id:gdti:${itemLocationGln}.${recallNoticeRef}`,
+          },
+        ],
+        quantityList: [
+          {
+            epcClass: `urn:epc:class:lgtin:${batch.sgtin}`,
+            quantity,
+            uom,
+          },
+        ],
+      };
+    })
+    .filter(Boolean);
+
+  if (!eventList || eventList.length === 0) {
+    console.info(`[TrackAndTrace] No GS1-eligible batches found on recall ${operationRef} — skipping EPCIS event`);
+    return;
+  }
+
+  const epcisDocument = {
+    '@context': ['https://ref.gs1.org/standards/epcis/epcis-context.jsonld'],
+    type: 'EPCISDocument',
+    schemaVersion: '2.0',
+    creationDate: now,
+    epcisBody: { eventList },
+  };
+
+  const envelopeEventId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : operation.uuid;
+
+  try {
+    await openmrsFetch(`${restBaseUrl}/stockmanagement/trackandtraceevent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: {
+        eventId: envelopeEventId,
+        eventType: 'ObjectEvent',
+        bizType: 'recall',
+        status: 'queued',
+        reference: operationRef,
+        eventTime: new Date(),
+        message: JSON.stringify(epcisDocument),
+      },
+    });
+    persistedRefs.add(operationRef);
+    showSnackbar({
+      kind: 'success',
+      isLowContrast: true,
+      title: 'Track & Trace',
+      subtitle: `GS1 recall event queued for ${operationRef}`,
+    });
+  } catch (error) {
+    showSnackbar({
+      kind: 'warning',
+      title: 'Track & Trace Warning',
+      subtitle: `Recall saved, but GS1 event could not be queued: ${(error as any)?.message ?? 'unknown error'}`,
+    });
+  }
+}
+
+async function persistReturnTrackAndTraceEvent(
+  operation: StockOperationDTO,
+  operationTypeName: string,
+  enableTrackAndTrace: boolean,
+  persistedRefs: Set<string>,
+): Promise<void> {
+  const isReturnType = operationTypeName === OperationType.EXTERNAL_RETURN_OPERATION_TYPE;
+
+  if (!enableTrackAndTrace || !isReturnType || !operation?.uuid) return;
+
+  const operationRef = operation.operationNumber ?? operation.uuid;
+  if (persistedRefs.has(operationRef)) return;
+
+  const [batchNumbers, transactions] = await Promise.all([
+    fetchOperationBatchNumbers(operation.uuid),
+    fetchOperationTransactions(operation.uuid),
+  ]);
+
+  const transactionsByBatchNo = new Map(transactions.map((txn) => [txn.stockBatchNo, txn]));
+
+  // Source is where the return ships from (Main Store); destination is the
+  // external party (e.g. KEMSA / supplier) it's returning to.
+  const operationSourceUuid = (operation as any).sourceUuid ?? 'unknown';
+  const operationDestinationUuid = (operation as any).destinationUuid ?? operationSourceUuid;
+  const now = new Date().toISOString();
+  const operationTime = (operation as any).operationDate ?? now;
+
+  const returnRmaRef = (operation as any).rmaNumber ?? (operation as any).requisitionTransactionDate ?? operationRef;
+
+  const eventList = batchNumbers
+    .map((batch) => {
+      const itemEpcList: string[] = [];
+      if (batch.sscc) itemEpcList.push(`urn:epc:id:sscc:${batch.sscc}`);
+      if (batch.sgtin) itemEpcList.push(`urn:epc:id:sgtin:${batch.sgtin}`);
+      if (itemEpcList.length === 0) {
+        console.info(
+          `[TrackAndTrace] Return batch ${batch.uuid} (lot ${batch.batchNo}) has no sscc/sgtin — skipping GS1 event for this batch`,
+        );
+        return null;
+      }
+
+      const matchingTransaction = batch.batchNo ? transactionsByBatchNo.get(batch.batchNo) : undefined;
+      if (matchingTransaction === undefined) {
+        console.info(
+          `[TrackAndTrace] Return batch ${batch.uuid} (lot ${batch.batchNo}) has no matching transaction — quantity will be omitted from this event`,
+        );
+      }
+
+      const itemSourceGln = batch.sgln ?? operationSourceUuid;
+      const itemEventId =
+        typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${operation.uuid}-${batch.uuid}`;
+
+      return {
+        type: 'ObjectEvent',
+        eventID: `urn:uuid:${itemEventId}`,
+        eventTime: operationTime,
+        eventTimeZoneOffset: '+03:00',
+        epcList: itemEpcList,
+        action: 'OBSERVE',
+        bizStep: 'shipping',
+        disposition: 'returned',
+        readPoint: { id: `urn:epc:id:sgln:${itemSourceGln}` },
+        bizLocation: { id: `urn:epc:id:sgln:${itemSourceGln}` },
+        bizTransactionList: [
+          {
+            type: 'desadv',
+            bizTransaction: `urn:epcglobal:cbv:bt:${itemSourceGln}:${returnRmaRef}`,
+          },
+        ],
+        sourceList: [{ type: 'owning_party', source: `urn:epc:id:sgln:${itemSourceGln}` }],
+        destinationList: [
+          { type: 'owning_party', destination: `urn:epc:id:sgln:${operationDestinationUuid}` },
+          { type: 'location', destination: `urn:epc:id:sgln:${operationDestinationUuid}` },
+        ],
+      };
+    })
+    .filter(Boolean);
+
+  if (eventList.length === 0) {
+    console.info(`[TrackAndTrace] No GS1-eligible batches found on return ${operationRef} — skipping EPCIS event`);
+    return;
+  }
+
+  const epcisDocument = {
+    '@context': ['https://ref.gs1.org/standards/epcis/epcis-context.jsonld'],
+    type: 'EPCISDocument',
+    schemaVersion: '2.0',
+    creationDate: now,
+    epcisBody: { eventList },
+  };
+
+  const envelopeEventId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : operation.uuid;
+
+  try {
+    await openmrsFetch(`${restBaseUrl}/stockmanagement/trackandtraceevent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: {
+        eventId: envelopeEventId,
+        eventType: 'ObjectEvent',
+        bizType: 'return',
+        status: 'queued',
+        reference: operationRef,
+        eventTime: new Date(),
+        message: JSON.stringify(epcisDocument),
+      },
+    });
+    persistedRefs.add(operationRef);
+    showSnackbar({
+      kind: 'success',
+      isLowContrast: true,
+      title: 'Track & Trace',
+      subtitle: `GS1 return event queued for ${operationRef}`,
+    });
+  } catch (error) {
+    showSnackbar({
+      kind: 'warning',
+      title: 'Track & Trace Warning',
+      subtitle: `Return saved, but GS1 event could not be queued: ${(error as any)?.message ?? 'unknown error'}`,
+    });
+  }
+}
+
+const LOSS_REASON_STOLEN_CONCEPT_UUID = 'e8090476-87e5-4d43-9ba5-cea93245fb64';
+const LOSS_REASON_LOST_CONCEPT_UUID = 'f46d3b5e-3c51-4f1b-9a7a-be136b97b3f3';
+
+async function persistLossTrackAndTraceEvent(
+  operation: StockOperationDTO,
+  operationTypeName: string,
+  enableTrackAndTrace: boolean,
+  persistedRefs: Set<string>,
+): Promise<void> {
+  const isLossType = operationTypeName === OperationType.LOSS_OPERATION_TYPE;
+  const reasonUuid = (operation as any).reasonUuid;
+  const isStolenReason = reasonUuid === LOSS_REASON_STOLEN_CONCEPT_UUID;
+  const isLostReason = reasonUuid === LOSS_REASON_LOST_CONCEPT_UUID;
+
+  if (!enableTrackAndTrace || !isLossType || (!isStolenReason && !isLostReason) || !operation?.uuid) return;
+
+  const operationRef = operation.operationNumber ?? operation.uuid;
+  if (persistedRefs.has(operationRef)) return;
+
+  const batchNumbers = await fetchOperationBatchNumbers(operation.uuid);
+
+  const operationLocationUuid = (operation as any).sourceUuid ?? (operation as any).atLocationUuid ?? 'unknown';
+  const now = new Date().toISOString();
+  const operationTime = (operation as any).operationDate ?? now;
+
+  const stolenCaseRef = (operation as any).caseReferenceNumber ?? operationRef;
+
+  const eventList = batchNumbers
+    .map((batch) => {
+      if (!batch.sgtin) {
+        console.info(
+          `[TrackAndTrace] Loss batch ${batch.uuid} (lot ${batch.batchNo}) has no sgtin — skipping GS1 event for this batch`,
+        );
+        return null;
+      }
+
+      const itemLocationGln = batch.sgln ?? operationLocationUuid;
+      const itemEventId =
+        typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${operation.uuid}-${batch.uuid}`;
+
+      const baseEvent = {
+        type: 'ObjectEvent',
+        eventID: `urn:uuid:${itemEventId}`,
+        eventTime: operationTime,
+        eventTimeZoneOffset: '+03:00',
+        epcList: [`urn:epc:id:sgtin:${batch.sgtin}`],
+        action: 'OBSERVE',
+        bizStep: 'decommissioning',
+        disposition: isStolenReason ? 'stolen' : 'inactive',
+        readPoint: { id: `urn:epc:id:sgln:${itemLocationGln}` },
+        bizLocation: { id: `urn:epc:id:sgln:${itemLocationGln}` },
+      };
+
+      if (isStolenReason) {
+        return {
+          ...baseEvent,
+          bizTransactionList: [{ type: 'cert', bizTransaction: stolenCaseRef }],
+        };
+      }
+
+      return baseEvent;
+    })
+    .filter(Boolean);
+
+  if (eventList.length === 0) {
+    console.info(`[TrackAndTrace] No GS1-eligible batches found on loss ${operationRef} — skipping EPCIS event`);
+    return;
+  }
+
+  const epcisDocument = {
+    '@context': ['https://ref.gs1.org/standards/epcis/epcis-context.jsonld'],
+    type: 'EPCISDocument',
+    schemaVersion: '2.0',
+    creationDate: now,
+    epcisBody: { eventList },
+  };
+
+  const envelopeEventId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : operation.uuid;
+
+  try {
+    await openmrsFetch(`${restBaseUrl}/stockmanagement/trackandtraceevent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: {
+        eventId: envelopeEventId,
+        eventType: 'ObjectEvent',
+        bizType: isStolenReason ? 'stolen' : 'loss',
+        status: 'queued',
+        reference: operationRef,
+        eventTime: new Date(),
+        message: JSON.stringify(epcisDocument),
+      },
+    });
+    persistedRefs.add(operationRef);
+    showSnackbar({
+      kind: 'success',
+      isLowContrast: true,
+      title: 'Track & Trace',
+      subtitle: `GS1 ${isStolenReason ? 'stolen' : 'loss'} event queued for ${operationRef}`,
+    });
+  } catch (error) {
+    showSnackbar({
+      kind: 'warning',
+      title: 'Track & Trace Warning',
+      subtitle: `Operation saved, but GS1 event could not be queued: ${(error as any)?.message ?? 'unknown error'}`,
+    });
+  }
 }
 
 const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
@@ -44,6 +403,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
   const [notes, setNotes] = useState('');
   const [isApproving, setIsApproving] = useState(false);
   const { error, facilityCode, isLoading } = useFacilityCode();
+  const { enableTrackAndTrace } = useConfig<ConfigObject>();
   const isExternalRequisition = operationType === OperationType.EXTERNAL_REQUISITION_OPERATION_TYPE;
   const isReceiptOperation = operationType === OperationType.RECEIPT_OPERATION_TYPE;
   const {
@@ -59,7 +419,7 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
     isLoading: isLoadingStatus,
     statusRemoteMessages,
     supplier,
-  } = useExternalRequisitionStatusByReceiptNumber(isReceiptOperation ? operation.operationNumber : null);
+  } = useExternalRequisitionStatusByReceiptNumber(isReceiptOperation ? operation?.operationNumber : null);
   const isReceiptDerivedFromExternalRequisition = isReceiptOperation && status?.length > 0;
   // Find External requisition used to create the receipt operation(Used to retrive the quantity ordered)
   const { items: sourceExternalRequisition, isLoading: isLoadingSourceRequisition } = useStockOperationAndItems(
@@ -270,6 +630,18 @@ const StockOperationsModal: React.FC<StockOperationsModalProps> = ({
         }),
         kind: 'success',
       });
+
+      if (enableTrackAndTrace && actionName === 'COMPLETE') {
+        if (operation?.operationType === OperationType.EXTERNAL_RECALL_OPERATION_TYPE) {
+          void persistRecallTrackAndTraceEvent(operation, operation?.operationType, enableTrackAndTrace, new Set());
+        }
+        if (operation?.operationType === OperationType.EXTERNAL_RETURN_OPERATION_TYPE) {
+          void persistReturnTrackAndTraceEvent(operation, operation?.operationType, enableTrackAndTrace, new Set());
+        }
+        if (operation?.operationType === OperationType.LOSS_OPERATION_TYPE) {
+          void persistLossTrackAndTraceEvent(operation, operation?.operationType, enableTrackAndTrace, new Set());
+        }
+      }
       closeModal();
       handleMutate(`${restBaseUrl}/stockmanagement/stockoperation`);
     } catch (err) {

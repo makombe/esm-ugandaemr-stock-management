@@ -7,6 +7,7 @@ import { openmrsFetch, restBaseUrl, showSnackbar, useConfig } from '@openmrs/esm
 import {
   createStockOperation,
   deleteStockOperationItem,
+  fetchOperationBatchNumbers,
   type LocalStatusResponse,
   updateStockOperation,
 } from '../../stock-operations.resource';
@@ -22,14 +23,6 @@ import useOperationTypePermisions from '../hooks/useOperationTypePermisions';
 import { type ConfigObject } from '../../../config-schema';
 import styles from '../stock-operation-form.scss';
 
-interface BatchNumberItem {
-  uuid: string;
-  batchNo: string | null;
-  sscc: string | null;
-  sgtin: string | null;
-  sgln: string | null;
-}
-
 type ModalAction = 'Complete' | 'Submit' | 'Dispatch';
 
 type StockOperationSubmissionFormStepProps = {
@@ -40,17 +33,6 @@ type StockOperationSubmissionFormStepProps = {
   dismissWorkspace?: () => void;
   externalRequsitionUuid?: string;
 };
-
-async function fetchOperationBatchNumbers(operationUuid: string): Promise<BatchNumberItem[]> {
-  try {
-    const resp = await openmrsFetch<{ uuid: string; batchNumbers: BatchNumberItem[] }>(
-      `${restBaseUrl}/stockmanagement/stockoperationbatchnumbers/${operationUuid}`,
-    );
-    return resp?.data?.batchNumbers ?? [];
-  } catch {
-    return [];
-  }
-}
 
 async function persistReceiptTrackAndTraceEvent(
   operation: StockOperationDTO,
@@ -310,6 +292,7 @@ const StockOperationSubmissionFormStep: React.FC<StockOperationSubmissionFormSte
           // T&T pipeline — only runs when it is enabled.;
           if (enable) {
             void persistReceiptTrackAndTraceEvent(operation, type, enable, refs);
+            //void persistRecallTrackAndTraceEvent(operation, type, enable, refs);
           }
         })
         .catch(() => {
