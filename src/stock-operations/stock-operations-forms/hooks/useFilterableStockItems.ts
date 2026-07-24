@@ -7,7 +7,7 @@ export function useFilterableStockItems(filter?: StockItemFilter) {
   const [conceptFilter, setConceptFilter] = useState<StockItemFilter>(
     filter || {
       v: ResourceRepresentation.Default,
-      limit: 10,
+      limit: 50,
       startIndex: 0,
     },
   );
@@ -18,7 +18,7 @@ export function useFilterableStockItems(filter?: StockItemFilter) {
   } = useStockItemsData(conceptFilter);
 
   const [searchString, setSearchString] = useState(null);
-  const [limit, setLimit] = useState(filter?.limit || 10);
+  const [limit, setLimit] = useState(filter?.limit || 50);
   const [representation, setRepresentation] = useState(filter?.v || ResourceRepresentation.Default);
 
   const [groupByFormulary] = useState<boolean>(filter?.groupByFormulary ?? false);
